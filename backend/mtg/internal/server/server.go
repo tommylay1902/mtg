@@ -2,9 +2,12 @@ package server
 
 import (
 	"mtg/internal/database"
-	"mtg/internal/server/dao"
+
+	pDao "mtg/internal/server/dao/prescription"
+	phDao "mtg/internal/server/dao/prescription_history"
 	"mtg/internal/server/handler"
-	"mtg/internal/server/service"
+	pService "mtg/internal/server/service/prescription"
+	phService "mtg/internal/server/service/prescriptionhistory"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -18,9 +21,12 @@ type FiberServer struct {
 
 func New() *FiberServer {
 	db := database.New()
-	gormPrescriptionDao := dao.InitializeGormDao(db)
-	fiberPrescriptionService := service.Initialize(gormPrescriptionDao)
-	handler := handler.InitHandlers(fiberPrescriptionService)
+	gormPrescriptionDao := pDao.InitializeGormDao(db)
+	gormPrescriptionHistoryDao := phDao.InitializeGormPrescriptionHistoryDao(db)
+	fiberPrescriptionService := pService.InitializeFiberPrescriptionService(gormPrescriptionDao)
+	fiberPrescriptionHistorySerivce := phService.InitializeFiberPrescriptionHistoryService(gormPrescriptionHistoryDao)
+	// fiberPrescriptionHistoryService := service
+	handler := handler.InitHandlers(fiberPrescriptionService, fiberPrescriptionHistorySerivce)
 
 	server := &FiberServer{
 		App:     fiber.New(),

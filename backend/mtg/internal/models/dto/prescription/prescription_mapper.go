@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func MapPrescriptionDTOToModel(dto *PrescriptionDTO) (*entity.Prescription, error) {
+func MapPrescriptionDTOToEntity(dto *PrescriptionDTO) (*entity.Prescription, error) {
 	var id, err = uuid.NewRandom()
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func MapPrescriptionDTOToModel(dto *PrescriptionDTO) (*entity.Prescription, erro
 	return model, nil
 }
 
-func MapPrescriptionModelToDTO(p *entity.Prescription) (*PrescriptionDTO, error) {
+func MapPrescriptionEntityToDTO(p *entity.Prescription) (*PrescriptionDTO, error) {
 	dto := &PrescriptionDTO{
 		Medication: p.Medication,
 		Dosage:     p.Dosage,
@@ -37,10 +37,10 @@ func MapPrescriptionModelToDTO(p *entity.Prescription) (*PrescriptionDTO, error)
 	return dto, nil
 }
 
-func MapPrescriptionModelSliceToDTOSlice(prescriptions []entity.Prescription) ([]PrescriptionDTO, error) {
+func MapPrescriptionEntitySliceToDTOSlice(prescriptions []entity.Prescription) ([]PrescriptionDTO, error) {
 	var resultMapping []PrescriptionDTO
 	for _, p := range prescriptions {
-		dto, err := MapPrescriptionModelToDTO(&p)
+		dto, err := MapPrescriptionEntityToDTO(&p)
 		if err != nil {
 			return nil, err
 		}
@@ -49,10 +49,10 @@ func MapPrescriptionModelSliceToDTOSlice(prescriptions []entity.Prescription) ([
 	return resultMapping, nil
 }
 
-func MapPrescriptionDTOSliceToModelSlice(prescriptions []PrescriptionDTO) ([]entity.Prescription, error) {
+func MapPrescriptionDTOSliceToEntitySlice(prescriptions []PrescriptionDTO) ([]entity.Prescription, error) {
 	var resultMapping []entity.Prescription
 	for _, dto := range prescriptions {
-		p, err := MapPrescriptionDTOToModel(&dto)
+		p, err := MapPrescriptionDTOToEntity(&dto)
 		if err != nil {
 			return nil, err
 		}

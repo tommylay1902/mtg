@@ -1,24 +1,24 @@
-package service
+package pService
 
 import (
 	"mtg/internal/error/apperror"
-	dto "mtg/internal/models/dto/prescription"
+	pDto "mtg/internal/models/dto/prescription"
 	"mtg/internal/models/entity"
-	"mtg/internal/server/dao"
+	pDao "mtg/internal/server/dao/prescription"
 
 	"github.com/google/uuid"
 )
 
 type FiberPrescriptionService struct {
-	DAO dao.PrescriptionDAO
+	DAO pDao.PrescriptionDAO
 }
 
-func Initialize(dao dao.PrescriptionDAO) *FiberPrescriptionService {
+func InitializeFiberPrescriptionService(dao pDao.PrescriptionDAO) *FiberPrescriptionService {
 	return &FiberPrescriptionService{DAO: dao}
 }
 
-func (ps *FiberPrescriptionService) CreatePrescription(pDTO *dto.PrescriptionDTO) (*uuid.UUID, error) {
-	create, dtoErr := dto.MapPrescriptionDTOToModel(pDTO)
+func (ps *FiberPrescriptionService) CreatePrescription(pDTO *pDto.PrescriptionDTO) (*uuid.UUID, error) {
+	create, dtoErr := pDto.MapPrescriptionDTOToEntity(pDTO)
 
 	if dtoErr != nil {
 		return nil, dtoErr
@@ -66,7 +66,7 @@ func (ps *FiberPrescriptionService) DeletePrescription(id uuid.UUID, email strin
 	return nil
 }
 
-func (ps *FiberPrescriptionService) UpdatePrescription(pDTO *dto.PrescriptionDTO, id uuid.UUID, email string) error {
+func (ps *FiberPrescriptionService) UpdatePrescription(pDTO *pDto.PrescriptionDTO, id uuid.UUID, email string) error {
 	pUpdate, err := ps.DAO.GetPrescriptionById(id, email)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package service
+package pService
 
 import (
 	dto "mtg/internal/models/dto/prescription"

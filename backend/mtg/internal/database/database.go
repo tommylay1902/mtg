@@ -29,5 +29,6 @@ func New() *gorm.DB {
 	}
 
 	db.AutoMigrate(&entity.Prescription{})
+	db.AutoMigrate(&entity.PrescriptionHistory{})
 	return db
 }

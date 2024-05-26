@@ -1,13 +1,18 @@
 package handler
 
-import "mtg/internal/server/service"
+import (
+	pService "mtg/internal/server/service/prescription"
+	phService "mtg/internal/server/service/prescriptionhistory"
+)
 
 type Handler struct {
-	PHandler *PrescriptionHandler
+	PHandler       *PrescriptionHandler
+	HistoryHandler *PrescriptionHistoryHandler
 }
 
-func InitHandlers(pService *service.FiberPrescriptionService) *Handler {
-	pHandler := InitializePrescriptionHandler(pService)
+func InitHandlers(pService *pService.FiberPrescriptionService, hService *phService.FiberPrescriptionHistoryService) *Handler {
 
-	return &Handler{PHandler: pHandler}
+	pHandler := InitializePrescriptionHandler(pService)
+	historyHandler := InitializePrescriptionHistoryHandler(hService)
+	return &Handler{PHandler: pHandler, HistoryHandler: historyHandler}
 }

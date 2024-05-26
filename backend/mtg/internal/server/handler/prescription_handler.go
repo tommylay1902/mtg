@@ -4,7 +4,7 @@ import (
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	dto "mtg/internal/models/dto/prescription"
-	"mtg/internal/server/service"
+	service "mtg/internal/server/service/prescription"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

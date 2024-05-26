@@ -1,4 +1,4 @@
-package dao
+package pDao
 
 import (
 	"mtg/internal/models/entity"
