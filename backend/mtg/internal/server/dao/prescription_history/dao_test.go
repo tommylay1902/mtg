@@ -1,4 +1,4 @@
-package tests
+package phDao_test
 
 import (
 	"database/sql"
@@ -14,7 +14,6 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

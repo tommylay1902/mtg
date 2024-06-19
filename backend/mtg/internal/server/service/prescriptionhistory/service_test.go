@@ -1,4 +1,4 @@
-package tests
+package phService_test
 
 import (
 	"log"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	m "github.com/stretchr/testify/mock"
 )
 
@@ -164,24 +165,49 @@ func TestDeleteByEmailAndId(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestUpdateUpdateByModel(t *testing.T) {
+func TestUpdateUpdateByEmailAndRx(t *testing.T) {
+	// Step 1: Generate initial Rx history model
 	rxOne := GenerateRxHistoryModel()
+	// originalOwner := rxOne.Owner
+	newOwner := "new.owner@example.com" // Set a new owner to test the if condition
+	newPrescription := uuid.New()
 	taken := time.Now()
 	rxDTO := &dto.PrescriptionHistoryDTO{
-		PrescriptionId: rxOne.PrescriptionId,
-		Owner:          rxOne.Owner,
+		PrescriptionId: &newPrescription,
+		Owner:          &newOwner, // Use a different owner to trigger the if block
 		Taken:          &taken,
 	}
 
+	// Step 2: Initialize mock DAO and service
 	dao := &MockPrescriptionHistoryDAO{}
 	service := phService.InitializeFiberPrescriptionHistoryService(dao)
 
-	dao.On("GetByEmailAndRx", "tommylay.c@gmail.com", *rxOne.PrescriptionId).Return(rxOne, nil)
+	// Step 3: Set up mocks for GetByEmailAndRx and UpdateByModel
+	dao.On("GetByEmailAndRx", "tommylay.c@gmail.com", newPrescription).Return(rxOne, nil)
+	dao.On("UpdateByModel", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		// Simulate the update by modifying the rxOne object
+		updatedRx := args.Get(0).(*entity.PrescriptionHistory)
+		*rxOne = *updatedRx
+	})
 
-	dao.On("UpdateByModel", rxOne).Return(nil)
-
-	err := service.UpdateByEmailAndRx(rxDTO, *rxDTO.Owner, *rxDTO.PrescriptionId)
+	// Step 4: Call the update method
+	err := service.UpdateByEmailAndRx(rxDTO, "tommylay.c@gmail.com", *rxDTO.PrescriptionId)
 	assert.NoError(t, err)
+
+	// Step 5: Verify that UpdateByModel was called
+	dao.AssertCalled(t, "UpdateByModel", mock.AnythingOfType("*entity.PrescriptionHistory"))
+
+	// Step 6: Mock the result of GetByEmailAndRx after the update
+	dao.On("GetByEmailAndRx", newOwner, *rxOne.PrescriptionId).Return(rxOne, nil)
+
+	// Step 7: Retrieve the updated entity
+	result, err := service.GetByEmailAndRx(newOwner, *rxOne.PrescriptionId)
+	assert.NoError(t, err)
+
+	// Step 8: Assert the updated values
+	assert.Equal(t, *rxDTO.Taken, *result.Taken)
+	assert.Equal(t, newOwner, *result.Owner)
+	assert.Equal(t, newPrescription, *result.PrescriptionId)
 }
 
 func GenerateRxHistoryModel() *entity.PrescriptionHistory {

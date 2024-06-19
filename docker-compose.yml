@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  mtg_api:
+    container_name: mtg_api
+    build:
+      context: ./backend/mtg
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - db
+    depends_on:
+      - postgres_api
   keycloak_web:
     image: quay.io/keycloak/keycloak:23.0.7
     container_name: keycloak_web
@@ -22,11 +33,12 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
     command: start-dev
     depends_on:
-      - keycloakdb
+      - keycloak_db
     ports:
       - 8081:8080
 
-  keycloakdb:
+  keycloak_db:
+    container_name: keycloak_db
     image: postgres:latest
     volumes:
       - kc_data:/var/lib/postgresql/data
@@ -34,16 +46,23 @@ services:
       POSTGRES_DB: ${POSTGRES_DB_KC}
       POSTGRES_USER: ${POSTGRES_USER_KC}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_KC}
-  psql:
+  postgres_api:
+    container_name: postgres_api
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - db
     ports:
       - "${DB_PORT}:5432"
     volumes:
       - psql_data:/var/lib/postgresql/data
+
+networks:
+  db:
+    driver: bridge
 
 volumes:
   psql_data:
