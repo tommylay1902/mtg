@@ -11,18 +11,23 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
+    "@tanstack/react-router": "^1.87.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "keycloak-js": "^25.0.0",
     "keycloak-react-web": "^0.1.19",
     "lucide-react": "^0.395.0",
+    "oidc-client-ts": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-oidc-context": "^3.2.0",
     "react-router-dom": "^6.23.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@tanstack/router-devtools": "^1.87.7",
+    "@tanstack/router-plugin": "^1.87.7",
     "@types/node": "^20.14.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
