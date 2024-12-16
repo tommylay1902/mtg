@@ -15,7 +15,6 @@ import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as MedicationIndexImport } from './routes/medication/index'
 import { Route as MedicationIdImport } from './routes/medication/$id'
-import { Route as MedicationDistIndexImport } from './routes/medication/dist/index'
 
 // Create/Update Routes
 
@@ -40,12 +39,6 @@ const MedicationIndexRoute = MedicationIndexImport.update({
 const MedicationIdRoute = MedicationIdImport.update({
   id: '/medication/$id',
   path: '/medication/$id',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MedicationDistIndexRoute = MedicationDistIndexImport.update({
-  id: '/medication/dist/',
-  path: '/medication/dist/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -81,13 +74,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MedicationIndexImport
       parentRoute: typeof rootRoute
     }
-    '/medication/dist/': {
-      id: '/medication/dist/'
-      path: '/medication/dist'
-      fullPath: '/medication/dist'
-      preLoaderRoute: typeof MedicationDistIndexImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -98,7 +84,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/medication/$id': typeof MedicationIdRoute
   '/medication': typeof MedicationIndexRoute
-  '/medication/dist': typeof MedicationDistIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -106,7 +91,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/medication/$id': typeof MedicationIdRoute
   '/medication': typeof MedicationIndexRoute
-  '/medication/dist': typeof MedicationDistIndexRoute
 }
 
 export interface FileRoutesById {
@@ -115,26 +99,14 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/medication/$id': typeof MedicationIdRoute
   '/medication/': typeof MedicationIndexRoute
-  '/medication/dist/': typeof MedicationDistIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/medication/$id'
-    | '/medication'
-    | '/medication/dist'
+  fullPaths: '/' | '/about' | '/medication/$id' | '/medication'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/medication/$id' | '/medication' | '/medication/dist'
-  id:
-    | '__root__'
-    | '/'
-    | '/about'
-    | '/medication/$id'
-    | '/medication/'
-    | '/medication/dist/'
+  to: '/' | '/about' | '/medication/$id' | '/medication'
+  id: '__root__' | '/' | '/about' | '/medication/$id' | '/medication/'
   fileRoutesById: FileRoutesById
 }
 
@@ -143,7 +115,6 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   MedicationIdRoute: typeof MedicationIdRoute
   MedicationIndexRoute: typeof MedicationIndexRoute
-  MedicationDistIndexRoute: typeof MedicationDistIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -151,7 +122,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   MedicationIdRoute: MedicationIdRoute,
   MedicationIndexRoute: MedicationIndexRoute,
-  MedicationDistIndexRoute: MedicationDistIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -167,8 +137,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/medication/$id",
-        "/medication/",
-        "/medication/dist/"
+        "/medication/"
       ]
     },
     "/": {
@@ -182,9 +151,6 @@ export const routeTree = rootRoute
     },
     "/medication/": {
       "filePath": "medication/index.tsx"
-    },
-    "/medication/dist/": {
-      "filePath": "medication/dist/index.js"
     }
   }
 }

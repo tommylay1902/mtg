@@ -13,7 +13,7 @@ export const Route = createFileRoute("/medication/")({
 
 function RouteComponent() {
   const auth = useAuth();
-  const response = useQuery({
+  const { isPending, isFetching, data } = useQuery({
     queryKey: ["medications"],
     queryFn: () =>
       getPrescriptions(
@@ -23,7 +23,6 @@ function RouteComponent() {
     enabled: !!auth.user?.profile?.email,
   });
 
-  const medications: Array<Prescription> = response.data;
   useEffect(() => {
     if (!auth.isAuthenticated && !auth.isLoading) {
       throw auth.signinRedirect();
@@ -33,38 +32,16 @@ function RouteComponent() {
   if (auth.isLoading) {
     return <div>Loading...</div>;
   }
-  // const [isAuthReady, setIsAuthReady] = useState(false);
-  // const [medications, setMedications] = useState<Array<Prescription>>(Array);
-  // // Wait for auth to be loaded before fetching medications
 
-  // useEffect(() => {
-  //   if (!auth.isAuthenticated && !auth.isLoading) {
-  //     throw auth.signinRedirect();
-  //   } else {
-  //     (async () => {
-  //       try {
-  //         const email = auth.user?.profile.email;
-  //         setMedications(
-  //           await getPrescriptions(email == undefined ? "" : email)
-  //         );
-  //       } catch (e) {
-  //         console.error(e);
-  //       }
-  //     })();
-  //   }
-  // }, [auth]);
-
-  // // Show loading message if auth isn't ready yet
-  // if (!medications.length) {
-  //   return <div>Loading...</div>;
-  // }
-
+  if (isPending || isFetching) {
+    return <div>Loading...</div>;
+  }
   return (
     <ul>
-      {medications.map((med, index) => {
+      {data!.map((med, index) => {
         return (
           <li key={index}>
-            {med.dosage}, {med.notes}
+            {med.medication}, {med.dosage}, {med.notes}
           </li>
         );
       })}
