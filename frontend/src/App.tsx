@@ -19,7 +19,7 @@ declare module "@tanstack/react-router" {
 
 const App = () => {
   const authentication = useAuth();
-  console.log(authentication, "from app");
+
   return <RouterProvider router={router} context={{ authentication }} />;
 };
 
