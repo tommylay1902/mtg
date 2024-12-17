@@ -1,5 +1,13 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getPrescriptions } from "@/shared/query/PrescriptionQueries";
-import { Prescription } from "@/shared/types/Prescription";
+import { generatePrescriptionTemplate } from "@/shared/types/Prescription";
 import { useQuery } from "@tanstack/react-query";
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -36,15 +44,33 @@ function RouteComponent() {
   if (isPending || isFetching) {
     return <div>Loading...</div>;
   }
+
+  const tableHeaders = Object.keys(generatePrescriptionTemplate());
+
   return (
-    <ul>
-      {data!.map((med, index) => {
-        return (
-          <li key={index}>
-            {med.medication}, {med.dosage}, {med.notes}
-          </li>
-        );
-      })}
-    </ul>
+    <div className={"m-10"}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {tableHeaders.map((header) => {
+              if (header !== "id") {
+                return <TableHead>{header}</TableHead>;
+              }
+            })}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data?.map((p) => (
+            <TableRow key={p.id}>
+              {tableHeaders.map((field) => {
+                if (field !== "id") {
+                  return <TableCell>{p[field]}</TableCell>;
+                }
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

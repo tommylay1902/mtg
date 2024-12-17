@@ -6,6 +6,19 @@ export interface Prescription extends IObjectKeys {
   medication: string;
   dosage: string;
   notes: string;
+  refills: number;
   started: string;
   ended: string | null;
 }
+
+export const generatePrescriptionTemplate = () => {
+  return {
+    id: "",
+    medication: "",
+    dosage: "",
+    notes: "",
+    refills: 0,
+    started: "",
+    ended: "",
+  };
+};

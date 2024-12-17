@@ -1,6 +1,4 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-// import { useAuth } from "react-oidc-context";
-// import { hasAuthParams } from "react-oidc-context";
 
 export const Route = createFileRoute("/")({
   component: Index,
