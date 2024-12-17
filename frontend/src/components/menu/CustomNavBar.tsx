@@ -30,17 +30,16 @@ export const CustomNavBar = () => {
           {auth.isAuthenticated ? (
             <>
               <NavigationMenuItem>
-                <Link href="/">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Dashboard
-                  </NavigationMenuLink>
+                <Link href="/" className={navigationMenuTriggerStyle()}>
+                  Dashboard
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/medication">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Medication
-                  </NavigationMenuLink>
+                <Link
+                  href="/medication"
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Medication
                 </Link>
               </NavigationMenuItem>
             </>
@@ -49,10 +48,8 @@ export const CustomNavBar = () => {
           )}
 
           <NavigationMenuItem className={"grow"}>
-            <Link href="/about">
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                About
-              </NavigationMenuLink>
+            <Link href="/about" className={navigationMenuTriggerStyle()}>
+              About
             </Link>
           </NavigationMenuItem>
           {auth.isAuthenticated ? (

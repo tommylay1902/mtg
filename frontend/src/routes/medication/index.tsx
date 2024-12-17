@@ -54,7 +54,7 @@ function RouteComponent() {
           <TableRow>
             {tableHeaders.map((header) => {
               if (header !== "id") {
-                return <TableHead>{header}</TableHead>;
+                return <TableHead key={header}>{header}</TableHead>;
               }
             })}
           </TableRow>
@@ -64,7 +64,7 @@ function RouteComponent() {
             <TableRow key={p.id}>
               {tableHeaders.map((field) => {
                 if (field !== "id") {
-                  return <TableCell>{p[field]}</TableCell>;
+                  return <TableCell key={p.id + field}>{p[field]}</TableCell>;
                 }
               })}
             </TableRow>
