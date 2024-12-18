@@ -1,13 +1,15 @@
 package server
 
-func (s *FiberServer) RegisterFiberRoutes() {
+import "github.com/gofiber/fiber/v2"
 
-	apiPrescriptionRoutes := s.Group("api/v1/prescription")
+func (s *FiberServer) RegisterFiberRoutes(kcMiddleware func(*fiber.Ctx) error, jwtMiddleware func(*fiber.Ctx) error) {
+
+	apiPrescriptionRoutes := s.Group("api/v1/prescription", kcMiddleware, jwtMiddleware)
 	apiPrescriptionRoutes.Post("", s.Handler.PHandler.CreatePrescription)
-	apiPrescriptionRoutes.Get("/all/:email", s.Handler.PHandler.GetPrescriptions)
-	apiPrescriptionRoutes.Get("/:email/:id", s.Handler.PHandler.GetPrescription)
-	apiPrescriptionRoutes.Delete("/:email/:id", s.Handler.PHandler.DeletePrescription)
-	apiPrescriptionRoutes.Put("/:email/:id", s.Handler.PHandler.UpdatePrescription)
+	apiPrescriptionRoutes.Get("/all", s.Handler.PHandler.GetPrescriptions, kcMiddleware, jwtMiddleware)
+	apiPrescriptionRoutes.Get("/:id", s.Handler.PHandler.GetPrescription)
+	apiPrescriptionRoutes.Delete("/:id", s.Handler.PHandler.DeletePrescription)
+	apiPrescriptionRoutes.Put("/:id", s.Handler.PHandler.UpdatePrescription)
 
 	apiPrescriptionHistoryRoutes := s.Group("api/v1/prescriptionhistory")
 	apiPrescriptionHistoryRoutes.Post("", s.Handler.HistoryHandler.CreatePrescriptionHistory)

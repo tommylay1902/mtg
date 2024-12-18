@@ -41,7 +41,7 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 
 func (ph *PrescriptionHandler) GetPrescription(c *fiber.Ctx) error {
 	idParam := c.Params("id")
-	email := c.Params("email")
+	email := c.Locals("email").(string)
 
 	id, err := uuid.Parse(idParam)
 
@@ -63,7 +63,8 @@ func (ph *PrescriptionHandler) GetPrescription(c *fiber.Ctx) error {
 }
 
 func (ph *PrescriptionHandler) GetPrescriptions(c *fiber.Ctx) error {
-	email := c.Params("email")
+	email := c.Locals("email").(string)
+
 	searchQueries := c.Queries()
 	prescriptions, err := ph.Service.GetPrescriptions(searchQueries, &email)
 

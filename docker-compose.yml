@@ -11,7 +11,8 @@ services:
     networks:
       - db
     depends_on:
-      - postgres_api
+      postgres_api:
+        condition: service_healthy
   keycloak_web:
     image: quay.io/keycloak/keycloak:23.0.7
     container_name: keycloak_web
@@ -59,6 +60,11 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - psql_data:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
 
 networks:
   db:

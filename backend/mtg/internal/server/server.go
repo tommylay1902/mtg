@@ -20,6 +20,8 @@ type FiberServer struct {
 }
 
 func New() *FiberServer {
+	//setup keycloak client
+
 	db := database.New()
 	gormPrescriptionDao := pDao.InitializeGormDao(db)
 	gormPrescriptionHistoryDao := phDao.InitializeGormPrescriptionHistoryDao(db)
