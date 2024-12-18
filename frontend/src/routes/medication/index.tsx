@@ -25,10 +25,10 @@ function RouteComponent() {
     queryKey: ["medications"],
     queryFn: () =>
       getPrescriptions(
-        auth.user?.profile?.email == undefined ? "" : auth.user?.profile?.email
+        auth.user?.access_token == undefined ? "" : auth.user?.access_token
       ),
     // The query will not execute until the userId exists
-    enabled: !!auth.user?.profile?.email,
+    enabled: !!auth.user?.access_token,
   });
 
   useEffect(() => {
@@ -42,6 +42,7 @@ function RouteComponent() {
   }
 
   if (isPending || isFetching) {
+    console.log("making call with ", auth.user?.access_token);
     return <div>Loading...</div>;
   }
 
