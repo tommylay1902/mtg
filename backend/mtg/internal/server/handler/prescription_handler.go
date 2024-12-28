@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	dto "mtg/internal/models/dto/prescription"
@@ -20,7 +21,7 @@ func InitializePrescriptionHandler(service service.PrescriptionService) *Prescri
 
 func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 	var requestBody dto.PrescriptionDTO
-
+	email := c.Locals("email").(string)
 	if err := c.BodyParser(&requestBody); err != nil {
 		badErr := &apperror.BadRequestError{
 			Message: err.Error(),
@@ -28,9 +29,11 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 		}
 		return errorhandler.HandleError(badErr, c)
 	}
+	requestBody.Owner = &email
 
 	id, err := ph.Service.CreatePrescription(&requestBody)
 	if err != nil {
+		fmt.Println(err)
 		return errorhandler.HandleError(err, c)
 	}
 

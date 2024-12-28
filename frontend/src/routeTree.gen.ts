@@ -13,8 +13,8 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
-import { Route as MedicationIndexImport } from './routes/medication/index'
-import { Route as MedicationIdImport } from './routes/medication/$id'
+import { Route as PrescriptionsIndexImport } from './routes/prescriptions/index'
+import { Route as PrescriptionsIdImport } from './routes/prescriptions/$id'
 
 // Create/Update Routes
 
@@ -30,15 +30,15 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const MedicationIndexRoute = MedicationIndexImport.update({
-  id: '/medication/',
-  path: '/medication/',
+const PrescriptionsIndexRoute = PrescriptionsIndexImport.update({
+  id: '/prescriptions/',
+  path: '/prescriptions/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const MedicationIdRoute = MedicationIdImport.update({
-  id: '/medication/$id',
-  path: '/medication/$id',
+const PrescriptionsIdRoute = PrescriptionsIdImport.update({
+  id: '/prescriptions/$id',
+  path: '/prescriptions/$id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,18 +60,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/medication/$id': {
-      id: '/medication/$id'
-      path: '/medication/$id'
-      fullPath: '/medication/$id'
-      preLoaderRoute: typeof MedicationIdImport
+    '/prescriptions/$id': {
+      id: '/prescriptions/$id'
+      path: '/prescriptions/$id'
+      fullPath: '/prescriptions/$id'
+      preLoaderRoute: typeof PrescriptionsIdImport
       parentRoute: typeof rootRoute
     }
-    '/medication/': {
-      id: '/medication/'
-      path: '/medication'
-      fullPath: '/medication'
-      preLoaderRoute: typeof MedicationIndexImport
+    '/prescriptions/': {
+      id: '/prescriptions/'
+      path: '/prescriptions'
+      fullPath: '/prescriptions'
+      preLoaderRoute: typeof PrescriptionsIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -82,46 +82,46 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/medication/$id': typeof MedicationIdRoute
-  '/medication': typeof MedicationIndexRoute
+  '/prescriptions/$id': typeof PrescriptionsIdRoute
+  '/prescriptions': typeof PrescriptionsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/medication/$id': typeof MedicationIdRoute
-  '/medication': typeof MedicationIndexRoute
+  '/prescriptions/$id': typeof PrescriptionsIdRoute
+  '/prescriptions': typeof PrescriptionsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/medication/$id': typeof MedicationIdRoute
-  '/medication/': typeof MedicationIndexRoute
+  '/prescriptions/$id': typeof PrescriptionsIdRoute
+  '/prescriptions/': typeof PrescriptionsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/medication/$id' | '/medication'
+  fullPaths: '/' | '/about' | '/prescriptions/$id' | '/prescriptions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/medication/$id' | '/medication'
-  id: '__root__' | '/' | '/about' | '/medication/$id' | '/medication/'
+  to: '/' | '/about' | '/prescriptions/$id' | '/prescriptions'
+  id: '__root__' | '/' | '/about' | '/prescriptions/$id' | '/prescriptions/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  MedicationIdRoute: typeof MedicationIdRoute
-  MedicationIndexRoute: typeof MedicationIndexRoute
+  PrescriptionsIdRoute: typeof PrescriptionsIdRoute
+  PrescriptionsIndexRoute: typeof PrescriptionsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  MedicationIdRoute: MedicationIdRoute,
-  MedicationIndexRoute: MedicationIndexRoute,
+  PrescriptionsIdRoute: PrescriptionsIdRoute,
+  PrescriptionsIndexRoute: PrescriptionsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -136,8 +136,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
-        "/medication/$id",
-        "/medication/"
+        "/prescriptions/$id",
+        "/prescriptions/"
       ]
     },
     "/": {
@@ -146,11 +146,11 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
-    "/medication/$id": {
-      "filePath": "medication/$id.tsx"
+    "/prescriptions/$id": {
+      "filePath": "prescriptions/$id.tsx"
     },
-    "/medication/": {
-      "filePath": "medication/index.tsx"
+    "/prescriptions/": {
+      "filePath": "prescriptions/index.tsx"
     }
   }
 }

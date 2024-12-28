@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useAuth } from "react-oidc-context";
 
-export const Route = createFileRoute("/medication/$id")({
+export const Route = createFileRoute("/prescriptions/$id")({
   component: RouteComponent,
 });
 

@@ -35,10 +35,10 @@ export const CustomNavBar = () => {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Link
-                  href="/medication"
+                  href="/prescriptions"
                   className={navigationMenuTriggerStyle()}
                 >
-                  Medication
+                  Prescriptions
                 </Link>
               </NavigationMenuItem>
             </>

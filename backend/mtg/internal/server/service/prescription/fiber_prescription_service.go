@@ -1,6 +1,7 @@
 package pService
 
 import (
+	"fmt"
 	"mtg/internal/error/apperror"
 	pDto "mtg/internal/models/dto/prescription"
 	"mtg/internal/models/entity"
@@ -21,6 +22,7 @@ func (ps *FiberPrescriptionService) CreatePrescription(pDTO *pDto.PrescriptionDT
 	create, dtoErr := pDto.MapPrescriptionDTOToEntity(pDTO)
 
 	if dtoErr != nil {
+		fmt.Println("error was hit here with dto mapping")
 		return nil, dtoErr
 	}
 

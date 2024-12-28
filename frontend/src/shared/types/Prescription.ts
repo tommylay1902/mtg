@@ -7,7 +7,7 @@ export interface Prescription extends IObjectKeys {
   dosage: string;
   notes: string;
   refills: number;
-  started: string;
+  started: string | null;
   ended: string | null;
 }
 
