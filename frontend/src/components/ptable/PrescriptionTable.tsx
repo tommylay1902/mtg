@@ -25,6 +25,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
+import { Checkbox } from "../ui/checkbox";
 
 interface PrescriptionTableProps {
   data: Prescription[] | undefined;
@@ -34,14 +35,36 @@ const tableHeaders = Object.keys(generatePrescriptionTemplate());
 
 const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
   const [hover, setHover] = useState("");
-  //   const [sortState, setSortState] = useState("default");
+
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const columnHelper = createColumnHelper<Prescription>();
 
-  const columns = tableHeaders.map((h) => {
-    if (h === "ended" || h === "started") {
+  const columns = [
+    columnHelper.display({
+      id: "select",
+      cell: ({ row }) => (
+        <Checkbox
+          checked={selectedRows.includes(row.original.id)}
+          onCheckedChange={(checked) => {
+            if (checked) {
+              setSelectedRows((prev) => [...prev, row.original.id]);
+            } else {
+              setSelectedRows((prev) =>
+                prev.filter((id) => id !== row.original.id)
+              );
+            }
+          }}
+        />
+      ),
+    }),
+    ...tableHeaders.map((h) => {
       return columnHelper.accessor(h, {
-        cell: (info) => stringToUSDate(info.getValue()),
+        cell: (info) => {
+          return (h === "started" || h === "ended") && typeof h === "string"
+            ? stringToUSDate(`${info.getValue()}`)
+            : info.getValue();
+        },
         header: () => {
           // sorting[0].id == h && s
           if (sorting.length === 0 || sorting[0].id !== h) {
@@ -64,32 +87,8 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
           );
         },
       });
-    }
-    return columnHelper.accessor(h, {
-      cell: (info) => info.getValue(),
-      header: () => {
-        // sorting[0].id == h && s
-        if (sorting.length === 0 || sorting[0].id !== h) {
-          return (
-            <span>
-              <DefaultSort className={"inline-block"} /> {h.toUpperCase()}
-            </span>
-          );
-        }
-        return sorting[0].desc ? (
-          <span>
-            <DscSort className={"inline-block"} />
-            {h.toUpperCase()}
-          </span>
-        ) : (
-          <span>
-            <AscSort className={"inline-block"} />
-            {h.toUpperCase()}
-          </span>
-        );
-      },
-    });
-  });
+    }),
+  ];
 
   const table = useReactTable({
     columns,
@@ -100,6 +99,7 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
     state: { sorting },
   });
 
+  console.log(selectedRows);
   return (
     <Table>
       <TableHeader>
