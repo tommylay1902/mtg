@@ -1,24 +1,15 @@
 import Modal from "@/components/modal/modal";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { createPrescription } from "@/shared/api/Prescription";
 import { getPrescriptions } from "@/shared/query/PrescriptionQueries";
-import {
-  generatePrescriptionTemplate,
-  Prescription,
-} from "@/shared/types/Prescription";
-import { handleDateFormat } from "@/shared/util/Date";
+import { Prescription } from "@/shared/types/Prescription";
+import { stringToTimeStamp } from "@/shared/util/Date";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
+import PrescriptionTable from "@/components/ptable/PrescriptionTable";
 
 export const Route = createFileRoute("/prescriptions/")({
   component: RouteComponent,
@@ -32,6 +23,7 @@ function RouteComponent() {
     queryFn: () => getPrescriptions(auth.user!.access_token),
     // The query will not execute until the userId exists
     enabled: !!auth.user?.access_token,
+    staleTime: 40000,
   });
 
   const createPrescriptionMutation = useMutation({
@@ -55,50 +47,18 @@ function RouteComponent() {
     return <div>Loading...</div>;
   }
 
-  const tableHeaders = Object.keys(generatePrescriptionTemplate());
-
   const createPrescriptionSubmit = (prescription: Prescription) => {
     createPrescriptionMutation.mutate({
       ...prescription,
-      started: handleDateFormat(prescription.started),
-      ended: handleDateFormat(prescription.ended),
+      started: stringToTimeStamp(prescription.started),
+      ended: stringToTimeStamp(prescription.ended),
     });
   };
 
   return (
     <div className={"m-10"}>
       <Modal customSubmit={createPrescriptionSubmit} />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {tableHeaders.map((header) => {
-              if (header !== "id") {
-                return (
-                  <TableHead key={header} className={" font-extrabold"}>
-                    {header.toUpperCase()}
-                  </TableHead>
-                );
-              }
-            })}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data?.map((p) => (
-            <TableRow key={p.id}>
-              {tableHeaders.map((field) => {
-                console.log(field);
-                if (field !== "id") {
-                  if (field === "ended" && p[field] == null) {
-                    return <TableCell key={p.id + field}>Current</TableCell>;
-                  } else {
-                    return <TableCell key={p.id + field}>{p[field]}</TableCell>;
-                  }
-                }
-              })}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <PrescriptionTable data={data} />
     </div>
   );
 }

@@ -23,7 +23,7 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<Prescription>();
 
   return (
