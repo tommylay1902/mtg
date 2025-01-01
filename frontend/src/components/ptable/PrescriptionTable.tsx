@@ -27,7 +27,6 @@ import {
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ModalOperations } from "@/shared/types/enum/ModalOperations";
-import Modal from "../modal/modal";
 
 interface PrescriptionTableProps {
   data: Prescription[] | undefined;
@@ -134,7 +133,6 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
     onSortingChange: (updater) => setSorting(updater),
     state: { sorting },
   });
-
   return (
     <Table>
       <TableHeader>

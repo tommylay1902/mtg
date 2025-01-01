@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { ModalOperations } from "@/shared/types/enum/ModalOperations";
+import ModalBody from "./ModalBody";
 
 type deleteAction = (list: string[]) => void;
 type updateAction = (prescriptions: Prescription[]) => void;
@@ -34,6 +35,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     } else {
       (confirmAction as updateAction)(prescriptions);
     }
+    setOperation(ModalOperations.NoAction);
   };
   return (
     <Dialog>
@@ -70,15 +72,16 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           </DialogTitle>
         </DialogHeader>
         <div>
-          {prescriptions.map((p: Prescription) => {
+          <ModalBody data={prescriptions} operation={operation} />
+          {/* {prescriptions.map((p: Prescription) => {
             return (
-              <>
+              <div key={p.id}>
                 <div className="items-center w-[50vw] text-center font-bold">
                   {p.medication}
                 </div>
-              </>
+              </div>
             );
-          })}
+          })} */}
         </div>
         <DialogFooter className="flex justify-between">
           <DialogClose asChild>
