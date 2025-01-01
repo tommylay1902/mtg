@@ -29,23 +29,27 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 interface PrescriptionTableProps {
   data: Prescription[] | undefined;
+  selectedRows: string[];
+  setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const tableHeaders = Object.keys(generatePrescriptionTemplate());
 
-const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
+const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
+  data,
+  selectedRows,
+  setSelectedRows,
+}) => {
   const [hover, setHover] = useState("");
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  // const [resetSelection, setResetSelection] = useState<boolean>(false);
-  const columnHelper = createColumnHelper<Prescription>();
 
+  const columnHelper = createColumnHelper<Prescription>();
+  console.log(selectedRows);
   const columns = [
     columnHelper.display({
       id: "select",
       header: ({ table }) => {
-        console.log(selectedRows);
         return (
           <Checkbox
             checked={

@@ -8,7 +8,8 @@ func (s *FiberServer) RegisterFiberRoutes(kcMiddleware func(*fiber.Ctx) error, j
 	apiPrescriptionRoutes.Post("", s.Handler.PHandler.CreatePrescription)
 	apiPrescriptionRoutes.Get("/all", s.Handler.PHandler.GetPrescriptions, kcMiddleware, jwtMiddleware)
 	apiPrescriptionRoutes.Get("/:id", s.Handler.PHandler.GetPrescription)
-	apiPrescriptionRoutes.Delete("/:id", s.Handler.PHandler.DeletePrescription)
+	// apiPrescriptionRoutes.Delete("/:id", s.Handler.PHandler.DeletePrescription)
+	apiPrescriptionRoutes.Delete("", s.Handler.PHandler.DeleteBatchPrescription)
 	apiPrescriptionRoutes.Put("/:id", s.Handler.PHandler.UpdatePrescription)
 
 	apiPrescriptionHistoryRoutes := s.Group("api/v1/prescriptionhistory")

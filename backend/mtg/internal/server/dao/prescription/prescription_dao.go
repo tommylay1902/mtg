@@ -11,5 +11,6 @@ type PrescriptionDAO interface {
 	GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error)
 	GetAllPrescriptions(searchQueries map[string]string, email *string) ([]entity.Prescription, error)
 	DeletePrescription(model *entity.Prescription, email string) error
+	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error
 	UpdatePrescription(model *entity.Prescription, email string) error
 }

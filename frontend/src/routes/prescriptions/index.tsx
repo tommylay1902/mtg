@@ -1,15 +1,19 @@
 import Modal from "@/components/modal/modal";
 
-import { createPrescription } from "@/shared/api/Prescription";
+import {
+  createPrescription,
+  deleteBatchPrescription,
+} from "@/shared/api/Prescription";
 import { getPrescriptions } from "@/shared/query/PrescriptionQueries";
 import { Prescription } from "@/shared/types/Prescription";
 import { stringToTimeStamp } from "@/shared/util/Date";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import PrescriptionTable from "@/components/ptable/PrescriptionTable";
+import ReviewModal from "@/components/modal/reviewmodal";
 
 export const Route = createFileRoute("/prescriptions/")({
   component: RouteComponent,
@@ -31,6 +35,14 @@ function RouteComponent() {
       createPrescription(auth.user!.access_token, prescription),
     onSuccess: () => refetch(),
   });
+
+  const deleteBatchPrescriptionMutation = useMutation({
+    mutationFn: (deleteList: string[]) =>
+      deleteBatchPrescription(auth.user!.access_token, deleteList),
+    onSuccess: () => refetch(),
+  });
+
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
     if (!auth.isAuthenticated && !auth.isLoading) {
@@ -55,10 +67,27 @@ function RouteComponent() {
     });
   };
 
+  const deletePrescriptionHandler = (deleteList: string[]) => {
+    deleteBatchPrescriptionMutation.mutate(deleteList);
+  };
+
   return (
     <div className={"m-10"}>
-      <Modal customSubmit={createPrescriptionSubmit} />
-      <PrescriptionTable data={data} />
+      <div className={"flex justify-between"}>
+        <Modal customSubmit={createPrescriptionSubmit} />
+        <ReviewModal
+          prescriptions={(data ?? []).filter((p) =>
+            selectedRows.includes(p.id)
+          )}
+          confirmAction={deletePrescriptionHandler}
+        />
+      </div>
+
+      <PrescriptionTable
+        data={data}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+      />
     </div>
   );
 }

@@ -25,3 +25,17 @@ export const createPrescription = (
     body: JSON.stringify(prescription),
   });
 };
+
+export const deleteBatchPrescription = (
+  token: string,
+  deleteList: string[]
+) => {
+  return fetch("http://localhost:8080/api/v1/prescription", {
+    method: "DELETE",
+    headers: new Headers({
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    }),
+    body: JSON.stringify({ deleteList: deleteList }),
+  });
+};

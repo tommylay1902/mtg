@@ -5,6 +5,7 @@ import (
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	dto "mtg/internal/models/dto/prescription"
+	"mtg/internal/models/request"
 	service "mtg/internal/server/service/prescription"
 
 	"github.com/gofiber/fiber/v2"
@@ -94,6 +95,29 @@ func (ph *PrescriptionHandler) DeletePrescription(c *fiber.Ctx) error {
 		return errorhandler.HandleError(sErr, c)
 	}
 	return nil
+}
+
+func (ph *PrescriptionHandler) DeleteBatchPrescription(c *fiber.Ctx) error {
+	email := c.Locals("email").(string)
+	var requestBody request.DeleteBatchPrescriptionRequest
+	if err := c.BodyParser(&requestBody); err != nil {
+		bodyParseErr := &apperror.BadRequestError{
+			Message: err.Error(),
+			Code:    400,
+		}
+		return errorhandler.HandleError(bodyParseErr, c)
+	}
+
+	err := ph.Service.DeleteBatchPrescription(requestBody.DeleteList, email)
+
+	if err != nil {
+		fmt.Println(err)
+		return errorhandler.HandleError(err, c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": "successfully deleted all prescriptions",
+	})
 }
 
 func (ph *PrescriptionHandler) UpdatePrescription(c *fiber.Ctx) error {

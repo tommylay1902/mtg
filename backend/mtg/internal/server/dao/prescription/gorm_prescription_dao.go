@@ -66,6 +66,16 @@ func (dao *GormPrescriptionDao) DeletePrescription(model *entity.Prescription, e
 	return nil
 }
 
+func (dao *GormPrescriptionDao) DeleteBatchPrescription(deleteList []uuid.UUID, email string) error {
+	err := dao.DB.Table("prescriptions").Where("owner = ? AND id IN ?", email, deleteList).Delete(&entity.Prescription{}).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (dao *GormPrescriptionDao) UpdatePrescription(model *entity.Prescription, email string) error {
 	err := dao.DB.Where("owner = ?", email).Save(&model).Error
 

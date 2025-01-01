@@ -68,6 +68,16 @@ func (ps *FiberPrescriptionService) DeletePrescription(id uuid.UUID, email strin
 	return nil
 }
 
+func (ps *FiberPrescriptionService) DeleteBatchPrescription(deleteList []uuid.UUID, email string) error {
+	err := ps.DAO.DeleteBatchPrescription(deleteList, email)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (ps *FiberPrescriptionService) UpdatePrescription(pDTO *pDto.PrescriptionDTO, id uuid.UUID, email string) error {
 	pUpdate, err := ps.DAO.GetPrescriptionById(id, email)
 	if err != nil {

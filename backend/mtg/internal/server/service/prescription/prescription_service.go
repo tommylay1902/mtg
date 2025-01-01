@@ -12,5 +12,6 @@ type PrescriptionService interface {
 	GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error)
 	GetPrescriptions(searchQuery map[string]string, owner *string) ([]entity.Prescription, error)
 	DeletePrescription(id uuid.UUID, email string) error
+	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error
 	UpdatePrescription(pDTO *dto.PrescriptionDTO, id uuid.UUID, email string) error
 }
