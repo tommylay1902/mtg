@@ -123,3 +123,7 @@ func (ps *FiberPrescriptionService) UpdatePrescription(pDTO *pDto.PrescriptionDT
 
 	return &apperror.BadRequestError{Message: "No updates found for the prescription", Code: 400}
 }
+
+func (ps *FiberPrescriptionService) UpdateBatchPrescription(updateList []entity.Prescription, email string) error {
+	return ps.DAO.UpdateBatchPrescription(updateList, email)
+}

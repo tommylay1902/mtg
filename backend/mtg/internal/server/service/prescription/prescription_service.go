@@ -14,4 +14,5 @@ type PrescriptionService interface {
 	DeletePrescription(id uuid.UUID, email string) error
 	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error
 	UpdatePrescription(pDTO *dto.PrescriptionDTO, id uuid.UUID, email string) error
+	UpdateBatchPrescription(updateList []entity.Prescription, email string) error
 }

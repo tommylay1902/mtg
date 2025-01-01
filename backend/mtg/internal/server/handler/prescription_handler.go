@@ -5,6 +5,7 @@ import (
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	dto "mtg/internal/models/dto/prescription"
+	"mtg/internal/models/entity"
 	"mtg/internal/models/request"
 	service "mtg/internal/server/service/prescription"
 
@@ -151,4 +152,33 @@ func (ph *PrescriptionHandler) UpdatePrescription(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": "successfully updated prescription",
 	})
+}
+
+func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
+	email := c.Locals("email").(string)
+
+	var requestBody []entity.Prescription
+
+	if err := c.BodyParser(&requestBody); err != nil {
+		bodyParseErr := &apperror.BadRequestError{
+			Message: err.Error(),
+			Code:    400,
+		}
+		return errorhandler.HandleError(bodyParseErr, c)
+	}
+
+	for _, e := range requestBody {
+		e.Owner = &email
+	}
+
+	err := ph.Service.UpdateBatchPrescription(requestBody, email)
+
+	if err != nil {
+		return errorhandler.HandleError(err, c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": "successfully all prescriptions",
+	})
+
 }

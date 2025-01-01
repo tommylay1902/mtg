@@ -13,4 +13,5 @@ type PrescriptionDAO interface {
 	DeletePrescription(model *entity.Prescription, email string) error
 	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error
 	UpdatePrescription(model *entity.Prescription, email string) error
+	UpdateBatchPrescription(updateList []entity.Prescription, email string) error
 }

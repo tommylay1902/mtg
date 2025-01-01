@@ -62,6 +62,11 @@ func (m *MockPrescriptionDAO) DeletePrescription(p *entity.Prescription, email s
 	return args.Error(0)
 }
 
+func (m *MockPrescriptionDAO) DeleteBatchPrescription(deleteList []uuid.UUID, email string) error {
+	args := m.Called(email, deleteList)
+	return args.Error(0)
+}
+
 // UpdatePrescription mocks the UpdatePrescription method of PrescriptionDAO.
 func (m *MockPrescriptionDAO) UpdatePrescription(p *entity.Prescription, email string) error {
 	args := m.Called(p, email)

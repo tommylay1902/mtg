@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type GormPrescriptionDao struct {
@@ -84,5 +85,32 @@ func (dao *GormPrescriptionDao) UpdatePrescription(model *entity.Prescription, e
 	}
 
 	return nil
+}
 
+func (dao *GormPrescriptionDao) UpdateBatchPrescription(updateList []entity.Prescription, email string) error {
+	// err := dao.DB.Where("owner = ? and id IN ?", email, updateList).Save(updateList).Error
+	// if err != nil {
+	// 	return err
+	// }
+
+	// create values array which represents the rows
+	values := make([]clause.Expr, 0, len(updateList))
+	for _, p := range updateList {
+		values = append(values, gorm.Expr("(?, ?, ?, ?, ?, ?, ?, ?)", p.ID, p.Medication, p.Dosage, p.Notes, p.Started, p.Ended, p.Refills, p.Owner))
+	}
+
+	valuesExpr := gorm.Expr("?", values)
+	valuesExpr.WithoutParentheses = true
+
+	err := dao.DB.Exec(
+		"UPDATE prescriptions SET Medication = tmp.Medication, dosage = tmp.Dosage,  notes = tmp.Notes, started = tmp.Started, ended = tmp.Ended, refills = tmp.Refills FROM (VALUES ?) tmp(ID, Medication, Dosage, Notes, Started, Ended, Refills, Owner) WHERE prescriptions.ID = tmp.ID AND owner = ?",
+		valuesExpr,
+		email,
+	).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
