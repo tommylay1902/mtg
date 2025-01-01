@@ -9,23 +9,65 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { ModalOperations } from "@/shared/types/enum/ModalOperations";
+
+type deleteAction = (list: string[]) => void;
+type updateAction = (prescriptions: Prescription[]) => void;
+
 interface ReviewModalProps {
+  operation: ModalOperations;
+  setOperation: React.Dispatch<React.SetStateAction<ModalOperations>>;
   prescriptions: Prescription[];
-  confirmAction: (list: string[]) => void;
+  confirmAction: deleteAction | updateAction;
 }
+
 const ReviewModal: React.FC<ReviewModalProps> = ({
+  operation,
+  setOperation,
   prescriptions,
   confirmAction,
 }) => {
+  const handleAction = () => {
+    //check which operation and cast the confirmAction as the approriate function
+    if (operation === ModalOperations.Delete) {
+      (confirmAction as deleteAction)(prescriptions.map((p) => p.id));
+    } else {
+      (confirmAction as updateAction)(prescriptions);
+    }
+  };
   return (
     <Dialog>
-      <DialogTrigger asChild className={"mb-8"}>
-        <Button className={"bg-red-600"}>Delete Prescription</Button>
-      </DialogTrigger>
+      <div
+        className={
+          ModalOperations.NoAction === operation ? "invisible" : "visible"
+        }
+      >
+        <DialogTrigger asChild className={"mb-8 mr-8"}>
+          <Button
+            className={"bg-blue-600"}
+            onClick={() => setOperation(ModalOperations.Update)}
+          >
+            Update Prescription
+          </Button>
+        </DialogTrigger>
+
+        <DialogTrigger asChild className={"mb-8"}>
+          <Button
+            className={"bg-red-600"}
+            onClick={() => setOperation(ModalOperations.Delete)}
+          >
+            Delete Prescription
+          </Button>
+        </DialogTrigger>
+      </div>
 
       <DialogContent className="max-w-fit">
-        <DialogHeader className=" items-center">
-          <DialogTitle>Add New Prescription</DialogTitle>
+        <DialogHeader className=" items-center pt-3">
+          <DialogTitle>
+            {ModalOperations.Delete === operation
+              ? "Confirm you want to delete these prescriptions"
+              : "Confirm you want to update these prescriptions"}
+          </DialogTitle>
         </DialogHeader>
         <div>
           {prescriptions.map((p: Prescription) => {
@@ -43,11 +85,8 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             <Button className={"bg-red-600"}>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button
-              className={"bg-red-600"}
-              onClick={() => confirmAction(prescriptions.map((p) => p.id))}
-            >
-              Confirm Deletion
+            <Button className={"bg-blue-600"} onClick={handleAction}>
+              Confirm
             </Button>
           </DialogClose>
         </DialogFooter>

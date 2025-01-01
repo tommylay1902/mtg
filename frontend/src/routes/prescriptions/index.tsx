@@ -3,6 +3,7 @@ import Modal from "@/components/modal/modal";
 import {
   createPrescription,
   deleteBatchPrescription,
+  updateBatchPrescription,
 } from "@/shared/api/Prescription";
 import { getPrescriptions } from "@/shared/query/PrescriptionQueries";
 import { Prescription } from "@/shared/types/Prescription";
@@ -13,7 +14,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import PrescriptionTable from "@/components/ptable/PrescriptionTable";
-import ReviewModal from "@/components/modal/reviewmodal";
+import ReviewModal from "@/components/modal/ReviewModal";
+import { ModalOperations } from "@/shared/types/enum/ModalOperations";
 
 export const Route = createFileRoute("/prescriptions/")({
   component: RouteComponent,
@@ -42,7 +44,16 @@ function RouteComponent() {
     onSuccess: () => refetch(),
   });
 
+  const updateBatchPrescriptionMutation = useMutation({
+    mutationFn: (prescriptions: Prescription[]) =>
+      updateBatchPrescription(auth.user!.access_token, prescriptions),
+    onSuccess: () => refetch(),
+  });
+
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [modalOperation, setModalOperation] = useState<ModalOperations>(
+    ModalOperations.NoAction
+  );
 
   useEffect(() => {
     if (!auth.isAuthenticated && !auth.isLoading) {
@@ -71,15 +82,25 @@ function RouteComponent() {
     deleteBatchPrescriptionMutation.mutate(deleteList);
   };
 
+  const updatePrescriptionHandler = (prescriptions: Prescription[]) => {
+    updateBatchPrescriptionMutation.mutate(prescriptions);
+  };
+
   return (
     <div className={"m-10"}>
       <div className={"flex justify-between"}>
         <Modal customSubmit={createPrescriptionSubmit} />
         <ReviewModal
+          operation={modalOperation}
+          setOperation={setModalOperation}
           prescriptions={(data ?? []).filter((p) =>
             selectedRows.includes(p.id)
           )}
-          confirmAction={deletePrescriptionHandler}
+          confirmAction={
+            modalOperation === ModalOperations.Delete
+              ? deletePrescriptionHandler
+              : updatePrescriptionHandler
+          }
         />
       </div>
 
@@ -87,6 +108,7 @@ function RouteComponent() {
         data={data}
         selectedRows={selectedRows}
         setSelectedRows={setSelectedRows}
+        setModalOperation={setModalOperation}
       />
     </div>
   );

@@ -26,11 +26,14 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ModalOperations } from "@/shared/types/enum/ModalOperations";
+import Modal from "../modal/modal";
 
 interface PrescriptionTableProps {
   data: Prescription[] | undefined;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
+  setModalOperation: React.Dispatch<React.SetStateAction<ModalOperations>>;
 }
 
 const tableHeaders = Object.keys(generatePrescriptionTemplate());
@@ -39,13 +42,14 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
   data,
   selectedRows,
   setSelectedRows,
+  setModalOperation,
 }) => {
   const [hover, setHover] = useState("");
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columnHelper = createColumnHelper<Prescription>();
-  console.log(selectedRows);
+
   const columns = [
     columnHelper.display({
       id: "select",
@@ -58,8 +62,10 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
             }
             onCheckedChange={(value: boolean) => {
               if (value) {
+                setModalOperation(ModalOperations.Delete);
                 setSelectedRows(data ? data.map((p) => p.id) : []);
               } else {
+                setModalOperation(ModalOperations.NoAction);
                 setSelectedRows([]);
               }
               table.toggleAllPageRowsSelected(value);
@@ -72,11 +78,16 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
           checked={row.getIsSelected()}
           onCheckedChange={(checked: boolean) => {
             if (checked) {
+              setModalOperation(ModalOperations.Delete);
               setSelectedRows((prev) => [...prev, row.original.id]);
             } else {
-              setSelectedRows((prev) =>
-                prev.filter((id) => id !== row.original.id)
-              );
+              setSelectedRows((prev) => {
+                const filtered = prev.filter((id) => id !== row.original.id);
+                if (filtered.length === 0) {
+                  setModalOperation(ModalOperations.NoAction);
+                }
+                return filtered;
+              });
             }
             row.getToggleSelectedHandler()(checked);
           }}

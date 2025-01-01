@@ -160,6 +160,7 @@ func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
 	var requestBody []entity.Prescription
 
 	if err := c.BodyParser(&requestBody); err != nil {
+		fmt.Println(err)
 		bodyParseErr := &apperror.BadRequestError{
 			Message: err.Error(),
 			Code:    400,
@@ -174,6 +175,7 @@ func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
 	err := ph.Service.UpdateBatchPrescription(requestBody, email)
 
 	if err != nil {
+		fmt.Println(err)
 		return errorhandler.HandleError(err, c)
 	}
 
