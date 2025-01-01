@@ -25,7 +25,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PrescriptionTableProps {
   data: Prescription[] | undefined;
@@ -38,15 +38,35 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  // const [resetSelection, setResetSelection] = useState<boolean>(false);
   const columnHelper = createColumnHelper<Prescription>();
 
   const columns = [
     columnHelper.display({
       id: "select",
+      header: ({ table }) => {
+        console.log(selectedRows);
+        return (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value: boolean) => {
+              if (value) {
+                setSelectedRows(data ? data.map((p) => p.id) : []);
+              } else {
+                setSelectedRows([]);
+              }
+              table.toggleAllPageRowsSelected(value);
+            }}
+          />
+        );
+      },
       cell: ({ row }) => (
         <Checkbox
-          checked={selectedRows.includes(row.original.id)}
-          onCheckedChange={(checked) => {
+          checked={row.getIsSelected()}
+          onCheckedChange={(checked: boolean) => {
             if (checked) {
               setSelectedRows((prev) => [...prev, row.original.id]);
             } else {
@@ -54,6 +74,7 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
                 prev.filter((id) => id !== row.original.id)
               );
             }
+            row.getToggleSelectedHandler()(checked);
           }}
         />
       ),
@@ -99,7 +120,6 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ data }) => {
     state: { sorting },
   });
 
-  console.log(selectedRows);
   return (
     <Table>
       <TableHeader>
