@@ -17,6 +17,7 @@ import PrescriptionTable from "@/components/ptable/PrescriptionTable";
 import ReviewModal from "@/components/modal/ReviewModal";
 import { ModalOperations } from "@/shared/types/enum/ModalOperations";
 import { useToast } from "@/shared/hooks/use-toast";
+import { Spinner } from "@/components/ui/spinner";
 
 export const Route = createFileRoute("/prescriptions/")({
   component: RouteComponent,
@@ -38,7 +39,18 @@ function RouteComponent() {
   const createPrescriptionMutation = useMutation({
     mutationFn: (prescription: Prescription) =>
       createPrescription(auth.user!.access_token, prescription),
-    onSuccess: (_, variables) => {
+    onMutate: async () => {
+      toast({
+        description: (
+          <div className={"flex flex-row items-center gap-3"}>
+            <Spinner />
+            <h1 className="font-bold">Creating prescription</h1>
+          </div>
+        ),
+        duration: Infinity,
+      });
+    },
+    onSuccess: async (_, variables) => {
       toast({
         title: `Successfully created ${variables.medication} `,
         duration: 2000,
@@ -50,6 +62,17 @@ function RouteComponent() {
   const deleteBatchPrescriptionMutation = useMutation({
     mutationFn: (deleteList: string[]) =>
       deleteBatchPrescription(auth.user!.access_token, deleteList),
+    onMutate: async () => {
+      toast({
+        description: (
+          <div className={"flex flex-row items-center gap-3"}>
+            <Spinner size="small" />
+            <h1 className="font-bold">Deleting prescription(s)</h1>
+          </div>
+        ),
+        duration: Infinity,
+      });
+    },
     onSuccess: (_, variables) => {
       const prescriptionList = data!.filter((p) => variables.includes(p.id));
       toast({
@@ -63,7 +86,17 @@ function RouteComponent() {
   const updateBatchPrescriptionMutation = useMutation({
     mutationFn: (prescriptions: Prescription[]) =>
       updateBatchPrescription(auth.user!.access_token, prescriptions),
-
+    onMutate: async () => {
+      toast({
+        description: (
+          <div className={"flex flex-row items-center gap-3"}>
+            <Spinner />
+            <h1 className="font-bold">Updating prescription</h1>
+          </div>
+        ),
+        duration: Infinity,
+      });
+    },
     onSuccess: (_, variables) => {
       toast({
         title: `Successfully updated ${variables.map((p) => p.medication)} `,
