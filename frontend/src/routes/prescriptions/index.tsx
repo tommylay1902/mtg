@@ -80,10 +80,12 @@ function RouteComponent() {
 
   const deletePrescriptionHandler = (deleteList: string[]) => {
     deleteBatchPrescriptionMutation.mutate(deleteList);
+    setSelectedRows([]);
   };
 
   const updatePrescriptionHandler = (prescriptions: Prescription[]) => {
     updateBatchPrescriptionMutation.mutate(prescriptions);
+    setSelectedRows([]);
   };
 
   return (

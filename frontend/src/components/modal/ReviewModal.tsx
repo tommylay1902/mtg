@@ -11,6 +11,7 @@ import {
 } from "../ui/dialog";
 import { ModalOperations } from "@/shared/types/enum/ModalOperations";
 import ModalBody from "./ModalBody";
+import { useEffect, useState } from "react";
 
 type deleteAction = (list: string[]) => void;
 type updateAction = (prescriptions: Prescription[]) => void;
@@ -28,17 +29,30 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   prescriptions,
   confirmAction,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [updatePrescriptions, setUpdatePrescriptions] = useState<
+    Prescription[]
+  >(JSON.parse(JSON.stringify(prescriptions)));
+
+  useEffect(() => {
+    setUpdatePrescriptions(prescriptions);
+    return () => {
+      setUpdatePrescriptions([]);
+    };
+  }, [prescriptions, updatePrescriptions]);
+
   const handleAction = () => {
     //check which operation and cast the confirmAction as the approriate function
     if (operation === ModalOperations.Delete) {
       (confirmAction as deleteAction)(prescriptions.map((p) => p.id));
     } else {
-      (confirmAction as updateAction)(prescriptions);
+      (confirmAction as updateAction)(updatePrescriptions);
     }
     setOperation(ModalOperations.NoAction);
   };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <div
         className={
           ModalOperations.NoAction === operation ? "invisible" : "visible"
@@ -68,27 +82,30 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           <DialogTitle>
             {ModalOperations.Delete === operation
               ? "Confirm you want to delete these prescriptions"
-              : "Confirm you want to update these prescriptions"}
+              : "Update Prescriptions"}
           </DialogTitle>
         </DialogHeader>
         <div>
-          <ModalBody data={prescriptions} operation={operation} />
-          {/* {prescriptions.map((p: Prescription) => {
-            return (
-              <div key={p.id}>
-                <div className="items-center w-[50vw] text-center font-bold">
-                  {p.medication}
-                </div>
-              </div>
-            );
-          })} */}
+          <ModalBody
+            data={prescriptions}
+            updatePrescriptions={updatePrescriptions}
+            operation={operation}
+            open={open}
+            setUpdatePrescriptions={setUpdatePrescriptions}
+          />
         </div>
         <DialogFooter className="flex justify-between">
           <DialogClose asChild>
             <Button className={"bg-red-600"}>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button className={"bg-blue-600"} onClick={handleAction}>
+            <Button
+              className={"bg-blue-600"}
+              onClick={() => {
+                setUpdatePrescriptions([]);
+                handleAction();
+              }}
+            >
               Confirm
             </Button>
           </DialogClose>
