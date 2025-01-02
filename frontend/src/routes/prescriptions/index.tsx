@@ -16,6 +16,7 @@ import { useAuth } from "react-oidc-context";
 import PrescriptionTable from "@/components/ptable/PrescriptionTable";
 import ReviewModal from "@/components/modal/ReviewModal";
 import { ModalOperations } from "@/shared/types/enum/ModalOperations";
+import { useToast } from "@/shared/hooks/use-toast";
 
 export const Route = createFileRoute("/prescriptions/")({
   component: RouteComponent,
@@ -32,22 +33,44 @@ function RouteComponent() {
     staleTime: 40000,
   });
 
+  const { toast } = useToast();
+
   const createPrescriptionMutation = useMutation({
     mutationFn: (prescription: Prescription) =>
       createPrescription(auth.user!.access_token, prescription),
-    onSuccess: () => refetch(),
+    onSuccess: (_, variables) => {
+      toast({
+        title: `Successfully created ${variables.medication} `,
+        duration: 2000,
+      });
+      refetch();
+    },
   });
 
   const deleteBatchPrescriptionMutation = useMutation({
     mutationFn: (deleteList: string[]) =>
       deleteBatchPrescription(auth.user!.access_token, deleteList),
-    onSuccess: () => refetch(),
+    onSuccess: (_, variables) => {
+      const prescriptionList = data!.filter((p) => variables.includes(p.id));
+      toast({
+        title: `Successfully deleted ${prescriptionList.map((p) => p.medication)} `,
+        duration: 2000,
+      });
+      refetch();
+    },
   });
 
   const updateBatchPrescriptionMutation = useMutation({
     mutationFn: (prescriptions: Prescription[]) =>
       updateBatchPrescription(auth.user!.access_token, prescriptions),
-    onSuccess: () => refetch(),
+
+    onSuccess: (_, variables) => {
+      toast({
+        title: `Successfully updated ${variables.map((p) => p.medication)} `,
+        duration: 2000,
+      });
+      refetch();
+    },
   });
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
