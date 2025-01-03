@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Prescription } from "@/shared/types/Prescription";
+import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 
@@ -27,6 +28,12 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
     getValues,
     clearErrors,
   } = useForm<Prescription>();
+  const [refillsInputError, setRefillsInputError] = useState(false);
+  useEffect(() => {
+    return () => {
+      setRefillsInputError(false);
+    };
+  });
 
   return (
     <Dialog
@@ -97,27 +104,32 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
                 id="notes"
                 placeholder="e.g. Steroid medication prescribed to help reduce inflamation"
                 {...register("notes")}
-                //   className="col-span-3"
               />
             </div>
 
             <div className="items-center w-[50vw]">
               <Label
                 htmlFor="refills"
-                className={`text-right ${errors.refills && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500" : ""}`}
+                className={`text-right ${refillsInputError && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500" : ""}`}
               >
                 Refills
               </Label>
               <Input
                 id="refills"
                 placeholder="e.g. 3"
-                type="number"
-                className={`${errors.refills && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
-                {...register("refills", {
-                  valueAsNumber: true,
-                })}
+                className={`${refillsInputError && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                {...register("refills", { valueAsNumber: true })}
+                onChange={(e) => {
+                  const input = parseInt(e.target.value);
+
+                  if (typeof input !== "number" || Number.isNaN(input)) {
+                    setRefillsInputError(true);
+                  } else {
+                    setRefillsInputError(false);
+                  }
+                }}
               />
-              {errors.refills &&
+              {refillsInputError &&
                 typeof getValues("refills") !== "number" &&
                 getValues("refills") !== undefined && (
                   <span className={"text-red-500"}>
