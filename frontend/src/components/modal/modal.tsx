@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -24,11 +23,19 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
   const {
     register,
     handleSubmit,
-    // formState: { errors },
+    formState: { errors },
+    getValues,
+    clearErrors,
   } = useForm<Prescription>();
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={(open) => {
+        if (!open) {
+          clearErrors();
+        }
+      }}
+    >
       <DialogTrigger asChild className={"mb-8"}>
         <Button className={"bg-blue-600"}>Add Prescription+</Button>
       </DialogTrigger>
@@ -43,26 +50,43 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
         <form onSubmit={handleSubmit(customSubmit)}>
           <div className="py-4">
             <div className="items-center">
-              <Label htmlFor="medication" className="text-right">
+              <Label
+                htmlFor="medication"
+                className={`text-right ${errors.medication ? "text-red-500" : ""}`}
+              >
                 Medication
               </Label>
               <Input
                 id="medication"
                 placeholder="e.g. Prednisone"
-                {...register("medication")}
-                //   className="col-span-3"
+                className={`${errors.medication ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                {...register("medication", { required: true })}
               />
+              {errors.medication && (
+                <span className={"text-red-500"}>
+                  Medication name is required
+                </span>
+              )}
             </div>
             <div className="items-center">
-              <Label htmlFor="dosage" className="text-right">
+              <Label
+                htmlFor="dosage"
+                className={`text-right ${errors.dosage ? "text-red-500" : ""}`}
+              >
                 Dosage
               </Label>
               <Input
                 id="dosage"
                 placeholder="e.g. 20mg daily"
-                //   className="col-span-3"
-                {...register("dosage")}
+                className={`${errors.dosage ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                {...register("dosage", { required: true })}
               />
+              {errors.dosage && (
+                <span className={"text-red-500"}>
+                  Please include dosage, if unknown just input something like
+                  "Don't Know"
+                </span>
+              )}
             </div>
 
             <div className="items-center w-[50vw]">
@@ -78,22 +102,49 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             </div>
 
             <div className="items-center w-[50vw]">
-              <Label htmlFor="refills" className="text-right">
+              <Label
+                htmlFor="refills"
+                className={`text-right ${errors.refills && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500" : ""}`}
+              >
                 Refills
               </Label>
               <Input
                 id="refills"
                 placeholder="e.g. 3"
                 type="number"
-                {...register("refills", { valueAsNumber: true })}
+                className={`${errors.refills && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                {...register("refills", {
+                  valueAsNumber: true,
+                })}
               />
+              {errors.refills &&
+                typeof getValues("refills") !== "number" &&
+                getValues("refills") !== undefined && (
+                  <span className={"text-red-500"}>
+                    This field must be a number
+                  </span>
+                )}
             </div>
 
             <div className="items-center w-[50vw]">
-              <Label htmlFor="started" className="text-right">
+              <Label
+                htmlFor="started"
+                className={`text-right ${errors.started ? "text-red-500" : ""}`}
+              >
                 Started
               </Label>
-              <Input id="started" type="date" {...register("started")} />
+              <Input
+                id="started"
+                type="date"
+                className={`${errors.started ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                {...register("started", { required: true })}
+              />
+              {errors.started && (
+                <span className={"text-red-500"}>
+                  This field is require, if you don't know exact date you can
+                  guess
+                </span>
+              )}
             </div>
 
             <div className="items-center w-[50vw]">
@@ -104,11 +155,9 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             </div>
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button className={"bg-blue-600"} type="submit">
-                Add Prescription
-              </Button>
-            </DialogClose>
+            <Button className={"bg-blue-600"} type="submit">
+              Add Prescription
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

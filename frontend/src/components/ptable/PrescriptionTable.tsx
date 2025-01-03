@@ -30,7 +30,6 @@ import { ModalOperations } from "@/shared/types/enum/ModalOperations";
 
 interface PrescriptionTableProps {
   data: Prescription[] | undefined;
-  selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   setModalOperation: React.Dispatch<React.SetStateAction<ModalOperations>>;
 }
@@ -39,7 +38,7 @@ const tableHeaders = Object.keys(generatePrescriptionTemplate());
 
 const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
   data,
-  selectedRows,
+
   setSelectedRows,
   setModalOperation,
 }) => {
