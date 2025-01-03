@@ -27,19 +27,21 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
     formState: { errors },
     getValues,
     clearErrors,
+    reset,
   } = useForm<Prescription>();
   const [refillsInputError, setRefillsInputError] = useState(false);
-  useEffect(() => {
-    return () => {
-      setRefillsInputError(false);
-    };
-  });
+  // useEffect(() => {
+  //   return () => {
+  //     setRefillsInputError(false);
+  //   };
+  // });
 
   return (
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
           clearErrors();
+          reset();
         }
       }}
     >
@@ -54,7 +56,16 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             Add a new prescription to view in your prescription list
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(customSubmit)}>
+        <form
+          onSubmit={(e) => {
+            if (Number.isNaN(getValues("refills"))) {
+              setRefillsInputError(true);
+            } else {
+              setRefillsInputError(false);
+            }
+            handleSubmit(customSubmit)(e);
+          }}
+        >
           <div className="py-4">
             <div className="items-center">
               <Label
@@ -110,32 +121,30 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             <div className="items-center w-[50vw]">
               <Label
                 htmlFor="refills"
-                className={`text-right ${refillsInputError && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500" : ""}`}
+                className={`text-right ${refillsInputError ? "text-red-500" : ""}`}
               >
                 Refills
               </Label>
               <Input
                 id="refills"
                 placeholder="e.g. 3"
-                className={`${refillsInputError && typeof getValues("refills") !== "number" && getValues("refills") !== undefined ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                className={`${refillsInputError ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
                 {...register("refills", { valueAsNumber: true })}
+                defaultValue={0}
                 onChange={(e) => {
-                  const input = parseInt(e.target.value);
-
-                  if (typeof input !== "number" || Number.isNaN(input)) {
-                    setRefillsInputError(true);
-                  } else {
+                  if (
+                    typeof +e.target.value === "number" &&
+                    !Number.isNaN(+e.target.value)
+                  ) {
                     setRefillsInputError(false);
                   }
                 }}
               />
-              {refillsInputError &&
-                typeof getValues("refills") !== "number" &&
-                getValues("refills") !== undefined && (
-                  <span className={"text-red-500"}>
-                    This field must be a number
-                  </span>
-                )}
+              {refillsInputError && (
+                <span className={"text-red-500"}>
+                  This field must be a number
+                </span>
+              )}
             </div>
 
             <div className="items-center w-[50vw]">
