@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Prescription } from "@/shared/types/Prescription";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useForm } from "react-hook-form";
 
@@ -28,6 +28,7 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
     getValues,
     clearErrors,
     reset,
+    setError,
   } = useForm<Prescription>();
   const [refillsInputError, setRefillsInputError] = useState(false);
   // useEffect(() => {
@@ -59,11 +60,14 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
         <form
           onSubmit={(e) => {
             if (Number.isNaN(getValues("refills"))) {
-              setRefillsInputError(true);
+              // setRefillsInputError(true);
+              setError("refills", { type: "refills", message: "refills" });
+              console.log(errors.refills, "hello");
+              e.preventDefault();
             } else {
-              setRefillsInputError(false);
+              clearErrors("refills");
+              handleSubmit(customSubmit)(e);
             }
-            handleSubmit(customSubmit)(e);
           }}
         >
           <div className="py-4">
@@ -121,14 +125,14 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             <div className="items-center w-[50vw]">
               <Label
                 htmlFor="refills"
-                className={`text-right ${refillsInputError ? "text-red-500" : ""}`}
+                className={`text-right ${errors.refills ? "text-red-500" : ""}`}
               >
                 Refills
               </Label>
               <Input
                 id="refills"
                 placeholder="e.g. 3"
-                className={`${refillsInputError ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
+                className={`${errors.refills ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
                 {...register("refills", { valueAsNumber: true })}
                 defaultValue={0}
                 onChange={(e) => {
@@ -136,11 +140,11 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
                     typeof +e.target.value === "number" &&
                     !Number.isNaN(+e.target.value)
                   ) {
-                    setRefillsInputError(false);
+                    clearErrors("refills");
                   }
                 }}
               />
-              {refillsInputError && (
+              {errors.refills && (
                 <span className={"text-red-500"}>
                   This field must be a number
                 </span>
