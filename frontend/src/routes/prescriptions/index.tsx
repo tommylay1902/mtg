@@ -55,6 +55,7 @@ function RouteComponent() {
         title: `Successfully created ${variables.medication} `,
         duration: 2000,
       });
+      setModalOperation(ModalOperations.NoAction);
       refetch();
     },
   });
@@ -140,6 +141,12 @@ function RouteComponent() {
   };
 
   const updatePrescriptionHandler = (prescriptions: Prescription[]) => {
+    prescriptions = prescriptions.map((p) => {
+      p.started = stringToTimeStamp(p.started);
+      p.ended = stringToTimeStamp(p.ended);
+      return p;
+    });
+
     updateBatchPrescriptionMutation.mutate(prescriptions);
     setSelectedRows([]);
   };
@@ -147,7 +154,10 @@ function RouteComponent() {
   return (
     <div className={"m-10"}>
       <div className={"flex justify-between"}>
-        <Modal customSubmit={createPrescriptionSubmit} />
+        <Modal
+          customSubmit={createPrescriptionSubmit}
+          setSelectedRows={setSelectedRows}
+        />
         <ReviewModal
           operation={modalOperation}
           setOperation={setModalOperation}
@@ -164,7 +174,7 @@ function RouteComponent() {
 
       <PrescriptionTable
         data={data}
-        selectedRows={selectedRows}
+        // selectedRows={selectedRows}
         setSelectedRows={setSelectedRows}
         setModalOperation={setModalOperation}
       />

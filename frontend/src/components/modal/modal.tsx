@@ -10,14 +10,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ModalOperations } from "@/shared/types/enum/ModalOperations";
 
 import { Prescription } from "@/shared/types/Prescription";
-import { useState } from "react";
 
 import { useForm } from "react-hook-form";
 
 interface ModalPropType {
   customSubmit: (event: Prescription) => void;
+  setSelectedRows?: React.Dispatch<React.SetStateAction<string[]>>;
+  setOperation?: React.Dispatch<React.SetStateAction<ModalOperations>>;
 }
 
 export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
@@ -30,12 +32,6 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
     reset,
     setError,
   } = useForm<Prescription>();
-  const [refillsInputError, setRefillsInputError] = useState(false);
-  // useEffect(() => {
-  //   return () => {
-  //     setRefillsInputError(false);
-  //   };
-  // });
 
   return (
     <Dialog
@@ -62,7 +58,6 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             if (Number.isNaN(getValues("refills"))) {
               // setRefillsInputError(true);
               setError("refills", { type: "refills", message: "refills" });
-              console.log(errors.refills, "hello");
               e.preventDefault();
             } else {
               clearErrors("refills");
