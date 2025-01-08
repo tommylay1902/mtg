@@ -55,14 +55,7 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
         </DialogHeader>
         <form
           onSubmit={(e) => {
-            if (Number.isNaN(getValues("refills"))) {
-              // setRefillsInputError(true);
-              setError("refills", { type: "refills", message: "refills" });
-              // e.preventDefault();
-            } else {
-              clearErrors("refills");
-              handleSubmit(customSubmit)(e);
-            }
+            handleSubmit(customSubmit)(e);
           }}
         >
           <div className="py-4">
@@ -128,8 +121,12 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
                 id="refills"
                 placeholder="e.g. 3"
                 className={`${errors.refills ? "text-red-500 focus-visible:ring-red-500 border-red-500" : ""}  `}
-                {...register("refills", { valueAsNumber: true })}
-                defaultValue={0}
+                {...register(`refills`, {
+                  valueAsNumber: true,
+                  validate: (value) =>
+                    !isNaN(Number(value)) || "Refills must be a valid number",
+                })}
+                // defaultValue={0}
                 onChange={(e) => {
                   if (
                     typeof +e.target.value === "number" &&
@@ -140,9 +137,7 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
                 }}
               />
               {errors.refills && (
-                <span className={"text-red-500"}>
-                  This field must be a number
-                </span>
+                <span className={"text-red-500"}>{errors.refills.message}</span>
               )}
             </div>
 
