@@ -58,7 +58,7 @@ export const Modal: React.FC<ModalPropType> = ({ customSubmit }) => {
             if (Number.isNaN(getValues("refills"))) {
               // setRefillsInputError(true);
               setError("refills", { type: "refills", message: "refills" });
-              e.preventDefault();
+              // e.preventDefault();
             } else {
               clearErrors("refills");
               handleSubmit(customSubmit)(e);

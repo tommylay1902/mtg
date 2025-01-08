@@ -109,7 +109,6 @@ const ModalBody: React.FC<ModalBodyProps> = ({
                 )}
               </div>
 
-              {/* Notes Input */}
               <div className="items-center w-[50vw]">
                 <Label htmlFor="notes" className="text-right">
                   Notes
@@ -143,6 +142,8 @@ const ModalBody: React.FC<ModalBodyProps> = ({
                   }`}
                   {...register(`prescriptions.${index}.refills`, {
                     valueAsNumber: true,
+                    validate: (value) =>
+                      !isNaN(Number(value)) || "Refills must be a valid number",
                   })}
                   onChange={(e) => {
                     if (
@@ -155,7 +156,7 @@ const ModalBody: React.FC<ModalBodyProps> = ({
                 />
                 {errors.prescriptions?.[index]?.refills && (
                   <span className="text-red-500">
-                    This field must be a number
+                    {errors.prescriptions?.[index]?.refills.message}
                   </span>
                 )}
               </div>

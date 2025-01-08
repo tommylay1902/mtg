@@ -41,18 +41,19 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     handleSubmit,
     formState: { errors },
     clearErrors,
-    setError,
-    getValues,
+    reset,
   } = useForm<{ prescriptions: Prescription[] }>({
-    defaultValues: { prescriptions: updatePrescriptions },
+    defaultValues: { prescriptions },
   });
 
   useEffect(() => {
     setUpdatePrescriptions(prescriptions);
-    return () => {
+    if (!open) {
       setUpdatePrescriptions([]);
-    };
-  }, [prescriptions, updatePrescriptions]);
+      clearErrors();
+      reset();
+    }
+  }, [clearErrors, open, prescriptions, reset]);
 
   const onSubmit = (formData: { prescriptions: Prescription[] }) => {
     if (operation === ModalOperations.Delete) {
@@ -99,7 +100,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         </DialogHeader>
         <div>
           <ModalBody
-            data={prescriptions}
+            data={updatePrescriptions}
             operation={operation}
             setUpdatePrescriptions={setUpdatePrescriptions}
             register={register} // Pass `register` to ModalBody
@@ -111,44 +112,20 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           <DialogClose asChild>
             <Button className={"bg-red-600"}>Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button
-              className={"bg-blue-600"}
-              onClick={(e) => {
-                if (operation === ModalOperations.Update) {
-                  const prescriptions = getValues("prescriptions");
-                  let hasError = false;
-                  prescriptions.forEach((_, index) => {
-                    const refillsValue = getValues(
-                      `prescriptions.${index}.refills`
-                    );
-                    const refillsNumber = Number(refillsValue); // Convert to number
 
-                    if (Number.isNaN(refillsNumber)) {
-                      hasError = true;
-                      setError(`prescriptions.${index}.refills`, {
-                        type: "manual",
-                        message: "Refills must be a valid number",
-                      });
-                    } else {
-                      clearErrors(`prescriptions.${index}.refills`);
-                    }
-                  });
-
-                  if (!hasError) {
-                    // Trigger the handleSubmit function to process the form data
-                    handleSubmit(onSubmit)(e);
-                  } else {
-                    e.preventDefault();
-                  }
-                } else {
-                  handleSubmit(onSubmit)(e);
-                }
-              }} // Validate before handling action
-            >
-              Confirm
-            </Button>
-          </DialogClose>
+          <Button
+            className={"bg-blue-600"}
+            onClick={(e) => {
+              if (operation === ModalOperations.Update) {
+                // Trigger the handleSubmit function to process the form data
+                handleSubmit(onSubmit)(e);
+              } else {
+                handleSubmit(onSubmit)(e);
+              }
+            }} // Validate before handling action
+          >
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
