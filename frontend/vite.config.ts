@@ -1,14 +1,18 @@
-import path from "path";
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import svgr from "vite-plugin-svgr";
+import { defineConfig } from 'vitest/config';
+import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
-  plugins: [TanStackRouterVite(), react(), svgr()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+	plugins: [sveltekit()],
+	server: {
+		watch: {
+			usePolling: true
+		},
+		hmr: {
+			protocol: 'ws'
+		}
+	},
+
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}']
+	}
 });

@@ -1,0 +1,63 @@
+services:
+  frontend:
+    container_name: mtg_fe
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    volumes:
+     - ./frontend:/app
+     - /app/node_modules
+    networks:
+      - mtg_network
+    ports: 
+      - 5173:5173
+      - 24678:24678
+    command:
+      npm run dev -- --host
+  mtg_api:
+    container_name: mtg_api
+    command:
+      air -c .air.toml
+    build:
+      context: ./backend/mtg
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - 8081:8080
+    volumes:
+      - ./backend/mtg:/app
+      - ./backend/mtg/tmp:/app/tmp
+    working_dir: /app
+    networks:
+      - db
+      - mtg_network
+    depends_on:
+      postgres_api:
+        condition: service_healthy
+
+  postgres_api:
+    container_name: postgres_api
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - db
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - psql_data:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
+networks:
+  mtg_network:
+    driver: bridge
+  db:
+    driver: bridge
+
+volumes:
+  psql_data:

@@ -1,6 +1,8 @@
 module mtg
 
-go 1.21.5
+go 1.22
+
+toolchain go1.23.8
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.5
@@ -13,7 +15,10 @@ require (
 	github.com/MicahParks/keyfunc/v2 v2.1.0 // indirect
 	github.com/Nerzal/gocloak/v13 v13.9.0 // indirect
 	github.com/go-resty/resty/v2 v2.7.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/nedpals/supabase-go v0.5.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect

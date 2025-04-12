@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mtg_api:
     container_name: mtg_api
@@ -7,46 +5,13 @@ services:
       context: ./backend/mtg
       dockerfile: ./Dockerfile
     ports:
-      - 8080:8080
+      - 8081:8080
     networks:
       - db
     depends_on:
       postgres_api:
         condition: service_healthy
-  keycloak_web:
-    image: quay.io/keycloak/keycloak:23.0.7
-    container_name: keycloak_web
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: ${KC_DB_URL}
-      KC_DB_USERNAME: ${KC_DB_USERNAME}
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
 
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8081
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
-
-      KC_LOG_LEVEL: info
-      KC_METRICS_ENABLED: true
-      KC_HEALTH_ENABLED: true
-      KEYCLOAK_ADMIN: ${KC_ADMIN_USERNAME}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
-    command: start-dev
-    depends_on:
-      - keycloak_db
-    ports:
-      - 8081:8080
-
-  keycloak_db:
-    container_name: keycloak_db
-    image: postgres:latest
-    volumes:
-      - kc_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB_KC}
-      POSTGRES_USER: ${POSTGRES_USER_KC}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_KC}
   postgres_api:
     container_name: postgres_api
     image: postgres:latest
@@ -61,7 +26,7 @@ services:
     volumes:
       - psql_data:/var/lib/postgresql/data
     healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
         interval: 5s
         timeout: 5s
         retries: 5
@@ -72,4 +37,3 @@ networks:
 
 volumes:
   psql_data:
-  kc_data:

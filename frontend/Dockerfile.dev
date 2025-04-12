@@ -1,0 +1,19 @@
+# Use official Node image
+FROM node:22-alpine
+
+ENV CHOKIDAR_USEPOLLING=true
+# Set working directory
+WORKDIR /app
+
+
+# Copy package files
+COPY  package*.json ./
+RUN npm install
+
+
+# Copy all files
+COPY . .
+
+# Expose ports (Vite default is 5173)
+EXPOSE 5173
+EXPOSE 24678

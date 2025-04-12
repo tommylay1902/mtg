@@ -1,12 +1,13 @@
 package server
 
-import "github.com/gofiber/fiber/v2"
+import "mtg/internal/server/middleware"
 
-func (s *FiberServer) RegisterFiberRoutes(kcMiddleware func(*fiber.Ctx) error, jwtMiddleware func(*fiber.Ctx) error) {
+func (s *FiberServer) RegisterFiberRoutes() {
 
-	apiPrescriptionRoutes := s.Group("api/v1/prescription", kcMiddleware, jwtMiddleware)
+	apiPrescriptionRoutes := s.Group("api/v1/prescription")
+	apiPrescriptionRoutes.Use(middleware.SupabaseProtected())
 	apiPrescriptionRoutes.Post("", s.Handler.PHandler.CreatePrescription)
-	apiPrescriptionRoutes.Get("/all", s.Handler.PHandler.GetPrescriptions, kcMiddleware, jwtMiddleware)
+	apiPrescriptionRoutes.Get("/all", s.Handler.PHandler.GetPrescriptions)
 	apiPrescriptionRoutes.Get("/:id", s.Handler.PHandler.GetPrescription)
 	// apiPrescriptionRoutes.Delete("/:id", s.Handler.PHandler.DeletePrescription)
 	apiPrescriptionRoutes.Delete("", s.Handler.PHandler.DeleteBatchPrescription)

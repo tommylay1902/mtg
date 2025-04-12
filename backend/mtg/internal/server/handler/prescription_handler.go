@@ -69,7 +69,6 @@ func (ph *PrescriptionHandler) GetPrescription(c *fiber.Ctx) error {
 
 func (ph *PrescriptionHandler) GetPrescriptions(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
-
 	searchQueries := c.Queries()
 	prescriptions, err := ph.Service.GetPrescriptions(searchQueries, &email)
 
