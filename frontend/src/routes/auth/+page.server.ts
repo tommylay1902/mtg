@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 
 import { zod } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types.js';
-import { z } from 'zod';
+import { z, ZodIssueCode } from 'zod';
 import { fail, message, setError, superValidate } from 'sveltekit-superforms';
 
 const loginSchema = z.object({
@@ -10,11 +10,26 @@ const loginSchema = z.object({
 	password: z.string().min(8, 'Password must be length 8 or greater')
 });
 
-const registerSchema = z.object({
-	email: z.string().email('Invalid Email Address'),
-	password: z.string().min(8),
-	confirmPassword: z.string().min(8)
-});
+const registerSchema = z
+	.object({
+		email: z.string().email('Invalid Email Address'),
+		password: z.string().min(8),
+		confirmPassword: z.string().min(8)
+	})
+	.superRefine((data, ctx) => {
+		if (data.password !== data.confirmPassword) {
+			ctx.addIssue({
+				code: ZodIssueCode.custom,
+				message: "Passwords don't match",
+				path: ['password']
+			});
+			ctx.addIssue({
+				code: ZodIssueCode.custom,
+				message: "Passwords don't match",
+				path: ['confirmPassword']
+			});
+		}
+	});
 
 export const load: PageServerLoad = async () => {
 	// Different schemas, no id required.
@@ -30,13 +45,15 @@ export const actions: Actions = {
 		const registerForm = await superValidate(request, zod(registerSchema));
 		if (!registerForm.valid) return fail(400, { registerForm });
 
-		const { error } = await supabase.auth.signUp({
+		const { data, error } = await supabase.auth.signUp({
 			email: registerForm.data.email,
 			password: registerForm.data.password
 		});
 		if (error) {
 			console.error(error);
 			redirect(303, '/auth/error');
+		} else if (data.user?.identities?.length === 0) {
+			return setError(registerForm, 'email', 'E-mail already exists.');
 		} else {
 			redirect(303, '/');
 		}
