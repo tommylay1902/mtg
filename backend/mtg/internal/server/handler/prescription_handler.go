@@ -31,6 +31,8 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 		}
 		return errorhandler.HandleError(badErr, c)
 	}
+
+	fmt.Println(requestBody)
 	requestBody.Owner = &email
 
 	id, err := ph.Service.CreatePrescription(&requestBody)
