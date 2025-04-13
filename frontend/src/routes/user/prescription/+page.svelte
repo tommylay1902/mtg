@@ -1,6 +1,4 @@
 <script lang="ts">
-	let { data } = $props();
-	import * as Table from '$lib/components/ui/table/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import Label from '$lib/components/ui/label/label.svelte';
@@ -8,31 +6,42 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
 
+	let { data } = $props();
+	import DataTable from '$lib/components/table/prescription/PrescriptionTable.svelte';
+	import { columns } from '$lib/components/table/prescription/Columns.js';
+
+	let toastId: string | number | undefined;
+
 	let prescriptions = $state(data.prescription);
 	let isDialogOpen = $state(false);
 
-	const { form, errors, enhance, delayed } = superForm(data.prescriptionForm, {
+	const { form, errors, enhance, reset, delayed } = superForm(data.prescriptionForm, {
 		resetForm: false,
-		onSubmit(event) {
-			isDialogOpen = false;
+		onSubmit() {
+			toastId = toast.loading('Processing...');
 		},
 		onResult(event) {
+			if (toastId) toast.dismiss(toastId);
 			if (event.result.type === 'success') {
+				isDialogOpen = false;
 				prescriptions = event.result.data?.data;
 				toast.success('Successfully created prescription');
+				reset();
+			} else if (event.result.type === 'failure') {
+				if (toastId) toast.dismiss(toastId);
+				toast.error('ERROR!');
 			}
 		}
 	});
 
-	$effect(() => {
-		if ($errors && Object.keys($errors).length > 0) {
-			toast.error('There are some issues creating your prescription');
-		}
-	});
+	// $effect(() => {
+	// 	if ($errors && Object.keys($errors).length > 0) {
+	// 		toast.error('There are some issues creating your prescription');
+	// 	}
+	// });
 </script>
 
 <div class="w-full">
-	<h1>Prescriptions</h1>
 	<Dialog.Root bind:open={isDialogOpen}>
 		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Add Prescription</Dialog.Trigger>
 		<Dialog.Content class="h-[67dvh] w-full max-w-[70dvw] overflow-y-scroll">
@@ -150,44 +159,5 @@
 			</form>
 		</Dialog.Content>
 	</Dialog.Root>
-	<Table.Root>
-		<Table.Header>
-			<Table.Row>
-				<Table.Head>Medication</Table.Head>
-				<Table.Head>Dosage</Table.Head>
-				<Table.Head>Notes</Table.Head>
-				<Table.Head>Started</Table.Head>
-				<Table.Head>Ended</Table.Head>
-			</Table.Row>
-		</Table.Header>
-		<Table.Body>
-			{#each prescriptions as prescription}
-				<Table.Row>
-					<Table.Cell>
-						{prescription.medication}
-					</Table.Cell>
-					<Table.Cell>
-						{prescription.dosage}
-					</Table.Cell>
-					<Table.Cell>
-						{prescription.notes}
-					</Table.Cell>
-					<Table.Cell>
-						{new Date(
-							prescription.started.substring(0, prescription.started.length - 1)
-						).toLocaleDateString()}
-					</Table.Cell>
-					<Table.Cell>
-						{#if prescription.ended}
-							{new Date(
-								prescription.ended.substring(0, prescription.ended.length - 1)
-							).toLocaleDateString()}
-						{:else}
-							Presently Taking
-						{/if}
-					</Table.Cell>
-				</Table.Row>
-			{/each}
-		</Table.Body>
-	</Table.Root>
+	<DataTable data={prescriptions} {columns} />
 </div>
