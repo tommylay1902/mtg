@@ -7,6 +7,16 @@ const config: Config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	safelist: ['dark'],
 	theme: {
+		animation: {
+			'float-up': 'floatUp .5s ease-out forwards',
+			scaleUp: 'scaleUp 0.5s ease-out'
+		},
+		keyframes: {
+			floatUp: {
+				'0%': { transform: 'translateY(10px)', opacity: '0' },
+				'100%': { transform: 'translateY(0)', opacity: '1' }
+			}
+		},
 		container: {
 			center: true,
 			padding: '2rem',

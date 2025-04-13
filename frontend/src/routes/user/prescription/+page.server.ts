@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { PageServerLoad } from './$types.js';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
