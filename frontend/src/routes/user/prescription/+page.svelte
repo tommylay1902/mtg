@@ -6,23 +6,43 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
+	import { toast } from 'svelte-sonner';
+
 	let prescriptions = $state(data.prescription);
-	const { form, errors, enhance, message, constraints } = superForm(data.prescriptionForm, {
-		resetForm: true
+	let isDialogOpen = $state(false);
+
+	const { form, errors, enhance, delayed } = superForm(data.prescriptionForm, {
+		resetForm: false,
+		onSubmit(event) {
+			isDialogOpen = false;
+		},
+		onResult(event) {
+			if (event.result.type === 'success') {
+				prescriptions = event.result.data?.data;
+				toast.success('Successfully created prescription');
+			}
+		}
+	});
+
+	$effect(() => {
+		if ($errors && Object.keys($errors).length > 0) {
+			toast.error('There are some issues creating your prescription');
+		}
 	});
 </script>
 
-<div>
+<div class="w-full">
 	<h1>Prescriptions</h1>
-	<Dialog.Root>
+	<Dialog.Root bind:open={isDialogOpen}>
 		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Add Prescription</Dialog.Trigger>
-		<Dialog.Content class="h-[90dvh] overflow-y-scroll">
+		<Dialog.Content class="h-[67dvh] w-full max-w-[70dvw] overflow-y-scroll">
 			<Dialog.Header>
 				<Dialog.Title>Create a new prescription</Dialog.Title>
 			</Dialog.Header>
-			<div>
-				<form method="POST" use:enhance>
-					<div class="space-y-2">
+
+			<form method="POST" use:enhance>
+				<div class="flex w-full space-x-4">
+					<div class="w-full space-y-2">
 						<Label for="medication" class={$errors.medication ? 'text-red-500' : ''}
 							>Medication</Label
 						>
@@ -39,7 +59,7 @@
 							{/if}
 						</div>
 					</div>
-					<div class="space-y-2">
+					<div class="w-full space-y-2">
 						<Label for="dosage" class={$errors.dosage ? 'text-red-500' : ''}>Dosage</Label>
 						<Input
 							id="dosage"
@@ -54,7 +74,10 @@
 							{/if}
 						</div>
 					</div>
-					<div class="space-y-2">
+				</div>
+
+				<div class="flex w-full space-x-4">
+					<div class="w-full space-y-2">
 						<Label for="notes" class={$errors.notes ? 'text-red-500' : ''}>Notes</Label>
 						<Input
 							id="notes"
@@ -69,7 +92,25 @@
 							{/if}
 						</div>
 					</div>
-					<div class="space-y-2">
+					<div class="w-full space-y-2">
+						<Label for="refills" class={$errors.refills ? 'text-red-500' : ''}>Refills</Label>
+						<Input
+							id="refills"
+							name="refills"
+							bind:value={$form.refills}
+							aria-invalid={$form.refills ? 'true' : undefined}
+							class={$errors.refills ? 'border-red-500' : ''}
+						/>
+						<div class="min-h-5">
+							{#if $errors.refills}
+								<p class="text-sm text-red-500">{$errors.refills}</p>
+							{/if}
+						</div>
+					</div>
+				</div>
+
+				<div class="flex w-full space-x-4">
+					<div class="w-full space-y-2">
 						<Label for="started" class={$errors.started ? 'text-red-500' : ''}>Started</Label>
 						<Input
 							id="started"
@@ -85,7 +126,7 @@
 							{/if}
 						</div>
 					</div>
-					<div class="space-y-2">
+					<div class="w-full space-y-2">
 						<Label for="ended" class={$errors.ended ? 'text-red-500' : ''}>Ended</Label>
 						<Input
 							id="ended"
@@ -101,26 +142,12 @@
 							{/if}
 						</div>
 					</div>
-					<div class="space-y-2">
-						<Label for="refills" class={$errors.refills ? 'text-red-500' : ''}>Refills</Label>
-						<Input
-							id="refills"
-							name="refills"
-							bind:value={$form.refills}
-							aria-invalid={$form.refills ? 'true' : undefined}
-							class={$errors.refills ? 'border-red-500' : ''}
-						/>
-						<div class="min-h-5">
-							{#if $errors.refills}
-								<p class="text-sm text-red-500">{$errors.refills}</p>
-							{/if}
-						</div>
-					</div>
-					<Dialog.Footer>
-						<Button type="submit">Add Prescription</Button>
-					</Dialog.Footer>
-				</form>
-			</div>
+				</div>
+
+				<Dialog.Footer>
+					<Button type="submit">Add Prescription</Button>
+				</Dialog.Footer>
+			</form>
 		</Dialog.Content>
 	</Dialog.Root>
 	<Table.Root>
@@ -151,9 +178,13 @@
 						).toLocaleDateString()}
 					</Table.Cell>
 					<Table.Cell>
-						{new Date(
-							prescription.ended.substring(0, prescription.ended.length - 1)
-						).toLocaleDateString()}
+						{#if prescription.ended}
+							{new Date(
+								prescription.ended.substring(0, prescription.ended.length - 1)
+							).toLocaleDateString()}
+						{:else}
+							Presently Taking
+						{/if}
 					</Table.Cell>
 				</Table.Row>
 			{/each}
