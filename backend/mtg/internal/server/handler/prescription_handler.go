@@ -109,7 +109,7 @@ func (ph *PrescriptionHandler) DeleteBatchPrescription(c *fiber.Ctx) error {
 		}
 		return errorhandler.HandleError(bodyParseErr, c)
 	}
-
+	fmt.Println(requestBody.DeleteList)
 	err := ph.Service.DeleteBatchPrescription(requestBody.DeleteList, email)
 
 	if err != nil {
