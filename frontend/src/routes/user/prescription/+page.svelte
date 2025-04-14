@@ -8,14 +8,23 @@
 
 	let { data } = $props();
 	import DataTable from '$lib/components/table/prescription/PrescriptionTable.svelte';
-	import { columns } from '$lib/components/table/prescription/Columns.js';
+	import { columns, type Prescription } from '$lib/components/table/prescription/Columns.js';
+	import type { RowSelectionState } from '@tanstack/react-table';
 
 	let toastId: string | number | undefined;
-
+	let rowSelection = $state<RowSelectionState>({});
 	let prescriptions = $state(data.prescription);
 	let isDialogOpen = $state(false);
+	let displayDeleteButton = $state(false);
 
-	const { form, errors, enhance, reset, delayed } = superForm(data.prescriptionForm, {
+	$effect(() => {
+		if (Object.keys(rowSelection).length > 0) {
+			displayDeleteButton = true;
+		} else {
+			displayDeleteButton = false;
+		}
+	});
+	const { form, errors, enhance, reset } = superForm(data.prescriptionForm, {
 		resetForm: false,
 		onSubmit() {
 			toastId = toast.loading('Processing...');
@@ -28,20 +37,54 @@
 				toast.success('Successfully created prescription');
 				reset();
 			} else if (event.result.type === 'failure') {
-				if (toastId) toast.dismiss(toastId);
 				toast.error('ERROR!');
 			}
 		}
 	});
 
-	// $effect(() => {
-	// 	if ($errors && Object.keys($errors).length > 0) {
-	// 		toast.error('There are some issues creating your prescription');
-	// 	}
-	// });
+	const batchDelete = async () => {
+		const selectedIds = Object.keys(rowSelection).map((id) => {
+			return id;
+		});
+		if (selectedIds.length === 0) {
+			toast.error('Please select at least one prescription to delete');
+			return;
+		}
+
+		try {
+			toastId = toast.loading('Deleting selected prescriptions...');
+
+			const response = await fetch('/api/prescriptions', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ ids: selectedIds })
+			});
+
+			if (response.ok) {
+				toast.success('Successfully deleted prescriptions');
+				// Refresh the data
+				prescriptions = prescriptions.filter((p: Prescription) => {
+					return !selectedIds.includes(p.id);
+				});
+				rowSelection = {}; // Clear selection
+			} else {
+				throw new Error(await response.text());
+			}
+		} catch (error) {
+			toast.error('Failed to delete prescriptions: ' + error);
+			console.error('Delete error:', error);
+		} finally {
+			if (toastId) toast.dismiss(toastId);
+		}
+	};
 </script>
 
 <div class="w-full">
+	{#if displayDeleteButton}
+		<Button onclick={batchDelete}>Remove Prescriptions</Button>
+	{/if}
 	<Dialog.Root bind:open={isDialogOpen}>
 		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Add Prescription</Dialog.Trigger>
 		<Dialog.Content class="h-[67dvh] w-full max-w-[70dvw] overflow-y-scroll">
@@ -159,5 +202,5 @@
 			</form>
 		</Dialog.Content>
 	</Dialog.Root>
-	<DataTable data={prescriptions} {columns} />
+	<DataTable data={prescriptions} {columns} bind:rowSelection />
 </div>
