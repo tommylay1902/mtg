@@ -1,4 +1,5 @@
-import type { ColumnDef, Row, SortingFn } from '@tanstack/table-core';
+import type { ColumnDef, SortingFn } from '@tanstack/table-core';
+import DataTableCheckbox from './DataTableCheckbox.svelte';
 
 import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js';
 import GenericSortHeader from './header/GenericSortHeader.svelte';
@@ -6,6 +7,7 @@ import GenericSortHeader from './header/GenericSortHeader.svelte';
 // This type is used to define the shape of our data.
 
 export type Prescription = {
+	id: string;
 	medication: string;
 	dosage: string;
 	notes: string;
@@ -28,6 +30,24 @@ const numberSortingFn: SortingFn<Prescription> = (rowA, rowB, columnId) => {
 };
 
 export const columns: ColumnDef<Prescription>[] = [
+	{
+		id: 'select',
+		header: ({ table }) =>
+			renderComponent(DataTableCheckbox, {
+				checked: table.getIsAllPageRowsSelected(),
+				indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+				onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
+				'aria-label': 'Select all'
+			}),
+		cell: ({ row }) =>
+			renderComponent(DataTableCheckbox, {
+				checked: row.getIsSelected(),
+				onCheckedChange: (value) => row.toggleSelected(!!value),
+				'aria-label': 'Select row'
+			}),
+		enableSorting: false,
+		enableHiding: false
+	},
 	{
 		accessorKey: 'medication',
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Medication' })
