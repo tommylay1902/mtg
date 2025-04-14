@@ -3,10 +3,12 @@
 	import * as Table from '$lib/components/ui/table/index.js';
 	import {
 		type ColumnDef,
+		type RowSelectionState,
+		type SortingState,
 		getCoreRowModel,
-		getSortedRowModel,
-		type SortingState
+		getSortedRowModel
 	} from '@tanstack/table-core';
+	import type { Prescription } from './Columns.js';
 
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
@@ -15,6 +17,7 @@
 
 	let { data, columns }: DataTableProps<TData, TValue> = $props();
 	let sorting = $state<SortingState>([]);
+	let rowSelection = $state<RowSelectionState>({});
 
 	const table = createSvelteTable({
 		get data() {
@@ -30,9 +33,20 @@
 				sorting = updater;
 			}
 		},
+		onRowSelectionChange: (updater) => {
+			if (typeof updater === 'function') {
+				rowSelection = updater(rowSelection);
+			} else {
+				rowSelection = updater;
+			}
+		},
+		getRowId: (row: TData) => (row as Prescription).id,
 		state: {
 			get sorting() {
 				return sorting;
+			},
+			get rowSelection() {
+				return rowSelection;
 			}
 		}
 	});
