@@ -8,7 +8,6 @@
 	import { superForm } from 'sveltekit-superforms';
 
 	let { prescriptionForm, isDialogOpen = $bindable() } = $props();
-
 	let toastId: string | number | undefined;
 
 	const prescriptions = getContext<any>('prescriptions');

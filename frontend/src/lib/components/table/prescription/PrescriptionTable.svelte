@@ -13,13 +13,14 @@
 
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
+		rowSelection: RowSelectionState;
+		// onRowSelectionChange?: (selection: RowSelectionState) => void;
 	};
 
-	let { columns }: DataTableProps<TData, TValue> = $props();
+	let { columns, rowSelection = $bindable() }: DataTableProps<TData, TValue> = $props();
 	const prescriptions = getContext<any>('prescriptions');
 
 	let sorting = $state<SortingState>([]);
-	let rowSelection = $state<RowSelectionState>({});
 
 	const table = createSvelteTable({
 		get data() {
