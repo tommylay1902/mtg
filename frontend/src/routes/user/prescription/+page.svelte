@@ -41,7 +41,6 @@
 		const dateValue = isoString.split('T')[0];
 		return dateValue;
 	}
-
 	const batchDelete = async () => {
 		const selectedIds = Object.keys(rowSelection).map((id) => {
 			return id;
@@ -172,7 +171,7 @@
 									'notes'
 								)}
 						/>
-						<Button onclick={batchUpdate}>Update Prescriptions</Button>
+						<Label for="started">Started</Label>
 						<Input
 							id="started"
 							type="date"
@@ -184,6 +183,20 @@
 									e,
 									updateDisplayPrescriptions[currentDisplayIndex],
 									'started'
+								)}
+						/>
+						<Label for="ended">Ended</Label>
+						<Input
+							id="ended"
+							type="date"
+							value={updateDisplayPrescriptions[currentDisplayIndex].ended == null
+								? ''
+								: formatISODateForHtmlInput(updateDisplayPrescriptions[currentDisplayIndex].ended)}
+							oninput={(e: Event) =>
+								updatePrescriptionsToUpdate(
+									e,
+									updateDisplayPrescriptions[currentDisplayIndex],
+									'ended'
 								)}
 						/>
 						<Button onclick={batchUpdate}>Update Prescriptions</Button>
