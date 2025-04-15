@@ -3,14 +3,12 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { getContext } from 'svelte';
+	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms';
 
 	let { prescriptionForm, isDialogOpen = $bindable() } = $props();
-	// let toastId: string | number | undefined;
-
-	const prescriptions = getContext<any>('prescriptions');
+	const prescriptions = getPrescriptionContext();
 
 	const { form, errors, enhance, reset, delayed } = superForm(prescriptionForm, {
 		resetForm: false,

@@ -16,20 +16,24 @@ export type Prescription = {
 	refills: number;
 };
 
-const dateSortingFn: SortingFn<Prescription> = (rowA, rowB, columnId) => {
+const dateSortingFn = <T extends Prescription>(rowA: any, rowB: any, columnId: string): number => {
 	const dateA = new Date(rowA.original[columnId as keyof Prescription] as string);
 	const dateB = new Date(rowB.original[columnId as keyof Prescription] as string);
 
 	return dateA.getTime() - dateB.getTime();
 };
 
-const numberSortingFn: SortingFn<Prescription> = (rowA, rowB, columnId) => {
+const numberSortingFn = <T extends Prescription>(
+	rowA: any,
+	rowB: any,
+	columnId: string
+): number => {
 	const numA = rowA.original[columnId as keyof Prescription] as number;
 	const numB = rowB.original[columnId as keyof Prescription] as number;
 	return numA - numB;
 };
 
-export const columns: ColumnDef<Prescription>[] = [
+export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	{
 		id: 'select',
 		header: ({ table }) =>
