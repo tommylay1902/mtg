@@ -16,4 +16,12 @@ export class PrescriptionState {
 			return !selectedIds.includes(p.id);
 		});
 	}
+	updatePrescriptions(updatedPrescriptions: Prescription[]) {
+		this.prescriptions = this.prescriptions.map((existing) => {
+			const updated = updatedPrescriptions.find((p) => p.id === existing.id);
+			return updated ? { ...existing, ...updated } : existing;
+		});
+
+		console.log(this.prescriptions);
+	}
 }

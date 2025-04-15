@@ -23,6 +23,7 @@
 	let prescriptions = new PrescriptionState(data.prescription);
 
 	setPrescriptionContext(prescriptions);
+
 	$effect(() => {
 		if (Object.keys(rowSelection).length > 0) {
 			displayDeleteButton = true;
@@ -76,15 +77,18 @@
 		updateDisplayPrescriptions = selectedPrescriptions === undefined ? [] : selectedPrescriptions;
 	};
 
-	const updatePrescriptionsToUpdate = (e: Event) => {
+	const updatePrescriptionsToUpdate = <K extends keyof Prescription>(
+		e: Event,
+		prescription: Prescription,
+		field: K
+	) => {
 		const target = e.target as HTMLInputElement;
 		const newValue = target.value ?? '';
-		updateDisplayPrescriptions[currentDisplayIndex].medication = newValue;
-		if (!prescriptionsToUpdate.includes(updateDisplayPrescriptions[currentDisplayIndex].id)) {
-			prescriptionsToUpdate = [
-				...prescriptionsToUpdate,
-				updateDisplayPrescriptions[currentDisplayIndex].id
-			];
+
+		(prescription as Record<keyof Prescription, any>)[field] = newValue;
+
+		if (!prescriptionsToUpdate.includes(prescription.id)) {
+			prescriptionsToUpdate = [...prescriptionsToUpdate, prescription.id];
 		}
 	};
 
@@ -99,6 +103,9 @@
 			method: 'PUT',
 			body: JSON.stringify(updatePrescriptions)
 		});
+
+		prescriptions.updatePrescriptions(updatePrescriptions);
+		isUpdateDialogOpen = false;
 	};
 </script>
 
@@ -121,7 +128,12 @@
 					<div class="flex flex-col items-center justify-center gap-y-3">
 						<Input
 							value={updateDisplayPrescriptions[currentDisplayIndex].medication}
-							onchange={(e) => updatePrescriptionsToUpdate(e)}
+							oninput={(e: Event) =>
+								updatePrescriptionsToUpdate(
+									e,
+									updateDisplayPrescriptions[currentDisplayIndex],
+									'medication'
+								)}
 						/>
 						<Button onclick={batchUpdate}>Update Prescriptions</Button>
 					</div>
