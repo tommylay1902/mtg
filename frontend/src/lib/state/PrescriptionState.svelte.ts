@@ -22,7 +22,5 @@ export class PrescriptionState {
 
 			return updated ? { ...existing, ...updated } : existing;
 		});
-
-		console.log('prescription', this.prescriptions);
 	}
 }

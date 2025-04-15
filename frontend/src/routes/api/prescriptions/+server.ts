@@ -42,7 +42,6 @@ export const PUT = async ({ request, locals: { safeGetSession } }) => {
 	const { session } = await safeGetSession();
 	try {
 		const prescriptions = await request.json();
-		console.log(prescriptions);
 		const response = await fetch('http://mtg_api:8080/api/v1/prescription', {
 			method: 'PUT',
 			headers: {

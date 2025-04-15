@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Navbar from '$lib/components/Navbar.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
 	let { data, children } = $props();
 	// @ts-ignore

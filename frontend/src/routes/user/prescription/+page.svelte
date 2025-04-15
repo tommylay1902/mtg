@@ -36,7 +36,6 @@
 	});
 
 	function formatISODateForHtmlInput(isoString: string) {
-		console.log('ISO', isoString);
 		// Handle malformed strings
 		const dateValue = isoString.split('T')[0];
 		return dateValue;
@@ -92,7 +91,6 @@
 		const target = e.target as HTMLInputElement;
 		const newValue = target.value ?? '';
 		if (field === 'started' || field === 'ended') {
-			console.log(newValue);
 			if (newValue == '') {
 				(prescription as Record<keyof Prescription, any>)[field] = null;
 			} else {
