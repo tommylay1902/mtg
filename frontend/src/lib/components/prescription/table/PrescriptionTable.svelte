@@ -7,8 +7,8 @@
 		getCoreRowModel,
 		getSortedRowModel
 	} from '@tanstack/table-core';
-	import type { Prescription } from './Columns.js';
-	import { columns } from '$lib/components/table/prescription/Columns.js';
+	import { columns, type Prescription } from './Columns.js';
+
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 
 	type DataTableProps<TData, TValue> = {

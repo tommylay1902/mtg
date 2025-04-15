@@ -7,7 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms';
 
-	let { prescriptionForm, isDialogOpen = $bindable() } = $props();
+	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
 
 	const { form, errors, enhance, reset, delayed } = superForm(prescriptionForm, {
@@ -18,7 +18,7 @@
 		onResult(event) {
 			toast.dismiss();
 			if (event.result.type === 'success') {
-				isDialogOpen = false;
+				isAddDialogOpen = false;
 				prescriptions.addPrescription(event.result.data?.data);
 				toast.success('Successfully created prescription');
 				reset();
