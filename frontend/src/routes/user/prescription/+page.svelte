@@ -92,9 +92,14 @@
 		const target = e.target as HTMLInputElement;
 		const newValue = target.value ?? '';
 		if (field === 'started' || field === 'ended') {
-			(prescription as Record<keyof Prescription, any>)[field] = new Date(
-				newValue + 'T00:00:00'
-			).toISOString();
+			console.log(newValue);
+			if (newValue == '') {
+				(prescription as Record<keyof Prescription, any>)[field] = null;
+			} else {
+				(prescription as Record<keyof Prescription, any>)[field] = new Date(
+					newValue + 'T00:00:00'
+				).toISOString();
+			}
 		} else {
 			(prescription as Record<keyof Prescription, any>)[field] = newValue;
 		}

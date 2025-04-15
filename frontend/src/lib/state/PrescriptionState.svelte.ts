@@ -19,7 +19,7 @@ export class PrescriptionState {
 	updatePrescriptions(updatedPrescriptions: Prescription[]) {
 		this.prescriptions = this.prescriptions.map((existing) => {
 			const updated = updatedPrescriptions.find((p) => p.id === existing.id);
-			console.log('updated', updated);
+
 			return updated ? { ...existing, ...updated } : existing;
 		});
 

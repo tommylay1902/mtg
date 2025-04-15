@@ -1,4 +1,4 @@
-import type { PrescriptionState } from '$lib/state/PrescriptionState.js';
+import type { PrescriptionState } from '$lib/state/PrescriptionState.svelte.js';
 
 import { getContext, setContext } from 'svelte';
 
