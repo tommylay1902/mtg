@@ -9,6 +9,7 @@
 	import { PrescriptionState } from '$lib/state/PrescriptionState.svelte.js';
 	import { type Prescription } from '$lib/components/table/prescription/Columns.js';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 
 	let { data } = $props();
 	let rowSelection = $state<RowSelectionState>({});
@@ -33,6 +34,13 @@
 			displayUpdateButton = false;
 		}
 	});
+
+	function formatISODateForHtmlInput(isoString: string) {
+		console.log('ISO', isoString);
+		// Handle malformed strings
+		const dateValue = isoString.split('T')[0];
+		return dateValue;
+	}
 
 	const batchDelete = async () => {
 		const selectedIds = Object.keys(rowSelection).map((id) => {
@@ -84,8 +92,13 @@
 	) => {
 		const target = e.target as HTMLInputElement;
 		const newValue = target.value ?? '';
-
-		(prescription as Record<keyof Prescription, any>)[field] = newValue;
+		if (field === 'started' || field === 'ended') {
+			(prescription as Record<keyof Prescription, any>)[field] = new Date(
+				newValue + 'T00:00:00'
+			).toISOString();
+		} else {
+			(prescription as Record<keyof Prescription, any>)[field] = newValue;
+		}
 
 		if (!prescriptionsToUpdate.includes(prescription.id)) {
 			prescriptionsToUpdate = [...prescriptionsToUpdate, prescription.id];
@@ -126,13 +139,51 @@
 
 				{#if updateDisplayPrescriptions.length > 0 && currentDisplayIndex < updateDisplayPrescriptions.length}
 					<div class="flex flex-col items-center justify-center gap-y-3">
+						<Label for="medication">Medication</Label>
 						<Input
+							id="medication"
 							value={updateDisplayPrescriptions[currentDisplayIndex].medication}
 							oninput={(e: Event) =>
 								updatePrescriptionsToUpdate(
 									e,
 									updateDisplayPrescriptions[currentDisplayIndex],
 									'medication'
+								)}
+						/>
+						<Label for="dosage">Dosage</Label>
+						<Input
+							id="dosage"
+							value={updateDisplayPrescriptions[currentDisplayIndex].dosage}
+							oninput={(e: Event) =>
+								updatePrescriptionsToUpdate(
+									e,
+									updateDisplayPrescriptions[currentDisplayIndex],
+									'dosage'
+								)}
+						/>
+						<Label for="notes">Notes</Label>
+						<Input
+							id="notes"
+							value={updateDisplayPrescriptions[currentDisplayIndex].notes}
+							oninput={(e: Event) =>
+								updatePrescriptionsToUpdate(
+									e,
+									updateDisplayPrescriptions[currentDisplayIndex],
+									'notes'
+								)}
+						/>
+						<Button onclick={batchUpdate}>Update Prescriptions</Button>
+						<Input
+							id="started"
+							type="date"
+							value={formatISODateForHtmlInput(
+								updateDisplayPrescriptions[currentDisplayIndex].started
+							)}
+							oninput={(e: Event) =>
+								updatePrescriptionsToUpdate(
+									e,
+									updateDisplayPrescriptions[currentDisplayIndex],
+									'started'
 								)}
 						/>
 						<Button onclick={batchUpdate}>Update Prescriptions</Button>

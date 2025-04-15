@@ -3,6 +3,7 @@ import DataTableCheckbox from './DataTableCheckbox.svelte';
 
 import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js';
 import GenericSortHeader from './header/GenericSortHeader.svelte';
+import { Cell } from '$lib/components/ui/table/index.js';
 
 // This type is used to define the shape of our data.
 
@@ -32,6 +33,16 @@ const numberSortingFn = <T extends Prescription>(
 	const numB = rowB.original[columnId as keyof Prescription] as number;
 	return numA - numB;
 };
+
+function formatISODateForUserDisplay(isoString: string) {
+	const displayDate = new Date(isoString).toLocaleString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
+	});
+
+	return displayDate;
+}
 
 export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	{
@@ -73,11 +84,18 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	},
 	{
 		accessorKey: 'started',
+		cell: ({ row }) => formatISODateForUserDisplay(row.original.started),
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Started' }),
 		sortingFn: dateSortingFn
 	},
 	{
 		accessorKey: 'ended',
+		cell: ({ row }) => {
+			if (!row.original.ended) {
+				return 'Present';
+			}
+			return formatISODateForUserDisplay(row.original.ended);
+		},
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Ended' }),
 		sortingFn: dateSortingFn
 	},
