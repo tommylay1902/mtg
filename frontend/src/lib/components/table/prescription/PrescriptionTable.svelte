@@ -23,7 +23,7 @@
 
 	const table = createSvelteTable({
 		get data() {
-			return prescriptions() as TData[];
+			return prescriptions.current as TData[];
 		},
 		columns,
 		getCoreRowModel: getCoreRowModel(),
