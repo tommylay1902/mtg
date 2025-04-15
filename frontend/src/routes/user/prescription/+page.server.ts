@@ -65,11 +65,11 @@ export const actions: Actions = {
 				});
 			}
 
-			const id = await response.json();
+			const { success } = await response.json();
 
 			return {
 				success: true,
-				data: { ...prescriptionForm.data, id }
+				data: { ...prescriptionForm.data, id: success }
 			};
 		} catch (err) {
 			console.error(err);

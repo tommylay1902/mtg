@@ -23,6 +23,7 @@
 		},
 		addPrescription(p: Prescription) {
 			prescriptions = [...prescriptions, p];
+			console.log(prescriptions);
 		},
 		deletePrescriptions(selectedIds: string[]) {
 			prescriptions.filter((p: Prescription) => {

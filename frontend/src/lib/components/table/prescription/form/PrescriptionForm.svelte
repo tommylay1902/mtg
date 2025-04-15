@@ -8,24 +8,23 @@
 	import { superForm } from 'sveltekit-superforms';
 
 	let { prescriptionForm, isDialogOpen = $bindable() } = $props();
-	let toastId: string | number | undefined;
+	// let toastId: string | number | undefined;
 
 	const prescriptions = getContext<any>('prescriptions');
 
 	const { form, errors, enhance, reset, delayed } = superForm(prescriptionForm, {
 		resetForm: false,
 		onSubmit() {
-			toastId = toast.loading('Processing...');
+			toast.loading('Processing...');
 		},
 		onResult(event) {
-			if (toastId) toast.dismiss(toastId);
+			toast.dismiss();
 			if (event.result.type === 'success') {
 				isDialogOpen = false;
 				prescriptions.addPrescription(event.result.data?.data);
 				toast.success('Successfully created prescription');
 				reset();
 			} else if (event.result.type === 'failure') {
-				if (toastId) toast.dismiss(toastId);
 				toast.error('ERROR!');
 			}
 		}
