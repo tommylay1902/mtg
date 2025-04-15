@@ -9,11 +9,14 @@
 	let { data } = $props();
 	import DataTable from '$lib/components/table/prescription/PrescriptionTable.svelte';
 	import { columns } from '$lib/components/table/prescription/Columns.js';
+	import { setContext } from 'svelte';
 
 	let toastId: string | number | undefined;
 
 	let prescriptions = $state(data.prescription);
 	let isDialogOpen = $state(false);
+
+	setContext('prescriptions', () => prescriptions);
 
 	const { form, errors, enhance, reset, delayed } = superForm(data.prescriptionForm, {
 		resetForm: false,
@@ -24,7 +27,7 @@
 			if (toastId) toast.dismiss(toastId);
 			if (event.result.type === 'success') {
 				isDialogOpen = false;
-				prescriptions = event.result.data?.data;
+				prescriptions = [...prescriptions, event.result.data?.data];
 				toast.success('Successfully created prescription');
 				reset();
 			} else if (event.result.type === 'failure') {
@@ -159,5 +162,5 @@
 			</form>
 		</Dialog.Content>
 	</Dialog.Root>
-	<DataTable data={prescriptions} {columns} />
+	<DataTable {columns} />
 </div>

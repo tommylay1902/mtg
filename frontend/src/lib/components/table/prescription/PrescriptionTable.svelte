@@ -9,19 +9,21 @@
 		getSortedRowModel
 	} from '@tanstack/table-core';
 	import type { Prescription } from './Columns.js';
+	import { getContext } from 'svelte';
 
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
-		data: TData[];
 	};
 
-	let { data, columns }: DataTableProps<TData, TValue> = $props();
+	let { columns }: DataTableProps<TData, TValue> = $props();
+	const prescriptions = getContext<any>('prescriptions');
+
 	let sorting = $state<SortingState>([]);
 	let rowSelection = $state<RowSelectionState>({});
 
 	const table = createSvelteTable({
 		get data() {
-			return data;
+			return prescriptions() as TData[];
 		},
 		columns,
 		getCoreRowModel: getCoreRowModel(),
