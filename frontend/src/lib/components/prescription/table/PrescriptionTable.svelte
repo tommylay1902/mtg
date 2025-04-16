@@ -1,30 +1,30 @@
-<script lang="ts" generics="TData, TValue">
+<script lang="ts" generics="TData extends Prescription, TValue">
 	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import {
-		type ColumnDef,
 		type RowSelectionState,
 		type SortingState,
 		getCoreRowModel,
 		getSortedRowModel
 	} from '@tanstack/table-core';
-	import type { Prescription } from './Columns.js';
+	import { columns, type Prescription } from './Columns.js';
+
+	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 
 	type DataTableProps<TData, TValue> = {
-		columns: ColumnDef<TData, TValue>[];
-		data: TData[];
 		rowSelection: RowSelectionState;
-		onRowSelectionChange?: (selection: RowSelectionState) => void;
+		// onRowSelectionChange?: (selection: RowSelectionState) => void;
 	};
 
-	let { data, columns, rowSelection = $bindable() }: DataTableProps<TData, TValue> = $props();
+	let { rowSelection = $bindable() }: DataTableProps<TData, TValue> = $props();
+	const prescriptions = getPrescriptionContext();
 	let sorting = $state<SortingState>([]);
 
 	const table = createSvelteTable({
 		get data() {
-			return data;
+			return prescriptions.current as TData[];
 		},
-		columns,
+		columns: columns<TData>(),
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: (updater) => {

@@ -65,15 +65,11 @@ export const actions: Actions = {
 				});
 			}
 
-			const updatedResponse = await fetch('/api/prescriptions', {
-				headers: {
-					Authorization: `Bearer ${session?.access_token}`
-				}
-			});
+			const { success } = await response.json();
 
 			return {
 				success: true,
-				data: await updatedResponse.json()
+				data: { ...prescriptionForm.data, id: success }
 			};
 		} catch (err) {
 			console.error(err);

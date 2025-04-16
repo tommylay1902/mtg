@@ -3,6 +3,7 @@ import DataTableCheckbox from './DataTableCheckbox.svelte';
 
 import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js';
 import GenericSortHeader from './header/GenericSortHeader.svelte';
+import { Cell } from '$lib/components/ui/table/index.js';
 
 // This type is used to define the shape of our data.
 
@@ -16,20 +17,34 @@ export type Prescription = {
 	refills: number;
 };
 
-const dateSortingFn: SortingFn<Prescription> = (rowA, rowB, columnId) => {
+const dateSortingFn = <T extends Prescription>(rowA: any, rowB: any, columnId: string): number => {
 	const dateA = new Date(rowA.original[columnId as keyof Prescription] as string);
 	const dateB = new Date(rowB.original[columnId as keyof Prescription] as string);
 
 	return dateA.getTime() - dateB.getTime();
 };
 
-const numberSortingFn: SortingFn<Prescription> = (rowA, rowB, columnId) => {
+const numberSortingFn = <T extends Prescription>(
+	rowA: any,
+	rowB: any,
+	columnId: string
+): number => {
 	const numA = rowA.original[columnId as keyof Prescription] as number;
 	const numB = rowB.original[columnId as keyof Prescription] as number;
 	return numA - numB;
 };
 
-export const columns: ColumnDef<Prescription>[] = [
+function formatISODateForUserDisplay(isoString: string) {
+	const displayDate = new Date(isoString).toLocaleString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
+	});
+
+	return displayDate;
+}
+
+export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	{
 		id: 'select',
 		header: ({ table }) =>
@@ -69,11 +84,18 @@ export const columns: ColumnDef<Prescription>[] = [
 	},
 	{
 		accessorKey: 'started',
+		cell: ({ row }) => formatISODateForUserDisplay(row.original.started),
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Started' }),
 		sortingFn: dateSortingFn
 	},
 	{
 		accessorKey: 'ended',
+		cell: ({ row }) => {
+			if (!row.original.ended) {
+				return 'Present';
+			}
+			return formatISODateForUserDisplay(row.original.ended);
+		},
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Ended' }),
 		sortingFn: dateSortingFn
 	},
