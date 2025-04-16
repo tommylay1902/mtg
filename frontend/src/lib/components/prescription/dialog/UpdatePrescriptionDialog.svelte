@@ -4,6 +4,8 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
+	import ChevronRight from '@lucide/svelte/icons/chevron-right';
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 
 	import type { Prescription } from '../table/Columns.js';
 
@@ -15,6 +17,17 @@
 		isUpdateDialogOpen = $bindable(),
 		rowSelection = $bindable()
 	} = $props();
+
+	let currentDisplayPrescription = $derived.by(() => {
+		if (
+			updateDisplayPrescriptions.length > 0 &&
+			currentDisplayIndex <= updateDisplayPrescriptions.length - 1
+		) {
+			return updateDisplayPrescriptions[currentDisplayIndex];
+		} else {
+			return null;
+		}
+	});
 
 	const prescriptions = getPrescriptionContext();
 
@@ -59,8 +72,11 @@
 
 	const displayUpdatePrescription = async () => {
 		const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
-			.map((id) => prescriptions.current.find((p) => p.id === id))
-			.filter((p): p is Prescription => p !== undefined);
+			.map((id) => {
+				const original = prescriptions.current.find((p) => p.id === id);
+				return original ? { ...original } : null;
+			})
+			.filter((p): p is Prescription => p !== null);
 
 		updateDisplayPrescriptions = selectedPrescriptions === undefined ? [] : selectedPrescriptions;
 	};
@@ -69,6 +85,14 @@
 		const dateValue = isoString.split('T')[0];
 		return dateValue;
 	}
+
+	$effect(() => {
+		if (isUpdateDialogOpen === false) {
+			updateDisplayPrescriptions = [];
+			prescriptionsToUpdate = [];
+			currentDisplayIndex = 0;
+		}
+	});
 </script>
 
 <Dialog.Root bind:open={isUpdateDialogOpen}>
@@ -80,68 +104,78 @@
 			<Dialog.Title>Update Prescription</Dialog.Title>
 		</Dialog.Header>
 
-		{#if updateDisplayPrescriptions.length > 0 && currentDisplayIndex < updateDisplayPrescriptions.length}
+		{#if updateDisplayPrescriptions.length > 0 && currentDisplayIndex <= updateDisplayPrescriptions.length}
 			<div class="flex flex-col items-center justify-center gap-y-3">
 				<Label for="medication">Medication</Label>
 				<Input
 					id="medication"
-					value={updateDisplayPrescriptions[currentDisplayIndex].medication}
+					value={currentDisplayPrescription.medication}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(
-							e,
-							updateDisplayPrescriptions[currentDisplayIndex],
-							'medication'
-						)}
+						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'medication')}
 				/>
 				<Label for="dosage">Dosage</Label>
 				<Input
 					id="dosage"
-					value={updateDisplayPrescriptions[currentDisplayIndex].dosage}
+					value={currentDisplayPrescription.dosage}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(
-							e,
-							updateDisplayPrescriptions[currentDisplayIndex],
-							'dosage'
-						)}
+						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'dosage')}
 				/>
 				<Label for="notes">Notes</Label>
 				<Input
 					id="notes"
-					value={updateDisplayPrescriptions[currentDisplayIndex].notes}
+					value={currentDisplayPrescription.notes}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(
-							e,
-							updateDisplayPrescriptions[currentDisplayIndex],
-							'notes'
-						)}
+						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'notes')}
 				/>
 				<Label for="started">Started</Label>
 				<Input
 					id="started"
 					type="date"
-					value={formatISODateForHtmlInput(updateDisplayPrescriptions[currentDisplayIndex].started)}
+					value={formatISODateForHtmlInput(currentDisplayPrescription.started)}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(
-							e,
-							updateDisplayPrescriptions[currentDisplayIndex],
-							'started'
-						)}
+						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'started')}
 				/>
 				<Label for="ended">Ended</Label>
 				<Input
 					id="ended"
 					type="date"
-					value={updateDisplayPrescriptions[currentDisplayIndex].ended == null
+					value={currentDisplayPrescription.ended == null
 						? ''
-						: formatISODateForHtmlInput(updateDisplayPrescriptions[currentDisplayIndex].ended)}
+						: formatISODateForHtmlInput(currentDisplayPrescription.ended)}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(
-							e,
-							updateDisplayPrescriptions[currentDisplayIndex],
-							'ended'
-						)}
+						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'ended')}
 				/>
-				<Button onclick={batchUpdate}>Update Prescriptions</Button>
+				<div class="flex w-full justify-between gap-x-2">
+					<div>
+						<Button onclick={isUpdateDialogOpen}>Cancel</Button>
+					</div>
+					<div>
+						<Button
+							disabled={currentDisplayIndex <= 0}
+							onclick={() => {
+								if (currentDisplayIndex > 0) {
+									currentDisplayIndex -= 1;
+								}
+							}}
+						>
+							<ChevronLeft />
+						</Button>
+						<Button
+							onclick={() => {
+								if (currentDisplayIndex < updateDisplayPrescriptions.length - 1) {
+									currentDisplayIndex += 1;
+								}
+							}}
+							disabled={currentDisplayIndex >= updateDisplayPrescriptions.length - 1}
+						>
+							<ChevronRight />
+						</Button>
+					</div>
+
+					<Button onclick={batchUpdate} disabled={prescriptionsToUpdate.length <= 0}
+						>Update Prescriptions</Button
+					>
+				</div>
 			</div>
 		{/if}
 	</Dialog.Content>
