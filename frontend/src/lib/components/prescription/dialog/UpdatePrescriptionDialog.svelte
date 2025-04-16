@@ -6,8 +6,8 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
-
 	import type { Prescription } from '../table/Columns.js';
+	import { prescriptinInputConfigs } from '$lib/config/inputConfig.js';
 
 	let prescriptionsToUpdate = $state<string[]>([]);
 	let currentDisplayIndex = $state(0);
@@ -20,6 +20,8 @@
 
 	let original = $state<Prescription[]>([]);
 	let localDrafts = $state<Prescription[]>([]);
+
+	const inputConfigs = prescriptinInputConfigs;
 
 	const prescriptions = getPrescriptionContext();
 
@@ -57,7 +59,11 @@
 		let hasUpdate = false;
 
 		keys.forEach((k) => {
-			if (k === 'started' || k === 'ended') {
+			if (k === 'refills') {
+				if (+prescription[k] !== +original[currentDisplayIndex][k]) {
+					hasUpdate = true;
+				}
+			} else if (k === 'started' || k === 'ended') {
 				const newDate = prescription[k];
 				const oldDate = original[currentDisplayIndex][k];
 				if (newDate == null || oldDate == null) {
@@ -80,11 +86,6 @@
 			}
 		}
 	};
-
-	function formatISODateForHtmlInput(isoString: string) {
-		const dateValue = isoString.split('T')[0];
-		return dateValue;
-	}
 
 	$effect(() => {
 		if (isUpdateDialogOpen === false) {
@@ -117,45 +118,16 @@
 
 		{#if updateDisplayPrescriptions.length > 0 && currentDisplayIndex <= updateDisplayPrescriptions.length}
 			<div class="flex flex-col items-center justify-center gap-y-3">
-				<Label for="medication">Medication</Label>
-				<Input
-					id="medication"
-					value={localDrafts[currentDisplayIndex].medication}
-					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'medication')}
-				/>
-				<Label for="dosage">Dosage</Label>
-				<Input
-					id="dosage"
-					value={localDrafts[currentDisplayIndex].dosage}
-					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'dosage')}
-				/>
-				<Label for="notes">Notes</Label>
-				<Input
-					id="notes"
-					value={localDrafts[currentDisplayIndex].notes}
-					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'notes')}
-				/>
-				<Label for="started">Started</Label>
-				<Input
-					id="started"
-					type="date"
-					value={formatISODateForHtmlInput(localDrafts[currentDisplayIndex].started)}
-					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'started')}
-				/>
-				<Label for="ended">Ended</Label>
-				<Input
-					id="ended"
-					type="date"
-					value={localDrafts[currentDisplayIndex].ended == null
-						? ''
-						: formatISODateForHtmlInput(localDrafts[currentDisplayIndex].ended)}
-					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'ended')}
-				/>
+				{#each inputConfigs as config}
+					<Label for={config.id}>{config.title}</Label>
+					<Input
+						id={config.id}
+						value={config.transform(localDrafts[currentDisplayIndex][config.id])}
+						oninput={(e: Event) =>
+							updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], config.id)}
+						type={config.type}
+					/>
+				{/each}
 				<div class="flex w-full justify-between gap-x-2">
 					<div>
 						<Button onclick={isUpdateDialogOpen}>Cancel</Button>
