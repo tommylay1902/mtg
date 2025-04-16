@@ -1,62 +1,54 @@
-# Project mtg
+# 📘 MTG Prescription API Documentation
 
-One Paragraph of project description goes here
+This document provides a reference for all API routes available in the MTG Prescription backend, organized by feature and functionality.
 
-## Getting Started
+---
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+## 🔐 Authentication Middleware
 
-## MakeFile
+> All `/api/v1/prescription` routes are protected by `SupabaseProtected()` middleware.  
+> Ensure the appropriate token is provided in the `Authorization` header as a Bearer token.
 
-run all make commands with clean tests
+---
 
-```bash
-make all build
-```
+## 💊 Prescription Routes
 
-build the application
+| Method | Endpoint            | Description                              |
+| ------ | ------------------- | ---------------------------------------- |
+| POST   | `/prescription`     | Create a new prescription                |
+| GET    | `/prescription/all` | Fetch all prescriptions                  |
+| GET    | `/prescription/:id` | Fetch a single prescription by ID        |
+| DELETE | `/prescription`     | Delete multiple prescriptions by ID list |
+| PUT    | `/prescription`     | Update multiple prescriptions in batch   |
 
-```bash
-make build
-```
+---
 
-run the application
+## 🧾 Prescription History Routes
 
-```bash
-make run
-```
+| Method | Endpoint                           | Description                                            |
+| ------ | ---------------------------------- | ------------------------------------------------------ |
+| POST   | `/prescriptionhistory`             | Create a prescription history record                   |
+| GET    | `/prescriptionhistory/all/:email`  | Get all histories associated with a user’s email       |
+| GET    | `/prescriptionhistory/:email/:pId` | Get a specific history by email and prescription ID    |
+| DELETE | `/prescriptionhistory/:email/:pId` | Delete a specific history by email and prescription ID |
+| PUT    | `/prescriptionhistory/:email/:pId` | Update a specific history by email and prescription ID |
 
-Create DB container
+---
 
-```bash
-make docker-run
-```
+## 📌 Notes
 
-Shutdown DB container
+- All routes follow RESTful conventions.
+- Data must be sent and received as JSON.
+- Endpoints are subject to authentication and may return `401 Unauthorized` if token validation fails.
+- Was recently converted from a microservice architecture to an API so some route urls/logic will be having major changes soon...
 
-```bash
-make docker-down
-```
+---
 
-live reload the application
+## 🧰 Coming Soon
 
-```bash
-make watch
-```
+---
 
-run the test suite
+## 🧑‍💻 Developed By
 
-```bash
-make test
-```
-
-clean up binary from the last build
-
-```bash
-make clean
-```
-
-Check test coverage across code and open up html profile
-
-go test -v -coverpkg=./... -coverprofile=profile.cov ./...
-go tool cover -html=profile.cov
+Tommy Lay  
+Made with ❤️ and Go + Fiber
