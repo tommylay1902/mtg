@@ -19,33 +19,17 @@
 	} = $props();
 
 	let original = $state<Prescription[]>([]);
-
-	let currentDisplayPrescription = $derived.by(() => {
-		if (
-			updateDisplayPrescriptions.length > 0 &&
-			currentDisplayIndex <= updateDisplayPrescriptions.length - 1
-		) {
-			return updateDisplayPrescriptions[currentDisplayIndex];
-		} else {
-			return null;
-		}
-	});
+	let localDrafts = $state<Prescription[]>([]);
 
 	const prescriptions = getPrescriptionContext();
 
 	const batchUpdate = async () => {
-		const updatePrescriptions = prescriptionsToUpdate
-			.map((id) => {
-				return updateDisplayPrescriptions.filter((p: Prescription) => p.id === id);
-			})
-			.flat();
-
 		await fetch('/api/prescriptions', {
 			method: 'PUT',
-			body: JSON.stringify(updatePrescriptions)
+			body: JSON.stringify(localDrafts)
 		});
 
-		prescriptions.updatePrescriptions(updatePrescriptions);
+		prescriptions.updatePrescriptions(localDrafts);
 		isUpdateDialogOpen = false;
 	};
 
@@ -73,7 +57,15 @@
 		let hasUpdate = false;
 
 		keys.forEach((k) => {
-			if (prescription[k] !== original[currentDisplayIndex][k]) {
+			if (k === 'started' || k === 'ended') {
+				const newDate = prescription[k];
+				const oldDate = original[currentDisplayIndex][k];
+				if (newDate == null || oldDate == null) {
+					if (newDate !== oldDate) hasUpdate = true;
+				} else if (newDate.split('T')[0] !== oldDate.split('T')[0]) {
+					hasUpdate = true;
+				}
+			} else if (prescription[k] !== original[currentDisplayIndex][k]) {
 				hasUpdate = true;
 			}
 		});
@@ -89,17 +81,6 @@
 		}
 	};
 
-	const displayUpdatePrescription = async () => {
-		const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
-			.map((id) => {
-				const original = prescriptions.current.find((p) => p.id === id);
-				return original ? { ...original } : null;
-			})
-			.filter((p): p is Prescription => p !== null);
-
-		updateDisplayPrescriptions = selectedPrescriptions === undefined ? [] : selectedPrescriptions;
-	};
-
 	function formatISODateForHtmlInput(isoString: string) {
 		const dateValue = isoString.split('T')[0];
 		return dateValue;
@@ -111,14 +92,23 @@
 			prescriptionsToUpdate = [];
 			currentDisplayIndex = 0;
 		} else {
-			original = structuredClone(updateDisplayPrescriptions);
+			const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
+				.map((id) => {
+					const original = prescriptions.current.find((p) => p.id === id);
+					return original ? JSON.parse(JSON.stringify(original)) : null;
+				})
+				.filter((p): p is Prescription => p !== null);
+
+			updateDisplayPrescriptions = selectedPrescriptions;
+			original = structuredClone(selectedPrescriptions);
+			localDrafts = structuredClone(selectedPrescriptions);
 		}
 	});
 </script>
 
 <Dialog.Root bind:open={isUpdateDialogOpen}>
 	<Dialog.Trigger>
-		<Button onclick={displayUpdatePrescription}>Update Prescriptions</Button>
+		<Button>Update Prescriptions</Button>
 	</Dialog.Trigger>
 	<Dialog.Content>
 		<Dialog.Header>
@@ -130,41 +120,41 @@
 				<Label for="medication">Medication</Label>
 				<Input
 					id="medication"
-					value={currentDisplayPrescription.medication}
+					value={localDrafts[currentDisplayIndex].medication}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'medication')}
+						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'medication')}
 				/>
 				<Label for="dosage">Dosage</Label>
 				<Input
 					id="dosage"
-					value={currentDisplayPrescription.dosage}
+					value={localDrafts[currentDisplayIndex].dosage}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'dosage')}
+						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'dosage')}
 				/>
 				<Label for="notes">Notes</Label>
 				<Input
 					id="notes"
-					value={currentDisplayPrescription.notes}
+					value={localDrafts[currentDisplayIndex].notes}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'notes')}
+						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'notes')}
 				/>
 				<Label for="started">Started</Label>
 				<Input
 					id="started"
 					type="date"
-					value={formatISODateForHtmlInput(currentDisplayPrescription.started)}
+					value={formatISODateForHtmlInput(localDrafts[currentDisplayIndex].started)}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'started')}
+						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'started')}
 				/>
 				<Label for="ended">Ended</Label>
 				<Input
 					id="ended"
 					type="date"
-					value={currentDisplayPrescription.ended == null
+					value={localDrafts[currentDisplayIndex].ended == null
 						? ''
-						: formatISODateForHtmlInput(currentDisplayPrescription.ended)}
+						: formatISODateForHtmlInput(localDrafts[currentDisplayIndex].ended)}
 					oninput={(e: Event) =>
-						updatePrescriptionsToUpdate(e, currentDisplayPrescription, 'ended')}
+						updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], 'ended')}
 				/>
 				<div class="flex w-full justify-between gap-x-2">
 					<div>
@@ -193,9 +183,7 @@
 						</Button>
 					</div>
 
-					<Button onclick={batchUpdate} disabled={prescriptionsToUpdate.length <= 0}
-						>Update Prescriptions</Button
-					>
+					<Button onclick={batchUpdate} disabled={prescriptionsToUpdate.length <= 0}>Update</Button>
 				</div>
 			</div>
 		{/if}
