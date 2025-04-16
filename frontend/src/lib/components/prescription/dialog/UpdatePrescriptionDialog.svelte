@@ -6,7 +6,6 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
-
 	import type { Prescription } from '../table/Columns.js';
 	import { prescriptinInputConfigs } from '$lib/config/inputConfig.js';
 	import { compareDates } from '$lib/utils.js';
@@ -101,7 +100,7 @@
 
 		const keys = Object.keys(activeDraft) as (keyof Prescription)[];
 
-		// if something is true it will break out of the loop and return
+		// if something is true it will break out of the loop because we just need to know there is one change from the activeDraft and the original object
 		// else will iterate through the whole array and make sure there are no changes
 		const hasUpdate = keys.some((k) => {
 			if (k === 'refills') {
