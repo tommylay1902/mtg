@@ -18,6 +18,8 @@
 		rowSelection = $bindable()
 	} = $props();
 
+	let original = $state<Prescription[]>([]);
+
 	let currentDisplayPrescription = $derived.by(() => {
 		if (
 			updateDisplayPrescriptions.length > 0 &&
@@ -54,6 +56,7 @@
 	) => {
 		const target = e.target as HTMLInputElement;
 		const newValue = target.value ?? '';
+
 		if (field === 'started' || field === 'ended') {
 			if (newValue == '') {
 				(prescription as Record<keyof Prescription, any>)[field] = null;
@@ -65,8 +68,24 @@
 		} else {
 			(prescription as Record<keyof Prescription, any>)[field] = newValue;
 		}
-		if (!prescriptionsToUpdate.includes(prescription.id)) {
-			prescriptionsToUpdate = [...prescriptionsToUpdate, prescription.id];
+
+		const keys = Object.keys(prescription) as (keyof Prescription)[];
+		let hasUpdate = false;
+
+		keys.forEach((k) => {
+			if (prescription[k] !== original[currentDisplayIndex][k]) {
+				hasUpdate = true;
+			}
+		});
+
+		if (!hasUpdate) {
+			if (prescriptionsToUpdate.includes(prescription.id)) {
+				prescriptionsToUpdate = prescriptionsToUpdate.filter((id) => id !== prescription.id);
+			}
+		} else {
+			if (!prescriptionsToUpdate.includes(prescription.id)) {
+				prescriptionsToUpdate = [...prescriptionsToUpdate, prescription.id];
+			}
 		}
 	};
 
@@ -91,6 +110,8 @@
 			updateDisplayPrescriptions = [];
 			prescriptionsToUpdate = [];
 			currentDisplayIndex = 0;
+		} else {
+			original = structuredClone(updateDisplayPrescriptions);
 		}
 	});
 </script>
