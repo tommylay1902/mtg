@@ -6,11 +6,23 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
+
 	import type { Prescription } from '../table/Columns.js';
 	import { prescriptinInputConfigs } from '$lib/config/inputConfig.js';
+	import { compareDates } from '$lib/utils.js';
 
-	let prescriptionsToUpdate = $state<string[]>([]);
-	let currentDisplayIndex = $state(0);
+	// STATES
+	// array of reference ids of all prescriptions that should be updated
+	let updateIds = $state<string[]>([]);
+	// the active index id to get the prescription we want to display on the dialog
+	let activeIdx = $state(0);
+
+	// represents the original prescriptions so we can compare if we need to update it or not
+	let original = $state<Prescription[]>([]);
+	/**
+	 * represents the current state of input dialog info, used to compare to {@link original}
+	 **/
+	let localDrafts = $state<Prescription[]>([]);
 
 	let {
 		updateDisplayPrescriptions,
@@ -18,81 +30,19 @@
 		rowSelection = $bindable()
 	} = $props();
 
-	let original = $state<Prescription[]>([]);
-	let localDrafts = $state<Prescription[]>([]);
-
 	const inputConfigs = prescriptinInputConfigs;
 
 	const prescriptions = getPrescriptionContext();
 
-	const batchUpdate = async () => {
-		await fetch('/api/prescriptions', {
-			method: 'PUT',
-			body: JSON.stringify(localDrafts)
-		});
-
-		prescriptions.updatePrescriptions(localDrafts);
-		isUpdateDialogOpen = false;
-	};
-
-	const updatePrescriptionsToUpdate = <K extends keyof Prescription>(
-		e: Event,
-		prescription: Prescription,
-		field: K
-	) => {
-		const target = e.target as HTMLInputElement;
-		const newValue = target.value ?? '';
-
-		if (field === 'started' || field === 'ended') {
-			if (newValue == '') {
-				(prescription as Record<keyof Prescription, any>)[field] = null;
-			} else {
-				(prescription as Record<keyof Prescription, any>)[field] = new Date(
-					newValue + 'T00:00:00'
-				).toISOString();
-			}
-		} else {
-			(prescription as Record<keyof Prescription, any>)[field] = newValue;
-		}
-
-		const keys = Object.keys(prescription) as (keyof Prescription)[];
-		let hasUpdate = false;
-
-		keys.forEach((k) => {
-			if (k === 'refills') {
-				if (+prescription[k] !== +original[currentDisplayIndex][k]) {
-					hasUpdate = true;
-				}
-			} else if (k === 'started' || k === 'ended') {
-				const newDate = prescription[k];
-				const oldDate = original[currentDisplayIndex][k];
-				if (newDate == null || oldDate == null) {
-					if (newDate !== oldDate) hasUpdate = true;
-				} else if (newDate.split('T')[0] !== oldDate.split('T')[0]) {
-					hasUpdate = true;
-				}
-			} else if (prescription[k] !== original[currentDisplayIndex][k]) {
-				hasUpdate = true;
-			}
-		});
-
-		if (!hasUpdate) {
-			if (prescriptionsToUpdate.includes(prescription.id)) {
-				prescriptionsToUpdate = prescriptionsToUpdate.filter((id) => id !== prescription.id);
-			}
-		} else {
-			if (!prescriptionsToUpdate.includes(prescription.id)) {
-				prescriptionsToUpdate = [...prescriptionsToUpdate, prescription.id];
-			}
-		}
-	};
-
+	// EFFECT
 	$effect(() => {
+		//reset state of dialog on close of dialog
 		if (isUpdateDialogOpen === false) {
 			updateDisplayPrescriptions = [];
-			prescriptionsToUpdate = [];
-			currentDisplayIndex = 0;
+			updateIds = [];
+			activeIdx = 0;
 		} else {
+			// if dialog opens repopulate original data
 			const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
 				.map((id) => {
 					const original = prescriptions.current.find((p) => p.id === id);
@@ -105,6 +55,72 @@
 			localDrafts = structuredClone(selectedPrescriptions);
 		}
 	});
+
+	// API CALL
+	const batchUpdate = async () => {
+		await fetch('/api/prescriptions', {
+			method: 'PUT',
+			body: JSON.stringify(localDrafts)
+		});
+
+		prescriptions.updatePrescriptions(localDrafts);
+		isUpdateDialogOpen = false;
+	};
+
+	/**
+	 * Manages the update tracking state when prescription fields are modified
+	 *
+	 * @param {Event} changeEvent - The input change event triggering the update
+	 * @param {Prescription} activeDraft - The current prescription being updated on the dialog, should be referencing an item in the array of  {@link localDrafts})
+	 * @param {string} field - The name of the prescription field being modified
+	 *
+	 * Handles:
+	 * - Adding prescription ID to update tracking when fields are changed
+	 * - Removing ID if changes are reverted to original values
+	 * - Maintains a clean list of IDs needing server updates
+	 */
+	const updateupdateIds = <K extends keyof Prescription>(
+		changeEvent: Event,
+		activeDraft: Prescription,
+		field: K
+	) => {
+		const target = changeEvent.target as HTMLInputElement;
+		const newValue = target.value ?? '';
+
+		if (field === 'started' || field === 'ended') {
+			if (newValue == '') {
+				(activeDraft as Record<keyof Prescription, any>)[field] = null;
+			} else {
+				(activeDraft as Record<keyof Prescription, any>)[field] = new Date(
+					newValue + 'T00:00:00'
+				).toISOString();
+			}
+		} else {
+			(activeDraft as Record<keyof Prescription, any>)[field] = newValue;
+		}
+
+		const keys = Object.keys(activeDraft) as (keyof Prescription)[];
+
+		// if something is true it will break out of the loop and return
+		// else will iterate through the whole array and make sure there are no changes
+		const hasUpdate = keys.some((k) => {
+			if (k === 'refills') {
+				return +activeDraft[k] !== +original[activeIdx][k];
+			} else if (k === 'started' || k === 'ended') {
+				return !compareDates(activeDraft[k], original[activeIdx][k]);
+			}
+			return activeDraft[k] !== original[activeIdx][k];
+		});
+
+		const prescriptionSet = new Set(updateIds);
+		if (hasUpdate) {
+			prescriptionSet.add(activeDraft.id);
+		} else {
+			prescriptionSet.delete(activeDraft.id);
+		}
+
+		updateIds = Array.from(prescriptionSet);
+	};
 </script>
 
 <Dialog.Root bind:open={isUpdateDialogOpen}>
@@ -116,28 +132,27 @@
 			<Dialog.Title>Update Prescription</Dialog.Title>
 		</Dialog.Header>
 
-		{#if updateDisplayPrescriptions.length > 0 && currentDisplayIndex <= updateDisplayPrescriptions.length}
+		{#if updateDisplayPrescriptions.length > 0 && activeIdx <= updateDisplayPrescriptions.length}
 			<div class="flex flex-col items-center justify-center gap-y-3">
 				{#each inputConfigs as config}
 					<Label for={config.id}>{config.title}</Label>
 					<Input
 						id={config.id}
-						value={config.transform(localDrafts[currentDisplayIndex][config.id])}
-						oninput={(e: Event) =>
-							updatePrescriptionsToUpdate(e, localDrafts[currentDisplayIndex], config.id)}
+						value={config.transform(localDrafts[activeIdx][config.id])}
+						oninput={(e: Event) => updateupdateIds(e, localDrafts[activeIdx], config.id)}
 						type={config.type}
 					/>
 				{/each}
 				<div class="flex w-full justify-between gap-x-2">
 					<div>
-						<Button onclick={isUpdateDialogOpen}>Cancel</Button>
+						<Button onclick={() => (isUpdateDialogOpen = false)}>Cancel</Button>
 					</div>
 					<div>
 						<Button
-							disabled={currentDisplayIndex <= 0}
+							disabled={activeIdx <= 0}
 							onclick={() => {
-								if (currentDisplayIndex > 0) {
-									currentDisplayIndex -= 1;
+								if (activeIdx > 0) {
+									activeIdx -= 1;
 								}
 							}}
 						>
@@ -145,17 +160,17 @@
 						</Button>
 						<Button
 							onclick={() => {
-								if (currentDisplayIndex < updateDisplayPrescriptions.length - 1) {
-									currentDisplayIndex += 1;
+								if (activeIdx < updateDisplayPrescriptions.length - 1) {
+									activeIdx += 1;
 								}
 							}}
-							disabled={currentDisplayIndex >= updateDisplayPrescriptions.length - 1}
+							disabled={activeIdx >= updateDisplayPrescriptions.length - 1}
 						>
 							<ChevronRight />
 						</Button>
 					</div>
 
-					<Button onclick={batchUpdate} disabled={prescriptionsToUpdate.length <= 0}>Update</Button>
+					<Button onclick={batchUpdate} disabled={updateIds.length <= 0}>Update</Button>
 				</div>
 			</div>
 		{/if}
