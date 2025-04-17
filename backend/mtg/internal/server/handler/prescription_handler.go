@@ -29,11 +29,12 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 			Message: err.Error(),
 			Code:    400,
 		}
+		fmt.Println(badErr)
 		return errorhandler.HandleError(badErr, c)
 	}
 
-	fmt.Println(requestBody)
 	requestBody.Owner = &email
+	fmt.Println(requestBody)
 
 	id, err := ph.Service.CreatePrescription(&requestBody)
 	if err != nil {
