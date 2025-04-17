@@ -2,7 +2,7 @@ import type { ColumnDef, SortingFn } from '@tanstack/table-core';
 import DataTableCheckbox from './DataTableCheckbox.svelte';
 
 import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js';
-import GenericSortHeader from './header/GenericSortHeader.svelte';
+import GenericSortHeader from '../table/header/GenericSortHeader.svelte';
 import { Cell } from '$lib/components/ui/table/index.js';
 
 // This type is used to define the shape of our data.
@@ -15,6 +15,7 @@ export type Prescription = {
 	started: string;
 	ended: string;
 	refills: number;
+	total: number;
 };
 
 const dateSortingFn = <T extends Prescription>(rowA: any, rowB: any, columnId: string): number => {
@@ -102,6 +103,11 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	{
 		accessorKey: 'refills',
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Refills' }),
+		sortingFn: numberSortingFn
+	},
+	{
+		accessorKey: 'total',
+		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Total' }),
 		sortingFn: numberSortingFn
 	}
 ];

@@ -1,30 +1,9 @@
-import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types.js';
-import { fail, superForm, superValidate } from 'sveltekit-superforms';
+import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
+import { prescriptionSchema } from '$lib/config/form/addRxFormConfig.js';
 
-const prescriptionSchema = z
-	.object({
-		medication: z.string().min(1, 'Field is required'),
-		dosage: z.string().min(1, 'Dosage is required or provide unknown'),
-		notes: z.string().nullable(),
-		started: z.string(),
-		ended: z.string().nullable(),
-		refills: z.number().min(0)
-	})
-	.refine(
-		(data) => {
-			if (data.started && data.ended)
-				return new Date(data.started + 'T00:00:00') <= new Date(data.ended + 'T00:00:00');
-			return true;
-		},
-		{
-			message: "Can't end prescription before the day you started it!",
-			path: ['ended']
-		}
-	);
-
-export const load: PageServerLoad = async ({ depends, fetch, locals: { safeGetSession } }) => {
+export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
 	const prescriptionForm = await superValidate(zod(prescriptionSchema));
 	const { session } = await safeGetSession();
 
