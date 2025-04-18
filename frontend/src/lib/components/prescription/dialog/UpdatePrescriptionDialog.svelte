@@ -6,7 +6,7 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
-	import type { Prescription } from '../table/Columns.js';
+	import type { Prescription } from '$lib/types/Prescription.js';
 	import { prescriptinInputConfigs } from '$lib/config/inputConfig.js';
 	import { compareDates } from '$lib/utils.js';
 

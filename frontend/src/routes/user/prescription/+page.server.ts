@@ -15,10 +15,12 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 
 	const rxResponse = await fetch('/api/prescriptions', fetchOptions);
 	//input fetch logic for medication types for drop down list
+	const mtResponse = await fetch('/api/medication-type', fetchOptions);
 
 	const prescription = await rxResponse.json();
+	const medicationTypes = await mtResponse.json();
 
-	return { prescription, prescriptionForm };
+	return { prescription, medicationTypes, prescriptionForm };
 };
 
 export const actions: Actions = {
@@ -28,7 +30,8 @@ export const actions: Actions = {
 		if (!prescriptionForm.valid) return fail(400, { prescriptionForm });
 		const { session } = await safeGetSession();
 
-		prescriptionForm.data.started = new Date(prescriptionForm.data.started).toISOString();
+		if (prescriptionForm.data.started)
+			prescriptionForm.data.started = new Date(prescriptionForm.data.started).toISOString();
 		try {
 			const response = await fetch('http://mtg_api:8080/api/v1/prescription', {
 				method: 'POST',
