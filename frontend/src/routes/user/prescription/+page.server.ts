@@ -7,13 +7,16 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 	const prescriptionForm = await superValidate(zod(prescriptionSchema));
 	const { session } = await safeGetSession();
 
-	const response = await fetch('/api/prescriptions', {
+	const fetchOptions = {
 		headers: {
 			Authorization: `Bearer ${session?.access_token}`
 		}
-	});
+	};
 
-	const prescription = await response.json();
+	const rxResponse = await fetch('/api/prescriptions', fetchOptions);
+	//input fetch logic for medication types for drop down list
+
+	const prescription = await rxResponse.json();
 
 	return { prescription, prescriptionForm };
 };

@@ -1,4 +1,4 @@
-import type { Prescription } from '$lib/components/prescription/table/Columns.js';
+import type { Prescription } from '$lib/types/Prescription.js';
 import { z } from 'zod';
 
 export const addRxFormConfig: {
@@ -28,6 +28,11 @@ export const addRxFormConfig: {
 		id: 'total',
 		title: 'Total',
 		type: 'number'
+	},
+	{
+		id: 'medicationType',
+		title: 'Medication Type',
+		type: 'select'
 	}
 ];
 
@@ -39,7 +44,8 @@ export const prescriptionSchema = z
 		started: z.string().nullable(),
 		ended: z.string().nullable(),
 		refills: z.number().min(0, 'Required'),
-		total: z.number().min(0, 'Required')
+		total: z.number().min(0, 'Required'),
+		medicationType: z.string().min(0, 'Required')
 	})
 	.refine(
 		(data) => {

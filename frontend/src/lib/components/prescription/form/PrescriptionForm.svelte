@@ -7,7 +7,8 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { type Prescription } from '../table/Columns.js';
+	import { type Prescription } from '$lib/types/Prescription.js';
+	import * as Select from '$lib/components/ui/select/index.js';
 
 	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
@@ -35,20 +36,26 @@
 			}
 		}
 	});
+
+	// const triggerContent = $derived(fruits.find((f) => f.value === value)?.label ?? 'Select a fruit');
 </script>
 
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
 		{#each formConfigs as config}
-			<div>
-				<Label for={config.id}>{config.title}</Label>
-				<Input id={config.id} name={config.id} type={config.type} bind:value={$form[config.id]} />
-				<div class="min-h-5">
-					{#if $errors[config.id]}
-						<p class="text-sm text-red-500">{$errors[config.id]}</p>
-					{/if}
+			{#if config.type === 'select'}
+				<Select.Root type="multiple" name="medicationTypes"></Select.Root>
+			{:else}
+				<div>
+					<Label for={config.id}>{config.title}</Label>
+					<Input id={config.id} name={config.id} type={config.type} bind:value={$form[config.id]} />
+					<div class="min-h-5">
+						{#if $errors[config.id]}
+							<p class="text-sm text-red-500">{$errors[config.id]}</p>
+						{/if}
+					</div>
 				</div>
-			</div>
+			{/if}
 		{/each}
 	</div>
 
