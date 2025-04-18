@@ -3,6 +3,28 @@
 // For a full list of overridable settings, and general information on folder-specific settings,
 // see the documentation: https://zed.dev/docs/configuring-zed#settings-files
 {
+  "inlayHints": {
+    "parameterNames": {
+      "enabled": "all",
+      "suppressWhenArgumentMatchesName": false
+    },
+    "parameterTypes": {
+      "enabled": true
+    },
+    "variableTypes": {
+      "enabled": true,
+      "suppressWhenTypeMatchesName": false
+    },
+    "propertyDeclarationTypes": {
+      "enabled": true
+    },
+    "functionLikeReturnTypes": {
+      "enabled": true
+    },
+    "enumMemberValues": {
+      "enabled": true
+    }
+  },
   "hints": {
     "assignVariableTypes": true,
     "compositeLiteralFields": true,
@@ -11,5 +33,57 @@
     "functionTypeParameters": true,
     "parameterNames": true,
     "rangeVariableTypes": true
+  },
+  "lsp": {
+    "svelte-language-server": {
+      "initialization_options": {
+        "configuration": {
+          "typescript": {
+            "parameterNames": {
+              "enabled": "all",
+              "suppressWhenArgumentMatchesName": false
+            },
+            "parameterTypes": {
+              "enabled": true
+            },
+            "variableTypes": {
+              "enabled": true,
+              "suppressWhenTypeMatchesName": false
+            },
+            "propertyDeclarationTypes": {
+              "enabled": true
+            },
+            "functionLikeReturnTypes": {
+              "enabled": true
+            },
+            "enumMemberValues": {
+              "enabled": true
+            }
+          },
+          "javascript": {
+            "parameterNames": {
+              "enabled": "all",
+              "suppressWhenArgumentMatchesName": false
+            },
+            "parameterTypes": {
+              "enabled": true
+            },
+            "variableTypes": {
+              "enabled": true,
+              "suppressWhenTypeMatchesName": false
+            },
+            "propertyDeclarationTypes": {
+              "enabled": true
+            },
+            "functionLikeReturnTypes": {
+              "enabled": true
+            },
+            "enumMemberValues": {
+              "enabled": true
+            }
+          }
+        }
+      }
+    }
   }
 }

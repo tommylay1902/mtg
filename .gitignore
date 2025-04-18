@@ -1,4 +1,8 @@
-.VSCodeCounter
-**/.env
+# General ignores
 **/.DS_Store
+**/.env
 **/profile.cov
+
+# Editor directories
+**/.vscode/
+**/.zed/
