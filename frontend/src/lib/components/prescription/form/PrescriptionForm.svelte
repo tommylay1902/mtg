@@ -9,9 +9,11 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { type Prescription } from '$lib/types/Prescription.js';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
 
 	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
+	const medicationTypes = getMedicationTypeContext();
 
 	const formConfigs: Array<{
 		id: keyof Prescription;
@@ -37,14 +39,26 @@
 		}
 	});
 
-	// const triggerContent = $derived(fruits.find((f) => f.value === value)?.label ?? 'Select a fruit');
+	let value = $state('');
+
+	const triggerContent = $derived(
+		medicationTypes.current.find((f) => f.type === value)?.type ?? 'Select medication type'
+	);
 </script>
 
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
 		{#each formConfigs as config}
-			{#if config.type === 'select'}
-				<Select.Root type="multiple" name="medicationTypes"></Select.Root>
+			{#if config.type === 'select' && medicationTypes.current.length > 0}
+				<Label for={config.id}>{config.title}</Label>
+				<Select.Root type="single" bind:value>
+					<Select.Trigger>{triggerContent}</Select.Trigger>
+					<Select.Content>
+						{#each medicationTypes.current as mt}
+							<Select.Item value={mt.type}>{mt.type}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			{:else}
 				<div>
 					<Label for={config.id}>{config.title}</Label>

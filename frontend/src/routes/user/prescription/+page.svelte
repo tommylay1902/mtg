@@ -9,6 +9,8 @@
 	import PrescriptionTable from '$lib/components/prescription/table/PrescriptionTable.svelte';
 	import UpdatePrescriptionDialog from '$lib/components/prescription/dialog/UpdatePrescriptionDialog.svelte';
 	import DeletePrescriptionDialog from '$lib/components/prescription/dialog/DeletePrescriptionDialog.svelte';
+	import { MedicationTypeState } from '$lib/state/MedicationTypeState.svelte.js';
+	import { setMedicationTypeContext } from '$lib/context/MedicationContext.js';
 
 	let { data } = $props();
 	let rowSelection = $state<RowSelectionState>({});
@@ -20,8 +22,10 @@
 	let updateDisplayPrescriptions = $state<Prescription[]>([]);
 
 	let prescriptions = new PrescriptionState(data.prescription);
+	let medicationTypes = new MedicationTypeState(data.medicationTypes);
 
 	setPrescriptionContext(prescriptions);
+	setMedicationTypeContext(medicationTypes);
 
 	$effect(() => {
 		if (Object.keys(rowSelection).length > 0) {

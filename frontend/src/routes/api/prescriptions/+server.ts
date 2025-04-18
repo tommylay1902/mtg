@@ -1,4 +1,6 @@
-export const GET = async ({ locals: { safeGetSession } }) => {
+import type { RequestHandler } from '@sveltejs/kit';
+
+export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
 	const { session } = await safeGetSession();
 	try {
 		const response = await fetch('http://mtg_api:8080/api/v1/prescription/all', {
@@ -12,10 +14,11 @@ export const GET = async ({ locals: { safeGetSession } }) => {
 		return new Response(JSON.stringify(data), { status: 200 });
 	} catch (err) {
 		console.error(err);
+		return new Response(null, { status: 400 });
 	}
 };
 
-export const DELETE = async ({ request, locals: { safeGetSession } }) => {
+export const DELETE: RequestHandler = async ({ request, locals: { safeGetSession } }) => {
 	const { session } = await safeGetSession();
 	try {
 		const { ids } = await request.json();
@@ -35,10 +38,11 @@ export const DELETE = async ({ request, locals: { safeGetSession } }) => {
 		return new Response(JSON.stringify(data), { status: 200 });
 	} catch (err) {
 		console.error(err);
+		return new Response(null, { status: 400 });
 	}
 };
 
-export const PUT = async ({ request, locals: { safeGetSession } }) => {
+export const PUT: RequestHandler = async ({ request, locals: { safeGetSession } }) => {
 	const { session } = await safeGetSession();
 	try {
 		const prescriptions = await request.json();
@@ -52,5 +56,7 @@ export const PUT = async ({ request, locals: { safeGetSession } }) => {
 		});
 		const data = await response.json();
 		return new Response(JSON.stringify(data), { status: 200 });
-	} catch (err) {}
+	} catch (err) {
+		return new Response(null, { status: 400 });
+	}
 };

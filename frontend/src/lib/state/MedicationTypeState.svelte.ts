@@ -1,23 +1,23 @@
 import type { MedicationType } from '$lib/types/MedicationType.js';
 
 export class MedicationTypeState {
-	medicationType = $state<MedicationType[]>([]);
+	medicationTypes = $state<MedicationType[]>([]);
 	constructor(m: MedicationType[]) {
-		this.medicationType = m;
+		this.medicationTypes = m;
 	}
 	get current() {
-		return this.medicationType;
+		return this.medicationTypes;
 	}
 	addMedicationType(m: MedicationType) {
-		this.medicationType = [...this.medicationType, m];
+		this.medicationTypes = [...this.medicationTypes, m];
 	}
 	deleteMedicationType(selectedIds: string[]) {
-		this.medicationType = this.medicationType.filter((m: MedicationType) => {
+		this.medicationTypes = this.medicationTypes.filter((m: MedicationType) => {
 			return !selectedIds.includes(m.id);
 		});
 	}
 	updateMedicationType(updatedMedications: MedicationType[]) {
-		this.medicationType = this.medicationType.map((existing) => {
+		this.medicationTypes = this.medicationTypes.map((existing) => {
 			const updated = updatedMedications.find((p) => p.id === existing.id);
 
 			return updated ? { ...existing, ...updated } : existing;
