@@ -5,6 +5,7 @@
 	import { toast } from 'svelte-sonner';
 	let { rowSelection = $bindable(), isDeleteDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
+
 	const batchDelete = async () => {
 		const selectedIds = Object.keys(rowSelection).map((id) => {
 			return id;

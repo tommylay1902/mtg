@@ -34,7 +34,6 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 	}
 
 	requestBody.Owner = &email
-	fmt.Println(requestBody)
 
 	id, err := ph.Service.CreatePrescription(&requestBody)
 	if err != nil {

@@ -5,7 +5,7 @@
 	import type { RowSelectionState } from '@tanstack/react-table';
 	import { setPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { PrescriptionState } from '$lib/state/PrescriptionState.svelte.js';
-	import { type Prescription } from '$lib/components/prescription/table/Columns.js';
+	import { type Prescription } from '$lib/types/Prescription.js';
 	import PrescriptionTable from '$lib/components/prescription/table/PrescriptionTable.svelte';
 	import UpdatePrescriptionDialog from '$lib/components/prescription/dialog/UpdatePrescriptionDialog.svelte';
 	import DeletePrescriptionDialog from '$lib/components/prescription/dialog/DeletePrescriptionDialog.svelte';
