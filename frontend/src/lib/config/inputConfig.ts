@@ -1,5 +1,5 @@
-import type { Prescription } from '$lib/components/prescription/table/Columns.js';
 import { formatISODateForHtmlInput } from '$lib/format/formatDate.js';
+import type { Prescription } from '$lib/types/Prescription.js';
 
 export const prescriptinInputConfigs: {
 	id: keyof Prescription;

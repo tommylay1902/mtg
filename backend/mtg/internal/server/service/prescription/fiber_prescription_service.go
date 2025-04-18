@@ -84,14 +84,14 @@ func (ps *FiberPrescriptionService) UpdatePrescription(pDTO *pDto.PrescriptionDT
 		return err
 	}
 	hasUpdate := false
-	if pDTO.Dosage != nil && *pDTO.Dosage != *pUpdate.Dosage {
+	if pDTO.Dosage != pUpdate.Dosage {
 		hasUpdate = true
-		*pUpdate.Dosage = *pDTO.Dosage
+		pUpdate.Dosage = pDTO.Dosage
 	}
 
-	if pDTO.Medication != nil && *pDTO.Medication != *pUpdate.Medication {
+	if pDTO.Medication != pUpdate.Medication {
 		hasUpdate = true
-		*pUpdate.Medication = *pDTO.Medication
+		pUpdate.Medication = pDTO.Medication
 	}
 
 	if pDTO.Notes != nil && *pDTO.Notes != *pUpdate.Notes {

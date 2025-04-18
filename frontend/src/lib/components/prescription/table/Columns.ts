@@ -1,21 +1,10 @@
-import type { ColumnDef, SortingFn } from '@tanstack/table-core';
+import type { ColumnDef } from '@tanstack/table-core';
 import DataTableCheckbox from './DataTableCheckbox.svelte';
-
 import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js';
-import GenericSortHeader from './header/GenericSortHeader.svelte';
-import { Cell } from '$lib/components/ui/table/index.js';
+import GenericSortHeader from '../table/header/GenericSortHeader.svelte';
+import { type Prescription } from '$lib/types/Prescription.js';
 
 // This type is used to define the shape of our data.
-
-export type Prescription = {
-	id: string;
-	medication: string;
-	dosage: string;
-	notes: string;
-	started: string;
-	ended: string;
-	refills: number;
-};
 
 const dateSortingFn = <T extends Prescription>(rowA: any, rowB: any, columnId: string): number => {
 	const dateA = new Date(rowA.original[columnId as keyof Prescription] as string);
@@ -51,13 +40,13 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 			renderComponent(DataTableCheckbox, {
 				checked: table.getIsAllPageRowsSelected(),
 				indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
-				onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
+				onCheckedChange: (value: any) => table.toggleAllPageRowsSelected(!!value),
 				'aria-label': 'Select all'
 			}),
 		cell: ({ row }) =>
 			renderComponent(DataTableCheckbox, {
 				checked: row.getIsSelected(),
-				onCheckedChange: (value) => row.toggleSelected(!!value),
+				onCheckedChange: (value: any) => row.toggleSelected(!!value),
 				'aria-label': 'Select row'
 			}),
 		enableSorting: false,
@@ -102,6 +91,11 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	{
 		accessorKey: 'refills',
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Refills' }),
+		sortingFn: numberSortingFn
+	},
+	{
+		accessorKey: 'total',
+		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Total' }),
 		sortingFn: numberSortingFn
 	}
 ];

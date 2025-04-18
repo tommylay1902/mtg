@@ -1,4 +1,4 @@
-import type { Prescription } from '$lib/components/table/prescription/Columns.js';
+import { type Prescription } from '$lib/types/Prescription.js';
 
 export class PrescriptionState {
 	prescriptions = $state<Prescription[]>([]);
