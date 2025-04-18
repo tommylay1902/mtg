@@ -34,3 +34,15 @@ func (mtHandler *MedicationTypeHandler) CreateMedicationType(c *fiber.Ctx) error
 		"success": id,
 	})
 }
+
+func (mtHandler *MedicationTypeHandler) GetMedicationTypes(c *fiber.Ctx) error {
+	medicationTypes, err := mtHandler.Service.GetMedicationTypes()
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Server Error",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(medicationTypes)
+}

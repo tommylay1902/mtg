@@ -8,4 +8,5 @@ import (
 
 type MedicationTypeDAO interface {
 	CreateMedicationType(*entity.MedicationType) (*uuid.UUID, error)
+	GetMedicationTypes() ([]entity.MedicationType, error)
 }
