@@ -1,7 +1,6 @@
 package mtDao
 
 import (
-	"fmt"
 	"mtg/internal/models/entity"
 
 	"github.com/google/uuid"
@@ -18,10 +17,17 @@ func InitializeGormDao(db *gorm.DB) *GormMedicationTypeDao {
 
 func (dao *GormMedicationTypeDao) CreateMedicationType(model *entity.MedicationType) (*uuid.UUID, error) {
 	err := dao.DB.Create(&model).Error
-	fmt.Println(model)
+
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.ID, err
+}
+
+func (dao *GormMedicationTypeDao) GetMedicationTypes() ([]entity.MedicationType, error) {
+	var medicationTypes []entity.MedicationType
+	err := dao.DB.Find(&medicationTypes).Error
+
+	return medicationTypes, err
 }

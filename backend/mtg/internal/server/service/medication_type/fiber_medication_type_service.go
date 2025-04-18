@@ -2,6 +2,7 @@ package mtService
 
 import (
 	dto "mtg/internal/models/dto/medication_type"
+	"mtg/internal/models/entity"
 	mtDao "mtg/internal/server/dao/medication_type"
 
 	"github.com/google/uuid"
@@ -23,4 +24,8 @@ func (mts *FiberMedicationTypeService) CreateMedicationType(mtDTO *dto.Medicatio
 	id, err := mts.DAO.CreateMedicationType(model)
 
 	return id, err
+}
+
+func (mts *FiberMedicationTypeService) GetMedicationTypes() ([]entity.MedicationType, error) {
+	return mts.DAO.GetMedicationTypes()
 }
