@@ -10,7 +10,7 @@
 	import { type Prescription } from '$lib/types/Prescription.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
-	import MedicationType from './Selector/MedicationType.svelte';
+	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
 
 	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
@@ -50,18 +50,10 @@
 
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
-		<MedicationType {isDropdownOpen} />
+		<MedicationTypeSelector {isDropdownOpen} />
 		{#each formConfigs as config}
 			{#if config.type === 'select' && medicationTypes.current.length > 0}
-				<Label for={config.id}>{config.title}</Label>
-				<Select.Root type="single" bind:value>
-					<Select.Trigger>{triggerContent}</Select.Trigger>
-					<Select.Content>
-						{#each medicationTypes.current as mt}
-							<Select.Item value={mt.type}>{mt.type}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				<MedicationTypeSelector {isDropdownOpen} />
 			{:else}
 				<div>
 					<Label for={config.id}>{config.title}</Label>
