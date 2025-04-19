@@ -7,6 +7,7 @@
 	import type { MedicationType } from '$lib/types/MedicationType.js';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import X from '@lucide/svelte/icons/x';
+	import { tick } from 'svelte';
 	type DropdownViewMode = 'All' | 'Selected' | 'Deselected';
 
 	let dropDownViewMode = $state<DropdownViewMode>('All');
@@ -17,6 +18,8 @@
 	let open = $state(false);
 
 	const medicationTypes = getMedicationTypeContext();
+
+	let searchInput: HTMLInputElement;
 
 	const removeMedicationType = (selected: MedicationType) => {
 		selectedMedicationTypes.delete(selected);
@@ -33,7 +36,7 @@
 	};
 
 	let filterMedicationTypes: string[] = $derived.by(() => {
-		const medicationTypeNames: string[] = medicationTypes.current.map((mt) => mt.type); // Extract breed names
+		const medicationTypeNames: string[] = medicationTypes.current.map((mt) => mt.type);
 		const filteredBySearch = medicationTypeNames.filter((type) =>
 			type.toLowerCase().includes(searchQuery.toLowerCase())
 		);
@@ -57,33 +60,41 @@
 		selectedMedicationTypes = allMedTypesSet;
 	};
 
-	const checkedState = $state<Record<string, boolean>>(
-		medicationTypes.current.reduce(
+	const deselectAllMedTypes = () => {
+		selectedMedicationTypes = new Set<String>();
+	};
+
+	let checkedState = $derived.by<Record<string, boolean>>(() => {
+		return medicationTypes.current.reduce(
 			(acc, mt: MedicationType) => {
-				acc[mt.type] = false;
+				acc[mt.type] = selectedMedicationTypes.has(mt.type);
 				return acc;
 			},
 			{} as Record<string, boolean>
-		)
-	);
+		);
+	});
+	function handleKeydown(event: KeyboardEvent) {
+		searchInput.focus();
+	}
 </script>
 
-<div>
+<svelte:window onkeydown={handleKeydown} />
+<div class="w-full">
 	<div class="w-full">
 		<DropdownMenu.Root bind:open={isDropdownOpen}>
-			<DropdownMenu.Trigger>
+			<DropdownMenu.Trigger class="w-full">
 				<Button
 					type="button"
 					variant="outline"
-					class="flex h-auto min-h-fit w-full flex-wrap items-center gap-2"
+					class="flex h-auto min-h-fit w-full min-w-full flex-wrap items-center gap-2"
 				>
 					{#if selectedMedicationTypes.size === 0}
-						<div>Click to add medication type(s)</div>
+						<div class="w-full min-w-full">Click to add medication type(s)</div>
 					{:else}
-						<div class="flex flex-wrap items-center gap-1">
+						<div class="flex w-full items-center gap-1">
 							{#each selectedMedicationTypes as selected}
 								<Badge class="chip" variant="default">
-									{{ selected }}
+									{selected}
 									<button
 										onclick={() => removeMedicationType(selected)}
 										class="ml-1 rounded-full p-0.5 hover:bg-[#EADCA4]"
@@ -96,7 +107,7 @@
 					{/if}
 				</Button>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content class="max-h-[50vh] w-48 overflow-y-auto p-0">
+			<DropdownMenu.Content class="max-h-[50vh] w-[40dvw] overflow-y-auto p-0">
 				<div class="z-2000 sticky top-0 border-b bg-background p-2">
 					<!-- Search Input with Clear Button -->
 					<div class="relative">
@@ -105,12 +116,17 @@
 							placeholder="Search medication type(s)..."
 							class="z-1000 w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
 							oninput={updateSearchQuery}
+							value={searchQuery}
+							bind:this={searchInput}
 						/>
 						<!-- Clear Button (X Icon) -->
 						{#if searchQuery}
 							<button
 								class="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground hover:text-foreground"
-								onclick={() => (searchQuery = '')}
+								onclick={(e: Event) => {
+									e.preventDefault();
+									searchQuery = '';
+								}}
 							>
 								<X class="h-4 w-4" />
 								<!-- X icon -->
@@ -134,13 +150,27 @@
 				<DropdownMenu.Separator />
 				<ScrollArea class="max-h-64 min-h-48 overflow-y-auto pb-0 [&>div]:!p-0">
 					<!-- Filtered Breeds -->
-					<!-- CURRENTLY WORKING ON -->
 					{#if filterMedicationTypes.length > 0}
 						<div class="flex flex-col">
 							{#each filterMedicationTypes as fmt}
 								<DropdownMenu.CheckboxItem
 									bind:checked={checkedState[fmt]}
-									class="flex h-9 px-3 py-2"
+									class="flex h-9 w-full px-3 py-2"
+									onclick={(e) => {
+										e.preventDefault();
+										const isSelected = !checkedState[fmt];
+										checkedState = {
+											...checkedState,
+											[fmt]: isSelected
+										};
+										if (isSelected) {
+											selectedMedicationTypes = new Set([...selectedMedicationTypes, fmt]);
+										} else {
+											const updated = new Set(selectedMedicationTypes);
+											updated.delete(fmt);
+											selectedMedicationTypes = updated;
+										}
+									}}
 								>
 									<span class="ml-6 text-xs">{fmt}</span>
 								</DropdownMenu.CheckboxItem>
@@ -162,13 +192,22 @@
 						>
 							<span class="w-full text-center">Select All</span>
 						</Button>
-						<Button variant="outline" class="h-8 w-full justify-start hover:bg-accent/50" size="sm">
-							>
+						<Button
+							variant="outline"
+							class="h-8 w-full justify-start hover:bg-accent/50"
+							size="sm"
+							onclick={deselectAllMedTypes}
+						>
 							<span class="w-full text-center">Deselect All</span>
 						</Button>
 					</div>
 
-					<Button variant="outline" class="h-8 w-full justify-start hover:bg-accent/50" size="sm">
+					<Button
+						variant="outline"
+						class="h-8 w-full justify-start hover:bg-accent/50"
+						size="sm"
+						onclick={() => (isDropdownOpen = false)}
+					>
 						<span class="w-full text-center">Close</span>
 					</Button>
 				</div>
