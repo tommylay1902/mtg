@@ -23,6 +23,7 @@
 	const { form, errors, enhance, reset, delayed } = superForm<PrescriptionSchemaType>(
 		prescriptionForm,
 		{
+			dataType: 'json',
 			resetForm: false,
 			onSubmit() {
 				toast.loading('Processing...');
@@ -67,14 +68,14 @@
 		{#each formConfigs as config}
 			{#if config.type === 'select' && medicationTypes.current.length > 0}
 				<div>
-					<MedicationTypeSelector {isDropdownOpen} />
+					<MedicationTypeSelector {isDropdownOpen} bind:value={$form.medicationType} />
 					<div class="min-h-5">
 						{#if $errors[config.id]}
 							<p class="text-sm text-red-500">{unwrapError($errors[config.id])}</p>
 						{/if}
 					</div>
 				</div>
-			{:else}
+			{:else if config.type !== 'select'}
 				<div>
 					<Label for={config.id}>{config.title}</Label>
 					<Input id={config.id} name={config.id} type={config.type} bind:value={$form[config.id]} />

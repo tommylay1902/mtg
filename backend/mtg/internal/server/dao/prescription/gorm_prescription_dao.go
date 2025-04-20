@@ -2,6 +2,7 @@ package pDao
 
 import (
 	"errors"
+	"fmt"
 	"mtg/internal/error/apperror"
 	"mtg/internal/helper"
 	"mtg/internal/models/entity"
@@ -19,13 +20,22 @@ func InitializeGormDao(db *gorm.DB) *GormPrescriptionDao {
 	return &GormPrescriptionDao{DB: db}
 }
 
-func (dao *GormPrescriptionDao) CreatePrescription(model *entity.Prescription) (*uuid.UUID, error) {
-	err := dao.DB.Create(&model).Error
-	if err != nil {
+func (dao *GormPrescriptionDao) CreatePrescription(model entity.BasePrescriptionFields, medicationTypes []string) (*uuid.UUID, error) {
+	tx := dao.DB.Begin()
+	fmt.Println(model, "beginning transaction")
+
+	if err := tx.Create(&model).Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
+	// err := dao.DB.Create(&model).Error
+	// if err != nil {
+	// 	return nil, err
+	// }var medicationTypes []string
 
-	return &model.ID, nil
+	// return &model.ID, nil
+	fmt.Println(model)
+	return model.ID, nil
 }
 
 func (dao *GormPrescriptionDao) GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error) {

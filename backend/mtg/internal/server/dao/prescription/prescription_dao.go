@@ -7,7 +7,7 @@ import (
 )
 
 type PrescriptionDAO interface {
-	CreatePrescription(model *entity.Prescription) (*uuid.UUID, error)
+	CreatePrescription(pDTO entity.BasePrescriptionFields, medicationTypes []string) (*uuid.UUID, error)
 	GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error)
 	GetAllPrescriptions(searchQueries map[string]string, email *string) ([]entity.Prescription, error)
 	DeletePrescription(model *entity.Prescription, email string) error

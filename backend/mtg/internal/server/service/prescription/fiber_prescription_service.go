@@ -1,10 +1,10 @@
 package pService
 
 import (
-	"fmt"
 	"mtg/internal/error/apperror"
 	pDto "mtg/internal/models/dto/prescription"
 	"mtg/internal/models/entity"
+	"mtg/internal/models/request"
 	pDao "mtg/internal/server/dao/prescription"
 
 	"github.com/google/uuid"
@@ -18,15 +18,19 @@ func InitializeFiberPrescriptionService(dao pDao.PrescriptionDAO) *FiberPrescrip
 	return &FiberPrescriptionService{DAO: dao}
 }
 
-func (ps *FiberPrescriptionService) CreatePrescription(pDTO *pDto.PrescriptionDTO) (*uuid.UUID, error) {
-	create, dtoErr := pDto.MapPrescriptionDTOToEntity(pDTO)
-
-	if dtoErr != nil {
-		fmt.Println("error was hit here with dto mapping")
-		return nil, dtoErr
+func (ps *FiberPrescriptionService) CreatePrescription(request *request.AddPrescriptionRequest) (*uuid.UUID, error) {
+	pDTO := entity.BasePrescriptionFields{
+		Medication: request.Medication,
+		Dosage:     request.Dosage,
+		Notes:      request.Notes,
+		Started:    request.Started,
+		Ended:      request.Ended,
+		Refills:    request.Refills,
+		Total:      request.Total,
+		Owner:      request.Owner,
 	}
 
-	id, err := ps.DAO.CreatePrescription(create)
+	id, err := ps.DAO.CreatePrescription(pDTO, request.MedicationType)
 
 	if err != nil {
 		return nil, err
