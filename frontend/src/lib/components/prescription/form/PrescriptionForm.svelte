@@ -7,47 +7,73 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { type Prescription } from '$lib/types/Prescription.js';
 	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
 	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
-
+	import type { FormFieldKeys, PrescriptionSchemaType } from '$lib/config/form/addRxFormConfig.js';
 	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
 	const medicationTypes = getMedicationTypeContext();
 
 	const formConfigs: Array<{
-		id: keyof Prescription;
+		id: FormFieldKeys;
 		title: string;
 		type: string;
 	}> = addRxFormConfig;
 
-	const { form, errors, enhance, reset, delayed } = superForm<Prescription>(prescriptionForm, {
-		resetForm: false,
-		onSubmit() {
-			toast.loading('Processing...');
-		},
-		onResult(event) {
-			toast.dismiss();
-			if (event.result.type === 'success') {
-				isAddDialogOpen = false;
-				prescriptions.addPrescription(event.result.data?.data);
-				toast.success('Successfully created prescription');
-				reset();
-			} else if (event.result.type === 'failure') {
-				toast.error('ERROR!');
+	const { form, errors, enhance, reset, delayed } = superForm<PrescriptionSchemaType>(
+		prescriptionForm,
+		{
+			resetForm: false,
+			onSubmit() {
+				toast.loading('Processing...');
+			},
+			onResult(event) {
+				toast.dismiss();
+				if (event.result.type === 'success') {
+					isAddDialogOpen = false;
+					prescriptions.addPrescription(event.result.data?.data);
+					toast.success('Successfully created prescription');
+					reset();
+				} else if (event.result.type === 'failure') {
+					toast.error('ERROR!');
+				}
 			}
 		}
-	});
+	);
 
 	let value = $state('');
 	let isDropdownOpen = $state(false);
+
+	const unwrapError = (error: { _errors?: string[] } | string | string[] | undefined): string => {
+		if (!error) return '';
+
+		// Handle Zod array error format
+		if (typeof error === 'object' && '_errors' in error) {
+			return error._errors?.[0] || '';
+		}
+
+		// Handle string arrays
+		if (Array.isArray(error)) {
+			return error[0] || '';
+		}
+
+		// Handle regular strings
+		return error.toString();
+	};
 </script>
 
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
 		{#each formConfigs as config}
 			{#if config.type === 'select' && medicationTypes.current.length > 0}
-				<MedicationTypeSelector {isDropdownOpen} />
+				<div>
+					<MedicationTypeSelector {isDropdownOpen} />
+					<div class="min-h-5">
+						{#if $errors[config.id]}
+							<p class="text-sm text-red-500">{unwrapError($errors[config.id])}</p>
+						{/if}
+					</div>
+				</div>
 			{:else}
 				<div>
 					<Label for={config.id}>{config.title}</Label>
