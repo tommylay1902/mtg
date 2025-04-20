@@ -6,5 +6,5 @@ import (
 
 type AddPrescriptionRequest struct {
 	entity.BasePrescriptionFields
-	MedicationType []string `json:"medicationType"`
+	MedicationType []entity.MedicationType `json:"medicationType"`
 }

@@ -19,18 +19,26 @@ func InitializeFiberPrescriptionService(dao pDao.PrescriptionDAO) *FiberPrescrip
 }
 
 func (ps *FiberPrescriptionService) CreatePrescription(request *request.AddPrescriptionRequest) (*uuid.UUID, error) {
-	pDTO := entity.BasePrescriptionFields{
-		Medication: request.Medication,
-		Dosage:     request.Dosage,
-		Notes:      request.Notes,
-		Started:    request.Started,
-		Ended:      request.Ended,
-		Refills:    request.Refills,
-		Total:      request.Total,
-		Owner:      request.Owner,
+
+	// var medType []entity.MedicationType
+
+	model := entity.Prescription{
+		BasePrescriptionFields: entity.BasePrescriptionFields{
+			Medication: request.Medication,
+			Dosage:     request.Dosage,
+			Notes:      request.Notes,
+			Started:    request.Started,
+			Ended:      request.Ended,
+			Refills:    request.Refills,
+			Total:      request.Total,
+			Owner:      request.Owner,
+		},
+		RelationshipPrescriptionFields: entity.RelationshipPrescriptionFields{
+			MedicationTypes: request.MedicationType,
+		},
 	}
 
-	id, err := ps.DAO.CreatePrescription(pDTO, request.MedicationType)
+	id, err := ps.DAO.CreatePrescription(model)
 
 	if err != nil {
 		return nil, err

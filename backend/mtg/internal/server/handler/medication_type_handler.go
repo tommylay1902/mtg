@@ -1,7 +1,7 @@
 package handler
 
 import (
-	dto "mtg/internal/models/dto/medication_type"
+	"mtg/internal/models/entity"
 	mtService "mtg/internal/server/service/medication_type"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +16,8 @@ func InitializeMedicationTypeHandler(service mtService.MedicationTypeService) *M
 }
 
 func (mtHandler *MedicationTypeHandler) CreateMedicationType(c *fiber.Ctx) error {
-	var bodyRequest dto.MedicationType
+
+	var bodyRequest entity.MedicationType
 
 	if err := c.BodyParser(&bodyRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

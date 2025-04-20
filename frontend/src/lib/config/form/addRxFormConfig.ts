@@ -13,7 +13,13 @@ const basePrescriptionSchema = z.object({
 
 export const prescriptionSchema = basePrescriptionSchema
 	.extend({
-		medicationType: z.string().array().min(1, 'Medication type is required!')
+		medicationType: z
+			.object({
+				id: z.string(),
+				type: z.string()
+			})
+			.array()
+			.min(1, 'Medication type is required!')
 	})
 	.refine(
 		(data) => {
