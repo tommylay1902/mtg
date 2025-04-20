@@ -101,28 +101,26 @@
 					variant="outline"
 					class="flex h-auto min-h-fit w-full min-w-full flex-wrap items-center gap-2 hover:bg-gray-300"
 				>
-					{#if selectedMedicationTypes.size === 0}
-						<div class="w-full min-w-full">Click to add medication type(s)</div>
-					{:else}
-						<div class="flex w-full items-center gap-1">
-							{#each selectedMedicationTypes as selected}
-								<Badge class="chip" variant="default">
-									{selected}
-									<button
-										onclick={(e) => {
-											e.preventDefault();
-											removeMedicationType(selected);
-										}}
-										class="ml-1 rounded-full p-0.5 hover:bg-[#EADCA4]"
-									>
-										<X class="h-3 w-3" />
-									</button>
-								</Badge>
-							{/each}
-						</div>
-					{/if}
+					<div class="w-full min-w-full">Click to add medication type(s)</div>
 				</Button>
 			</DropdownMenu.Trigger>
+
+			{#if selectedMedicationTypes.size > 0}
+				<div class="mt-2 flex flex-wrap items-center justify-center gap-1 border p-3">
+					{#each selectedMedicationTypes as selected}
+						<Badge class="chip p-2" variant="default">
+							{selected}
+							<button
+								type="button"
+								onclick={() => removeMedicationType(selected)}
+								class="ml-1 rounded-full p-0.5 hover:bg-[#EADCA4]"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						</Badge>
+					{/each}
+				</div>
+			{/if}
 			<DropdownMenu.Content class="max-h-[50vh] w-[40dvw] overflow-y-auto p-0">
 				<div class="z-2000 sticky top-0 border-b bg-background p-2">
 					<!-- Search Input with Clear Button -->
@@ -130,35 +128,37 @@
 						<input
 							type="text"
 							placeholder="Search medication type(s)..."
-							class="z-1000 w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+							class="z-1000 pointer-events-none w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
 							oninput={updateSearchQuery}
 							value={searchQuery}
 							bind:this={searchInput}
 						/>
 						<!-- Clear Button (X Icon) -->
 						{#if searchQuery}
-							<button
-								class="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground hover:text-foreground"
-								onclick={(e: Event) => {
-									e.preventDefault();
-									searchQuery = '';
-								}}
-							>
-								<X class="h-4 w-4" />
-								<!-- X icon -->
-							</button>
+							<div class="pointer-events-auto">
+								<button
+									class="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground hover:text-foreground"
+									onclick={(e: Event) => {
+										e.preventDefault();
+										searchQuery = '';
+									}}
+								>
+									<X class="h-4 w-4" />
+									<!-- X icon -->
+								</button>
+							</div>
 						{/if}
 					</div>
 
 					<div class="m-1 mt-1">
-						<Select.Root type="single">
+						<Select.Root type="single" bind:value={dropDownViewMode}>
 							<Select.Trigger class="h-8 w-full justify-center text-sm hover:bg-accent/50">
 								View: {dropDownViewMode}
 							</Select.Trigger>
 							<Select.Content>
-								<Select.Item value="DropdownViewMode.All">All</Select.Item>
-								<Select.Item value="DropdownViewMode.Selected">Selected</Select.Item>
-								<Select.Item value="DropdownViewMode.Deselected">Deselected</Select.Item>
+								<Select.Item value="All">All</Select.Item>
+								<Select.Item value="Selected">Selected</Select.Item>
+								<Select.Item value="Deselected">Deselected</Select.Item>
 							</Select.Content>
 						</Select.Root>
 					</div>
@@ -179,7 +179,7 @@
 						</div>
 					{:else}
 						<div class="flex flex-col">
-							<span class="pt-5 text-center text-sm italic"> No breeds to display! </span>
+							<span class="pt-5 text-center text-sm italic"> No medication types to display! </span>
 						</div>
 					{/if}
 				</ScrollArea>
