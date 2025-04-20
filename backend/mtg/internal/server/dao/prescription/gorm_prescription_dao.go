@@ -20,21 +20,28 @@ func InitializeGormDao(db *gorm.DB) *GormPrescriptionDao {
 	return &GormPrescriptionDao{DB: db}
 }
 
-func (dao *GormPrescriptionDao) CreatePrescription(model entity.BasePrescriptionFields, medicationTypes []string) (*uuid.UUID, error) {
+func (dao *GormPrescriptionDao) CreatePrescription(model entity.Prescription) (*uuid.UUID, error) {
+
 	tx := dao.DB.Begin()
-	fmt.Println(model, "beginning transaction")
 
 	if err := tx.Create(&model).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	// err := dao.DB.Create(&model).Error
-	// if err != nil {
-	// 	return nil, err
-	// }var medicationTypes []string
-
-	// return &model.ID, nil
+	fmt.Println(model.ID)
 	fmt.Println(model)
+
+	if err := tx.Model(&model).Association("MedicationTypes").Append(model.MedicationTypes); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err := tx.Commit().Error
+
+	if err != nil {
+		return nil, err
+	}
+
 	return model.ID, nil
 }
 

@@ -22,7 +22,7 @@ func (dao *GormMedicationTypeDao) CreateMedicationType(model *entity.MedicationT
 		return nil, err
 	}
 
-	return &model.ID, err
+	return model.ID, err
 }
 
 func (dao *GormMedicationTypeDao) GetMedicationTypes() ([]entity.MedicationType, error) {

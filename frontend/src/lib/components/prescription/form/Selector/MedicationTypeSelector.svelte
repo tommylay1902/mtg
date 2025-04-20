@@ -7,86 +7,91 @@
 	import type { MedicationType } from '$lib/types/MedicationType.js';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import X from '@lucide/svelte/icons/x';
+
 	type DropdownViewMode = 'All' | 'Selected' | 'Deselected';
+	type SelectedMedication = {
+		id: string;
+		type: string;
+	};
 
 	let dropDownViewMode = $state<DropdownViewMode>('All');
 	let { isDropdownOpen = $bindable(), value = $bindable() } = $props();
 	let searchQuery = $state<string>('');
-	let selectedMedicationTypes = $state<Set<any>>(new Set([]));
+	let selectedMedicationTypes = $state<Set<SelectedMedication>>(new Set());
 	let open = $state(false);
 
 	const medicationTypes = getMedicationTypeContext();
 
 	let searchInput: HTMLInputElement;
 
-	const removeMedicationType = (selected: MedicationType) => {
+	const removeMedicationType = (med: SelectedMedication) => {
 		const updated = new Set(selectedMedicationTypes);
-		updated.delete(selected);
+		updated.delete(med);
 		selectedMedicationTypes = updated;
+		value = Array.from(selectedMedicationTypes);
 	};
 
 	const updateSearchQuery = (e: Event) => {
-		const target = e.target as HTMLInputElement;
-		const newValue = target.value ?? '';
-		searchQuery = newValue;
+		searchQuery = (e.target as HTMLInputElement).value ?? '';
 	};
 
-	let filterMedicationTypes: string[] = $derived.by(() => {
-		const medicationTypeNames: string[] = medicationTypes.current.map((mt) => mt.type);
-		const filteredBySearch = medicationTypeNames.filter((type) =>
-			type.toLowerCase().includes(searchQuery.toLowerCase())
+	let filteredMedicationTypes: MedicationType[] = $derived.by(() => {
+		const searchLower = searchQuery.toLowerCase();
+		const filtered = medicationTypes.current.filter((mt) =>
+			mt.type.toLowerCase().includes(searchLower)
 		);
 
 		switch (dropDownViewMode) {
 			case 'Selected':
-				return filteredBySearch.filter((type: string) => selectedMedicationTypes.has(type));
+				return filtered.filter((mt) =>
+					Array.from(selectedMedicationTypes).some((s) => s.id === mt.id)
+				);
 			case 'Deselected':
-				return filteredBySearch.filter((type: string) => !selectedMedicationTypes.has(type));
-			case 'All':
+				return filtered.filter(
+					(mt) => !Array.from(selectedMedicationTypes).some((s) => s.id === mt.id)
+				);
 			default:
-				return filteredBySearch;
+				return filtered;
 		}
 	});
 
 	const selectAllMedTypes = () => {
-		const allMedTypesSet = new Set<string>();
+		const newSelection = new Set<SelectedMedication>();
 		medicationTypes.current.forEach((mt) => {
-			allMedTypesSet.add(mt.type);
+			newSelection.add({ id: mt.id, type: mt.type });
 		});
-		selectedMedicationTypes = allMedTypesSet;
-		value = [...Array.from(selectedMedicationTypes)];
+		selectedMedicationTypes = newSelection;
+		value = Array.from(newSelection);
 	};
 
 	const deselectAllMedTypes = () => {
-		selectedMedicationTypes = new Set<String>();
+		selectedMedicationTypes = new Set();
+		value = [];
 	};
 
 	let checkedState = $derived.by<Record<string, boolean>>(() => {
-		return medicationTypes.current.reduce(
-			(acc, mt: MedicationType) => {
-				acc[mt.type] = selectedMedicationTypes.has(mt.type);
-				return acc;
-			},
-			{} as Record<string, boolean>
-		);
+		const state: Record<string, boolean> = {};
+		medicationTypes.current.forEach((mt) => {
+			state[mt.id] = Array.from(selectedMedicationTypes).some((s) => s.id === mt.id);
+		});
+		return state;
 	});
 
-	const toggleCheck = (e: Event, fmt: string) => {
+	const toggleCheck = (e: Event, mt: MedicationType) => {
 		e.preventDefault();
-		const isSelected = !checkedState[fmt];
-		checkedState = {
-			...checkedState,
-			[fmt]: isSelected
-		};
+		const isSelected = !checkedState[mt.id];
+
+		const updated = new Set(selectedMedicationTypes);
 		if (isSelected) {
-			selectedMedicationTypes = new Set([...selectedMedicationTypes, fmt]);
+			updated.add({ id: mt.id, type: mt.type });
 		} else {
-			const updated = new Set(selectedMedicationTypes);
-			updated.delete(fmt);
-			selectedMedicationTypes = updated;
+			Array.from(updated).forEach((item) => {
+				if (item.id === mt.id) updated.delete(item);
+			});
 		}
 
-		value = [...Array.from(selectedMedicationTypes)];
+		selectedMedicationTypes = updated;
+		value = Array.from(updated);
 	};
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -110,9 +115,9 @@
 
 			{#if selectedMedicationTypes.size > 0}
 				<div class="mt-2 flex flex-wrap items-center justify-center gap-1 border p-3">
-					{#each selectedMedicationTypes as selected}
+					{#each Array.from(selectedMedicationTypes) as selected}
 						<Badge class="chip p-2" variant="default">
-							{selected}
+							{selected.type}
 							<button
 								type="button"
 								onclick={() => removeMedicationType(selected)}
@@ -126,7 +131,6 @@
 			{/if}
 			<DropdownMenu.Content class="max-h-[50vh] w-[40dvw] overflow-y-auto p-0">
 				<div class="z-2000 sticky top-0 border-b bg-background p-2">
-					<!-- Search Input with Clear Button -->
 					<div class="relative">
 						<input
 							type="text"
@@ -136,7 +140,6 @@
 							value={searchQuery}
 							bind:this={searchInput}
 						/>
-						<!-- Clear Button (X Icon) -->
 						{#if searchQuery}
 							<div class="pointer-events-auto">
 								<button
@@ -147,7 +150,6 @@
 									}}
 								>
 									<X class="h-4 w-4" />
-									<!-- X icon -->
 								</button>
 							</div>
 						{/if}
@@ -169,15 +171,15 @@
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
 					<ScrollArea class="max-h-64 min-h-48 overflow-y-auto pb-0 [&>div]:!p-0">
-						{#if filterMedicationTypes.length > 0}
+						{#if filteredMedicationTypes.length > 0}
 							<div class="flex flex-col">
-								{#each filterMedicationTypes as fmt}
+								{#each filteredMedicationTypes as mt}
 									<DropdownMenu.CheckboxItem
-										bind:checked={checkedState[fmt]}
+										bind:checked={checkedState[mt.id]}
 										class="flex h-9 w-full px-3 py-2"
-										onclick={(e: Event) => toggleCheck(e, fmt)}
+										onclick={(e: Event) => toggleCheck(e, mt)}
 									>
-										<span class="ml-6 text-xs">{fmt}</span>
+										<span class="ml-6 text-xs">{mt.type}</span>
 									</DropdownMenu.CheckboxItem>
 								{/each}
 							</div>
