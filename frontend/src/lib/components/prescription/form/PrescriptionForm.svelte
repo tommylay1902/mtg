@@ -50,7 +50,6 @@
 
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
-		<MedicationTypeSelector {isDropdownOpen} />
 		{#each formConfigs as config}
 			{#if config.type === 'select' && medicationTypes.current.length > 0}
 				<MedicationTypeSelector {isDropdownOpen} />

@@ -7,11 +7,9 @@
 	import type { MedicationType } from '$lib/types/MedicationType.js';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import X from '@lucide/svelte/icons/x';
-	import { tick } from 'svelte';
 	type DropdownViewMode = 'All' | 'Selected' | 'Deselected';
 
 	let dropDownViewMode = $state<DropdownViewMode>('All');
-
 	let { isDropdownOpen = $bindable() } = $props();
 	let searchQuery = $state<string>('');
 	let selectedMedicationTypes = $state<Set<any>>(new Set([]));
@@ -22,17 +20,15 @@
 	let searchInput: HTMLInputElement;
 
 	const removeMedicationType = (selected: MedicationType) => {
-		selectedMedicationTypes.delete(selected);
+		const updated = new Set(selectedMedicationTypes);
+		updated.delete(selected);
+		selectedMedicationTypes = updated;
 	};
 
 	const updateSearchQuery = (e: Event) => {
 		const target = e.target as HTMLInputElement;
 		const newValue = target.value ?? '';
 		searchQuery = newValue;
-	};
-
-	const cancelSelection = () => {
-		open = false;
 	};
 
 	let filterMedicationTypes: string[] = $derived.by(() => {
@@ -73,6 +69,23 @@
 			{} as Record<string, boolean>
 		);
 	});
+
+	const toggleCheck = (e: Event, fmt: string) => {
+		e.preventDefault();
+		const isSelected = !checkedState[fmt];
+		checkedState = {
+			...checkedState,
+			[fmt]: isSelected
+		};
+		if (isSelected) {
+			selectedMedicationTypes = new Set([...selectedMedicationTypes, fmt]);
+		} else {
+			const updated = new Set(selectedMedicationTypes);
+			updated.delete(fmt);
+			selectedMedicationTypes = updated;
+		}
+	};
+
 	function handleKeydown(event: KeyboardEvent) {
 		searchInput.focus();
 	}
@@ -86,7 +99,7 @@
 				<Button
 					type="button"
 					variant="outline"
-					class="flex h-auto min-h-fit w-full min-w-full flex-wrap items-center gap-2"
+					class="flex h-auto min-h-fit w-full min-w-full flex-wrap items-center gap-2 hover:bg-gray-300"
 				>
 					{#if selectedMedicationTypes.size === 0}
 						<div class="w-full min-w-full">Click to add medication type(s)</div>
@@ -96,7 +109,10 @@
 								<Badge class="chip" variant="default">
 									{selected}
 									<button
-										onclick={() => removeMedicationType(selected)}
+										onclick={(e) => {
+											e.preventDefault();
+											removeMedicationType(selected);
+										}}
 										class="ml-1 rounded-full p-0.5 hover:bg-[#EADCA4]"
 									>
 										<X class="h-3 w-3" />
@@ -136,7 +152,7 @@
 
 					<div class="m-1 mt-1">
 						<Select.Root type="single">
-							<Select.Trigger class="h-8 w-full justify-start text-sm hover:bg-accent/50">
+							<Select.Trigger class="h-8 w-full justify-center text-sm hover:bg-accent/50">
 								View: {dropDownViewMode}
 							</Select.Trigger>
 							<Select.Content>
@@ -149,28 +165,13 @@
 				</div>
 				<DropdownMenu.Separator />
 				<ScrollArea class="max-h-64 min-h-48 overflow-y-auto pb-0 [&>div]:!p-0">
-					<!-- Filtered Breeds -->
 					{#if filterMedicationTypes.length > 0}
 						<div class="flex flex-col">
 							{#each filterMedicationTypes as fmt}
 								<DropdownMenu.CheckboxItem
 									bind:checked={checkedState[fmt]}
 									class="flex h-9 w-full px-3 py-2"
-									onclick={(e) => {
-										e.preventDefault();
-										const isSelected = !checkedState[fmt];
-										checkedState = {
-											...checkedState,
-											[fmt]: isSelected
-										};
-										if (isSelected) {
-											selectedMedicationTypes = new Set([...selectedMedicationTypes, fmt]);
-										} else {
-											const updated = new Set(selectedMedicationTypes);
-											updated.delete(fmt);
-											selectedMedicationTypes = updated;
-										}
-									}}
+									onclick={(e: Event) => toggleCheck(e, fmt)}
 								>
 									<span class="ml-6 text-xs">{fmt}</span>
 								</DropdownMenu.CheckboxItem>
@@ -186,7 +187,7 @@
 					<div class="flex">
 						<Button
 							variant="outline"
-							class="h-8 w-full justify-start hover:bg-accent/50"
+							class="h-8 w-full justify-start hover:bg-gray-300"
 							size="sm"
 							onclick={selectAllMedTypes}
 						>
@@ -194,7 +195,7 @@
 						</Button>
 						<Button
 							variant="outline"
-							class="h-8 w-full justify-start hover:bg-accent/50"
+							class="h-8 w-full justify-start hover:bg-gray-300"
 							size="sm"
 							onclick={deselectAllMedTypes}
 						>
@@ -204,7 +205,7 @@
 
 					<Button
 						variant="outline"
-						class="h-8 w-full justify-start hover:bg-accent/50"
+						class="h-8 w-full justify-start hover:bg-gray-300"
 						size="sm"
 						onclick={() => (isDropdownOpen = false)}
 					>
