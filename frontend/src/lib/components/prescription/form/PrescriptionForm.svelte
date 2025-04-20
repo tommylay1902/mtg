@@ -8,7 +8,6 @@
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { type Prescription } from '$lib/types/Prescription.js';
-	import * as Select from '$lib/components/ui/select/index.js';
 	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
 	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
 
@@ -42,10 +41,6 @@
 
 	let value = $state('');
 	let isDropdownOpen = $state(false);
-
-	const triggerContent = $derived(
-		medicationTypes.current.find((f) => f.type === value)?.type ?? 'Select medication type'
-	);
 </script>
 
 <form method="POST" use:enhance>
@@ -67,7 +62,7 @@
 		{/each}
 	</div>
 
-	<Dialog.Footer>
+	<Dialog.Footer class="mt-3">
 		<Button type="submit">Add Prescription</Button>
 	</Dialog.Footer>
 </form>
