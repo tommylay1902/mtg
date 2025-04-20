@@ -22,7 +22,7 @@ func InitializePrescriptionHandler(service service.PrescriptionService) *Prescri
 }
 
 func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
-	var requestBody dto.PrescriptionDTO
+	var requestBody request.AddPrescriptionRequest
 	email := c.Locals("email").(string)
 	if err := c.BodyParser(&requestBody); err != nil {
 		badErr := &apperror.BadRequestError{

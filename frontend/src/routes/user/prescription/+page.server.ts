@@ -27,6 +27,8 @@ export const actions: Actions = {
 	default: async ({ request, fetch, locals: { safeGetSession } }) => {
 		const prescriptionForm = await superValidate(request, zod(prescriptionSchema));
 
+		console.log(prescriptionForm);
+
 		if (!prescriptionForm.valid) return fail(400, { prescriptionForm });
 		const { session } = await safeGetSession();
 

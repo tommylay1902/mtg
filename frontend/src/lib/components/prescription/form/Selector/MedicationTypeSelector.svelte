@@ -10,7 +10,7 @@
 	type DropdownViewMode = 'All' | 'Selected' | 'Deselected';
 
 	let dropDownViewMode = $state<DropdownViewMode>('All');
-	let { isDropdownOpen = $bindable() } = $props();
+	let { isDropdownOpen = $bindable(), value = $bindable() } = $props();
 	let searchQuery = $state<string>('');
 	let selectedMedicationTypes = $state<Set<any>>(new Set([]));
 	let open = $state(false);
@@ -54,6 +54,7 @@
 			allMedTypesSet.add(mt.type);
 		});
 		selectedMedicationTypes = allMedTypesSet;
+		value = [...Array.from(selectedMedicationTypes)];
 	};
 
 	const deselectAllMedTypes = () => {
@@ -84,6 +85,8 @@
 			updated.delete(fmt);
 			selectedMedicationTypes = updated;
 		}
+
+		value = [...Array.from(selectedMedicationTypes)];
 	};
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -164,25 +167,29 @@
 					</div>
 				</div>
 				<DropdownMenu.Separator />
-				<ScrollArea class="max-h-64 min-h-48 overflow-y-auto pb-0 [&>div]:!p-0">
-					{#if filterMedicationTypes.length > 0}
-						<div class="flex flex-col">
-							{#each filterMedicationTypes as fmt}
-								<DropdownMenu.CheckboxItem
-									bind:checked={checkedState[fmt]}
-									class="flex h-9 w-full px-3 py-2"
-									onclick={(e: Event) => toggleCheck(e, fmt)}
-								>
-									<span class="ml-6 text-xs">{fmt}</span>
-								</DropdownMenu.CheckboxItem>
-							{/each}
-						</div>
-					{:else}
-						<div class="flex flex-col">
-							<span class="pt-5 text-center text-sm italic"> No medication types to display! </span>
-						</div>
-					{/if}
-				</ScrollArea>
+				<DropdownMenu.Group>
+					<ScrollArea class="max-h-64 min-h-48 overflow-y-auto pb-0 [&>div]:!p-0">
+						{#if filterMedicationTypes.length > 0}
+							<div class="flex flex-col">
+								{#each filterMedicationTypes as fmt}
+									<DropdownMenu.CheckboxItem
+										bind:checked={checkedState[fmt]}
+										class="flex h-9 w-full px-3 py-2"
+										onclick={(e: Event) => toggleCheck(e, fmt)}
+									>
+										<span class="ml-6 text-xs">{fmt}</span>
+									</DropdownMenu.CheckboxItem>
+								{/each}
+							</div>
+						{:else}
+							<div class="flex flex-col">
+								<span class="pt-5 text-center text-sm italic">
+									No medication types to display!
+								</span>
+							</div>
+						{/if}
+					</ScrollArea>
+				</DropdownMenu.Group>
 				<div class="sticky bottom-0 z-10 m-0 border-t bg-background p-0">
 					<div class="flex">
 						<Button

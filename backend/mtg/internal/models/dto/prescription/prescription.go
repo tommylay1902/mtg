@@ -9,5 +9,6 @@ type PrescriptionDTO struct {
 	Started    *time.Time `json:"started"`
 	Ended      *time.Time `json:"ended"`
 	Refills    *int       `json:"refills"`
+	Total      int        `json:"total"`
 	Owner      *string    `json:"owner"`
 }

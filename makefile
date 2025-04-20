@@ -7,4 +7,4 @@ build-dev:
 setup-dev: build-dev
 	docker compose -f docker-compose.dev.yml up -d
 
-dev-refresh: down-dev setup-dev
+refresh-dev: down-dev setup-dev
