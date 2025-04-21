@@ -1,3 +1,4 @@
+import { type MedicationType } from './MedicationType.js';
 export type Prescription = {
 	id: string;
 	medication: string;
@@ -7,5 +8,5 @@ export type Prescription = {
 	ended: string;
 	refills: number;
 	total: number;
-	medicationType: string;
+	medicationType: MedicationType[];
 };

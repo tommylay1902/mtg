@@ -11,6 +11,7 @@ import (
 type PrescriptionService interface {
 	CreatePrescription(request *request.AddPrescriptionRequest) (*uuid.UUID, error)
 	GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error)
+	GetMedicationTypesByPrescriptionId(id uuid.UUID, email string) ([]entity.MedicationType, error)
 	GetPrescriptions(searchQuery map[string]string, owner *string) ([]entity.Prescription, error)
 	DeletePrescription(id uuid.UUID, email string) error
 	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error

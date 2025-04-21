@@ -20,8 +20,6 @@ func InitializeFiberPrescriptionService(dao pDao.PrescriptionDAO) *FiberPrescrip
 
 func (ps *FiberPrescriptionService) CreatePrescription(request *request.AddPrescriptionRequest) (*uuid.UUID, error) {
 
-	// var medType []entity.MedicationType
-
 	model := entity.Prescription{
 		BasePrescriptionFields: entity.BasePrescriptionFields{
 			Medication: request.Medication,
@@ -53,6 +51,16 @@ func (ps *FiberPrescriptionService) GetPrescriptionById(id uuid.UUID, email stri
 		return nil, err
 	}
 	return p, nil
+}
+
+func (ps *FiberPrescriptionService) GetMedicationTypesByPrescriptionId(id uuid.UUID, email string) ([]entity.MedicationType, error) {
+	prescription, err := ps.DAO.GetPrescriptionById(id, email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ps.DAO.GetMedicationTypesByPrescriptionId(prescription)
 }
 
 func (ps *FiberPrescriptionService) GetPrescriptions(searchQuery map[string]string, owner *string) ([]entity.Prescription, error) {

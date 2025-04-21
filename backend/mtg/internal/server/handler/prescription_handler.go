@@ -32,8 +32,6 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 		return errorhandler.HandleError(badErr, c)
 	}
 
-	fmt.Println(requestBody)
-
 	requestBody.Owner = &email
 
 	id, err := ph.Service.CreatePrescription(&requestBody)
@@ -68,6 +66,30 @@ func (ph *PrescriptionHandler) GetPrescription(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(p)
+}
+
+func (ph *PrescriptionHandler) GetMedicationTypeByPrescription(c *fiber.Ctx) error {
+	idParam := c.Params("id")
+	id, err := uuid.Parse(idParam)
+
+	if err != nil {
+		custErr := &apperror.BadRequestError{
+			Message: err.Error(),
+			Code:    400,
+		}
+		return errorhandler.HandleError(custErr, c)
+	}
+	email := c.Locals("email").(string)
+	mt, err := ph.Service.GetMedicationTypesByPrescriptionId(id, email)
+
+	if err != nil {
+		//change left for testing purposes
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(mt)
 }
 
 func (ph *PrescriptionHandler) GetPrescriptions(c *fiber.Ctx) error {

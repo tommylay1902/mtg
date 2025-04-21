@@ -13,7 +13,8 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 		}
 	};
 
-	const rxResponse = await fetch('/api/prescriptions', fetchOptions);
+	const rxResponse = await fetch('/api/prescriptions?type=prescriptions', fetchOptions);
+
 	//input fetch logic for medication types for drop down list
 	const mtResponse = await fetch('/api/medication-type', fetchOptions);
 

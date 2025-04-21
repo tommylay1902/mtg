@@ -1,9 +1,25 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
+export const GET: RequestHandler = async ({ locals: { safeGetSession }, url }) => {
 	const { session } = await safeGetSession();
+	const requestType = url.searchParams.get('type');
+
 	try {
-		const response = await fetch('http://mtg_api:8080/api/v1/prescription/all', {
+		let endpoint = '';
+		switch (requestType) {
+			case 'prescriptions':
+				endpoint = 'http://mtg_api:8080/api/v1/prescription/all';
+				break;
+			case 'medication-types':
+				const prescriptionId = url.searchParams.get('prescription_id');
+				endpoint = `http://mtg_api:8080/api/v1/prescription/${prescriptionId}/medication-types`;
+				break;
+			default:
+				return new Response(JSON.stringify({ error: 'Invalid request type' }), {
+					status: 400
+				});
+		}
+		const response = await fetch(endpoint, {
 			headers: {
 				Authorization: `Bearer ${session?.access_token}`
 			}

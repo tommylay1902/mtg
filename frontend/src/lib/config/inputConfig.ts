@@ -1,8 +1,8 @@
 import { formatISODateForHtmlInput } from '$lib/format/formatDate.js';
-import type { Prescription } from '$lib/types/Prescription.js';
+import { type FormFieldKeys } from './form/addRxFormConfig.js';
 
 export const prescriptinInputConfigs: {
-	id: keyof Prescription;
+	id: FormFieldKeys;
 	title: string;
 	type: string;
 	transform: (data: any) => string | null;
@@ -27,5 +27,11 @@ export const prescriptinInputConfigs: {
 		title: 'Refills',
 		type: 'number',
 		transform: (v: number) => v.toString()
+	},
+	{
+		id: 'medicationType',
+		title: 'Medication Type',
+		type: 'select',
+		transform: (v: any) => v
 	}
 ];

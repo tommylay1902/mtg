@@ -9,6 +9,9 @@
 	import type { Prescription } from '$lib/types/Prescription.js';
 	import { prescriptinInputConfigs } from '$lib/config/inputConfig.js';
 	import { compareDates } from '$lib/utils.js';
+	import MedicationTypeSelector from '$lib/components/prescription/form/Selector/MedicationTypeSelector.svelte';
+	import { type MedicationType } from '$lib/types/MedicationType.js';
+	import Loader from '$lib/components/ui/Loader.svelte';
 
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
@@ -22,6 +25,10 @@
 	 * represents the current state of input dialog info, used to compare to {@link original}
 	 **/
 	let localDrafts = $state<Prescription[]>([]);
+
+	let selectedMedTypes = $state<MedicationType[]>([]);
+
+	let isLoadingMedTypes = $state<boolean>(false);
 
 	let {
 		updateDisplayPrescriptions,
@@ -55,6 +62,47 @@
 		}
 	});
 
+	$effect(() => {
+		if (isUpdateDialogOpen && updateDisplayPrescriptions.length > 0) {
+			const prescriptionId = localDrafts[activeIdx]?.id;
+			if (prescriptionId) {
+				fetchAssociatedMedicationTypes(prescriptionId);
+			}
+		}
+	});
+
+	const fetchAssociatedMedicationTypes = async (prescriptionId: string) => {
+		isLoadingMedTypes = true;
+		try {
+			const response = await fetch(
+				`/api/prescriptions?type=medication-types&prescription_id=${prescriptionId}`
+			);
+
+			if (!response.ok) throw new Error('Failed to fetch medication types');
+
+			const data = await response.json();
+			selectedMedTypes = data; // Update state with fetched data
+			original[activeIdx].medicationType = [...selectedMedTypes];
+		} catch (error) {
+			console.error('Error fetching medication types:', error);
+			selectedMedTypes = []; // Reset or handle error state
+		} finally {
+			isLoadingMedTypes = false;
+		}
+	};
+
+	$effect(() => {
+		if (!isLoadingMedTypes && localDrafts[activeIdx]) {
+			updateupdateIds(localDrafts[activeIdx], 'medicationType', selectedMedTypes);
+		}
+	});
+
+	function setsEqual(a: Set<any>, b: Set<any>) {
+		if (a.size !== b.size) return false;
+		for (const item of a) if (!b.has(item)) return false;
+		return true;
+	}
+
 	// API CALL
 	const batchUpdate = async () => {
 		await fetch('/api/prescriptions', {
@@ -79,23 +127,27 @@
 	 * - Maintains a clean list of IDs needing server updates
 	 */
 	const updateupdateIds = <K extends keyof Prescription>(
-		changeEvent: Event,
 		activeDraft: Prescription,
-		field: K
+		field: K,
+		changeEvent?: Event | MedicationType[]
 	) => {
-		const target = changeEvent.target as HTMLInputElement;
-		const newValue = target.value ?? '';
+		if (Array.isArray(changeEvent)) {
+			activeDraft.medicationType = [...changeEvent];
+		} else if (field && changeEvent instanceof Event) {
+			const target = changeEvent.target as HTMLInputElement;
+			const newValue = target.value ?? '';
 
-		if (field === 'started' || field === 'ended') {
-			if (newValue == '') {
-				(activeDraft as Record<keyof Prescription, any>)[field] = null;
+			if (field === 'started' || field === 'ended') {
+				if (newValue == '') {
+					(activeDraft as Record<keyof Prescription, any>)[field] = null;
+				} else {
+					(activeDraft as Record<keyof Prescription, any>)[field] = new Date(
+						newValue + 'T00:00:00'
+					).toISOString();
+				}
 			} else {
-				(activeDraft as Record<keyof Prescription, any>)[field] = new Date(
-					newValue + 'T00:00:00'
-				).toISOString();
+				(activeDraft as Record<keyof Prescription, any>)[field] = newValue;
 			}
-		} else {
-			(activeDraft as Record<keyof Prescription, any>)[field] = newValue;
 		}
 
 		const keys = Object.keys(activeDraft) as (keyof Prescription)[];
@@ -107,6 +159,8 @@
 				return +activeDraft[k] !== +original[activeIdx][k];
 			} else if (k === 'started' || k === 'ended') {
 				return !compareDates(activeDraft[k], original[activeIdx][k]);
+			} else if (k === 'medicationType') {
+				return !arraysEqual(activeDraft.medicationType || [], original[activeIdx][k] || []);
 			}
 			return activeDraft[k] !== original[activeIdx][k];
 		});
@@ -120,6 +174,29 @@
 
 		updateIds = Array.from(prescriptionSet);
 	};
+
+	const arraysEqual = (a: MedicationType[], b: MedicationType[]) => {
+		return a.length === b.length && a.every((item, i) => item.id === b[i].id);
+	};
+
+	const unwrapError = (error: { _errors?: string[] } | string | string[] | undefined): string => {
+		if (!error) return '';
+
+		// Handle Zod array error format
+		if (typeof error === 'object' && '_errors' in error) {
+			return error._errors?.[0] || '';
+		}
+
+		// Handle string arrays
+		if (Array.isArray(error)) {
+			return error[0] || '';
+		}
+
+		// Handle regular strings
+		return error.toString();
+	};
+
+	let isDropdownOpen = $state(false);
 </script>
 
 <Dialog.Root bind:open={isUpdateDialogOpen}>
@@ -134,13 +211,28 @@
 		{#if updateDisplayPrescriptions.length > 0 && activeIdx <= updateDisplayPrescriptions.length}
 			<div class="flex flex-col items-center justify-center gap-y-3">
 				{#each inputConfigs as config}
-					<Label for={config.id}>{config.title}</Label>
-					<Input
-						id={config.id}
-						value={config.transform(localDrafts[activeIdx][config.id])}
-						oninput={(e: Event) => updateupdateIds(e, localDrafts[activeIdx], config.id)}
-						type={config.type}
-					/>
+					{#if config.type === 'select'}
+						{#if isLoadingMedTypes}
+							<div
+								class="flex min-h-[12dvh] items-center justify-center justify-items-center gap-x-4"
+							>
+								<Loader />
+								<div>Loading medication types...</div>
+							</div>
+						{:else}
+							<div class="min-h-[12dvh] w-full">
+								<MedicationTypeSelector {isDropdownOpen} bind:value={selectedMedTypes} />
+							</div>
+						{/if}
+					{:else}
+						<Label for={config.id}>{config.title}</Label>
+						<Input
+							id={config.id}
+							value={config.transform(localDrafts[activeIdx][config.id])}
+							oninput={(e: Event) => updateupdateIds(localDrafts[activeIdx], config.id, e)}
+							type={config.type}
+						/>
+					{/if}
 				{/each}
 				<div class="flex w-full justify-between gap-x-2">
 					<div>

@@ -17,8 +17,7 @@
 	let dropDownViewMode = $state<DropdownViewMode>('All');
 	let { isDropdownOpen = $bindable(), value = $bindable() } = $props();
 	let searchQuery = $state<string>('');
-	let selectedMedicationTypes = $state<Set<SelectedMedication>>(new Set());
-	let open = $state(false);
+	let selectedMedicationTypes = $state<Set<SelectedMedication>>(new Set(value));
 
 	const medicationTypes = getMedicationTypeContext();
 
@@ -135,13 +134,13 @@
 						<input
 							type="text"
 							placeholder="Search medication type(s)..."
-							class="z-1000 pointer-events-none w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+							class="z-1000 w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
 							oninput={updateSearchQuery}
 							value={searchQuery}
 							bind:this={searchInput}
 						/>
 						{#if searchQuery}
-							<div class="pointer-events-auto">
+							<div>
 								<button
 									class="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground hover:text-foreground"
 									onclick={(e: Event) => {
@@ -176,7 +175,7 @@
 								{#each filteredMedicationTypes as mt}
 									<DropdownMenu.CheckboxItem
 										bind:checked={checkedState[mt.id]}
-										class="flex h-9 w-full px-3 py-2"
+										class="flex h-9 w-full px-3 py-2 hover:bg-gray-300"
 										onclick={(e: Event) => toggleCheck(e, mt)}
 									>
 										<span class="ml-6 text-xs">{mt.type}</span>
