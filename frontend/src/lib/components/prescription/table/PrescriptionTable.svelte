@@ -7,9 +7,9 @@
 		getCoreRowModel,
 		getSortedRowModel
 	} from '@tanstack/table-core';
-	import { columns, type Prescription } from './Columns.js';
-
+	import { columns } from './Columns.js';
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
+	import { type Prescription } from '$lib/types/Prescription.js';
 
 	type DataTableProps<TData, TValue> = {
 		rowSelection: RowSelectionState;

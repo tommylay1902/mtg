@@ -8,6 +8,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	apiPrescriptionRoutes.Post("", s.Handler.PHandler.CreatePrescription)
 	apiPrescriptionRoutes.Get("/all", s.Handler.PHandler.GetPrescriptions)
 	apiPrescriptionRoutes.Get("/:id", s.Handler.PHandler.GetPrescription)
+	apiPrescriptionRoutes.Get("/:id/medication-types", s.Handler.PHandler.GetMedicationTypeByPrescription)
 	apiPrescriptionRoutes.Delete("", s.Handler.PHandler.DeleteBatchPrescription)
 	apiPrescriptionRoutes.Put("", s.Handler.PHandler.UpdateBatchPrescription)
 

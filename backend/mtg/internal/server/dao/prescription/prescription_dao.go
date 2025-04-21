@@ -9,6 +9,7 @@ import (
 type PrescriptionDAO interface {
 	CreatePrescription(model entity.Prescription) (*uuid.UUID, error)
 	GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error)
+	GetMedicationTypesByPrescriptionId(prescription *entity.Prescription) ([]entity.MedicationType, error)
 	GetAllPrescriptions(searchQueries map[string]string, email *string) ([]entity.Prescription, error)
 	DeletePrescription(model *entity.Prescription, email string) error
 	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error

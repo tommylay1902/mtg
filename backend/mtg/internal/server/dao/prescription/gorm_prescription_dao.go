@@ -62,6 +62,16 @@ func (dao *GormPrescriptionDao) GetPrescriptionById(id uuid.UUID, email string) 
 	return prescription, nil
 }
 
+func (dao *GormPrescriptionDao) GetMedicationTypesByPrescriptionId(prescription *entity.Prescription) ([]entity.MedicationType, error) {
+	var medTypes []entity.MedicationType
+	err := dao.DB.Model(&prescription).Association("MedicationTypes").Find(&medTypes)
+	if err != nil {
+		return nil, err
+	}
+
+	return medTypes, nil
+}
+
 func (dao *GormPrescriptionDao) GetAllPrescriptions(searchQueries map[string]string, owner *string) ([]entity.Prescription, error) {
 	var prescriptions []entity.Prescription
 
