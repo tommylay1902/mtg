@@ -68,7 +68,7 @@ func (dao *GormPrescriptionDao) GetMedicationTypesByPrescriptionId(prescription 
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println("helloo")
 	return medTypes, nil
 }
 
@@ -77,8 +77,11 @@ func (dao *GormPrescriptionDao) GetAllPrescriptions(searchQueries map[string]str
 
 	query := helper.BuildQueryWithSearchParam(searchQueries, dao.DB)
 
-	err := query.Where("owner = ?", *owner).Order("started desc").Find(&prescriptions).Error
-
+	err := query.Where("owner = ?", *owner).Order("started desc").Preload("MedicationTypes",
+		func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "type")
+		}).Find(&prescriptions).Error
+	fmt.Println(prescriptions[0].MedicationTypes)
 	if err != nil {
 		return nil, err
 	}

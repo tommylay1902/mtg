@@ -20,15 +20,12 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 
 	const prescription = await rxResponse.json();
 	const medicationTypes = await mtResponse.json();
-
 	return { prescription, medicationTypes, prescriptionForm };
 };
 
 export const actions: Actions = {
 	default: async ({ request, fetch, locals: { safeGetSession } }) => {
 		const prescriptionForm = await superValidate(request, zod(prescriptionSchema));
-
-		console.log(prescriptionForm.data.medicationType);
 
 		if (!prescriptionForm.valid) return fail(400, { prescriptionForm });
 		const { session } = await safeGetSession();
