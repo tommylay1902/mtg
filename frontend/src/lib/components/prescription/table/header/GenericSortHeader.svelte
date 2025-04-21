@@ -5,7 +5,6 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 
 	let { column, title, ...restProps } = $props();
-	$inspect(column.getSortIndex());
 </script>
 
 <Button variant="ghost" {...restProps} onclick={() => column.toggleSorting(undefined, true)}>

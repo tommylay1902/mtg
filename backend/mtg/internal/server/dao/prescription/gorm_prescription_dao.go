@@ -115,29 +115,75 @@ func (dao *GormPrescriptionDao) UpdatePrescription(model *entity.Prescription, e
 }
 
 func (dao *GormPrescriptionDao) UpdateBatchPrescription(updateList []entity.Prescription, email string) error {
-	// err := dao.DB.Where("owner = ? and id IN ?", email, updateList).Save(updateList).Error
+	return dao.DB.Transaction(func(tx *gorm.DB) error {
+		// 1. Batch update prescription fields
+		if err := dao.batchUpdatePrescriptions(tx, updateList, email); err != nil {
+			return err
+		}
+
+		// 2. Batch update associations using Replace()
+		return dao.batchUpdateAssociations(tx, updateList)
+	})
+	// create values array which represents the rows
+	// values := make([]clause.Expr, 0, len(updateList))
+	// for _, p := range updateList {
+	// 	values = append(values, gorm.Expr("(?::uuid, ?, ?, ?, ?::timestamp, ?::timestamp, ?::bigint, ?)", p.ID, p.Medication, p.Dosage, p.Notes, p.Started, p.Ended, p.Refills, p.Owner))
+	// }
+
+	// valuesExpr := gorm.Expr("?", values)
+	// valuesExpr.WithoutParentheses = true
+
+	// err := dao.DB.Exec(
+	// 	"UPDATE prescriptions SET Medication = tmp.Medication, dosage = tmp.Dosage,  notes = tmp.Notes, started = tmp.Started, ended = tmp.Ended, refills = tmp.Refills FROM (VALUES ?) tmp(ID, Medication, Dosage, Notes, Started, Ended, Refills, Owner) WHERE prescriptions.ID = tmp.ID AND prescriptions.owner = ?",
+	// 	valuesExpr,
+	// 	email,
+	// ).Error
+
 	// if err != nil {
 	// 	return err
 	// }
 
-	// create values array which represents the rows
+	// return nil
+}
+
+func (dao *GormPrescriptionDao) batchUpdatePrescriptions(tx *gorm.DB, updateList []entity.Prescription, email string) error {
+	// Your existing optimized bulk update
 	values := make([]clause.Expr, 0, len(updateList))
 	for _, p := range updateList {
-		values = append(values, gorm.Expr("(?::uuid, ?, ?, ?, ?::timestamp, ?::timestamp, ?::bigint, ?)", p.ID, p.Medication, p.Dosage, p.Notes, p.Started, p.Ended, p.Refills, p.Owner))
+		values = append(values, gorm.Expr("(?::uuid, ?, ?, ?, ?::timestamp, ?::timestamp, ?::bigint, ?)",
+			p.ID, p.Medication, p.Dosage, p.Notes, p.Started, p.Ended, p.Refills, p.Owner))
 	}
 
 	valuesExpr := gorm.Expr("?", values)
 	valuesExpr.WithoutParentheses = true
 
-	err := dao.DB.Exec(
-		"UPDATE prescriptions SET Medication = tmp.Medication, dosage = tmp.Dosage,  notes = tmp.Notes, started = tmp.Started, ended = tmp.Ended, refills = tmp.Refills FROM (VALUES ?) tmp(ID, Medication, Dosage, Notes, Started, Ended, Refills, Owner) WHERE prescriptions.ID = tmp.ID AND prescriptions.owner = ?",
+	return tx.Exec(
+		`UPDATE prescriptions SET
+            medication = tmp.medication,
+            dosage = tmp.dosage,
+            notes = tmp.notes,
+            started = tmp.started,
+            ended = tmp.ended,
+            refills = tmp.refills
+        FROM (VALUES ?) tmp(id, medication, dosage, notes, started, ended, refills, owner)
+        WHERE prescriptions.id = tmp.id AND prescriptions.owner = ?`,
 		valuesExpr,
 		email,
 	).Error
+}
 
-	if err != nil {
-		return err
+func (dao *GormPrescriptionDao) batchUpdateAssociations(tx *gorm.DB, updateList []entity.Prescription) error {
+	for _, p := range updateList {
+		// Load the full prescription model with associations
+		var current entity.Prescription
+		if err := tx.Where("id = ?", p.ID).First(&current).Error; err != nil {
+			return err
+		}
+
+		// Use Replace to atomically update associations
+		if err := tx.Model(&current).Association("MedicationTypes").Replace(p.MedicationTypes); err != nil {
+			return err
+		}
 	}
-
 	return nil
 }

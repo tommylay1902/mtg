@@ -182,7 +182,6 @@ func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
 
 	var requestBody []entity.Prescription
-	fmt.Println("we are in here")
 
 	if err := c.BodyParser(&requestBody); err != nil {
 		fmt.Println(err)
