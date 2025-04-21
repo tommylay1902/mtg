@@ -18,18 +18,22 @@
 	let { isDropdownOpen = $bindable(), value = $bindable() } = $props();
 	let searchQuery = $state<string>('');
 	let selectedMedicationTypes = $state<Set<SelectedMedication>>(new Set(value));
-
 	const medicationTypes = getMedicationTypeContext();
 
 	let searchInput: HTMLInputElement;
 
 	const removeMedicationType = (med: SelectedMedication) => {
 		const updated = new Set(selectedMedicationTypes);
-		updated.delete(med);
+		// Find the exact item to delete by comparing IDs
+		for (const item of updated) {
+			if (item.id === med.id) {
+				updated.delete(item);
+				break;
+			}
+		}
 		selectedMedicationTypes = updated;
-		value = Array.from(selectedMedicationTypes);
+		value = Array.from(updated);
 	};
-
 	const updateSearchQuery = (e: Event) => {
 		searchQuery = (e.target as HTMLInputElement).value ?? '';
 	};
@@ -94,7 +98,10 @@
 	};
 
 	function handleKeydown(event: KeyboardEvent) {
-		searchInput.focus();
+		if (isDropdownOpen && searchInput && event.key === '/') {
+			event.preventDefault();
+			searchInput.focus();
+		}
 	}
 </script>
 
