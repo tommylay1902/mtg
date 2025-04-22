@@ -8,6 +8,6 @@ export type Prescription = {
 	ended: string;
 	refills: number;
 	total: number;
-	medicationType: MedicationType[];
 	prescribedBy: string;
+	medicationType: MedicationType[];
 };

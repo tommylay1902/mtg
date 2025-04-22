@@ -44,7 +44,6 @@
 		}
 	);
 
-	let value = $state('');
 	let isDropdownOpen = $state(false);
 
 	const unwrapError = (error: { _errors?: string[] } | string | string[] | undefined): string => {
@@ -68,7 +67,7 @@
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
 		{#each formConfigs as config}
-			{#if config.type === 'select' && config.id === 'medicationType'}
+			{#if config.id === 'medicationType'}
 				<div>
 					<MedicationTypeSelector {isDropdownOpen} bind:value={$form.medicationType} />
 					<div class="min-h-5">
@@ -77,9 +76,11 @@
 						{/if}
 					</div>
 				</div>
-			{:else if config.type === 'select'}
+			{:else if config.id === 'prescribedBy'}
 				<div>
-					<Select.Root type="single"></Select.Root>
+					<Select.Root type="single">
+						<Select.Trigger>Who placed the prescription order</Select.Trigger>
+					</Select.Root>
 				</div>
 			{:else if config.type !== 'select'}
 				<div>
