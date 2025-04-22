@@ -29,6 +29,12 @@ export const prescriptinInputConfigs: {
 		transform: (v: number) => v.toString()
 	},
 	{
+		id: 'prescribedBy',
+		title: 'Prescribed By',
+		type: 'select',
+		transform: (v: any) => v
+	},
+	{
 		id: 'medicationType',
 		title: 'Medication Type',
 		type: 'select',

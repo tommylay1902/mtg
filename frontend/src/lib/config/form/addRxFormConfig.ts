@@ -1,4 +1,3 @@
-import type { Prescription } from '$lib/types/Prescription.js';
 import { z } from 'zod';
 
 const basePrescriptionSchema = z.object({

@@ -22,4 +22,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	apiMedicationTypeRoutes := s.Group("api/v1/medication-type")
 	apiMedicationTypeRoutes.Post("", s.Handler.MedicationTypeHandler.CreateMedicationType)
 	apiMedicationTypeRoutes.Get("/all", s.Handler.MedicationTypeHandler.GetMedicationTypes)
+
+	apiClinicRoutes := s.Group("api/v1/clinic")
+	apiClinicRoutes.Post("", s.Handler.ClinicHandler.CreateClinic)
 }
