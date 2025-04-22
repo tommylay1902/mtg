@@ -12,8 +12,8 @@ type BaseDoctorFields struct {
 }
 
 type DoctorRelationship struct {
-	ClinicLocation *uuid.UUID `json:"clinicLocation"`
-	Clinic         *Clinic    `gorm:"foreignKey:ClinicLocation;references:ID"`
+	Works  *uuid.UUID `json:"works"`
+	Clinic *Clinic    `gorm:"foreignKey:Works;references:ID"`
 }
 
 type Doctor struct {

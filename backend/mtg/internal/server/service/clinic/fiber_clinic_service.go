@@ -16,5 +16,10 @@ func InitializeFiberClinicService(dao cDao.ClinicDAO) *FiberClinicService {
 }
 
 func (s *FiberClinicService) CreateClinic(model entity.Clinic) (*uuid.UUID, error) {
+	return s.DAO.CreateClinic(model)
+
+}
+
+func (s *FiberClinicService) GetAllClinics() ([]entity.Clinic, error) {
 	return nil, nil
 }

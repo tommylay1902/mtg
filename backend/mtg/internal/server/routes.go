@@ -20,9 +20,11 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	apiPrescriptionHistoryRoutes.Put("/:email/:pId", s.Handler.HistoryHandler.UpdateByEmailAndRx)
 
 	apiMedicationTypeRoutes := s.Group("api/v1/medication-type")
+	apiMedicationTypeRoutes.Use(middleware.SupabaseProtected())
 	apiMedicationTypeRoutes.Post("", s.Handler.MedicationTypeHandler.CreateMedicationType)
 	apiMedicationTypeRoutes.Get("/all", s.Handler.MedicationTypeHandler.GetMedicationTypes)
 
 	apiClinicRoutes := s.Group("api/v1/clinic")
+	apiClinicRoutes.Use(middleware.SupabaseProtected())
 	apiClinicRoutes.Post("", s.Handler.ClinicHandler.CreateClinic)
 }

@@ -8,4 +8,5 @@ import (
 
 type ClinicService interface {
 	CreateClinic(entity.Clinic) (*uuid.UUID, error)
+	GetAllClinics() ([]entity.Clinic, error)
 }
