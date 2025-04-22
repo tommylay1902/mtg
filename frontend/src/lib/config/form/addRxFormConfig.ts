@@ -8,7 +8,8 @@ const basePrescriptionSchema = z.object({
 	started: z.string().nullable(),
 	ended: z.string().nullable(),
 	refills: z.number().min(0, 'Required'),
-	total: z.number().min(0, 'Required')
+	total: z.number().min(0, 'Required'),
+	prescribedBy: z.string()
 });
 
 export const prescriptionSchema = basePrescriptionSchema
@@ -69,6 +70,11 @@ export const addRxFormConfig: {
 	{
 		id: 'medicationType',
 		title: 'Medication Type',
+		type: 'select'
+	},
+	{
+		id: 'prescribedBy',
+		title: 'Prescribed By',
 		type: 'select'
 	}
 ];

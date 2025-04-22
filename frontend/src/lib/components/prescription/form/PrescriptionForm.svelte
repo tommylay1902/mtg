@@ -10,6 +10,7 @@
 	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
 	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
 	import type { FormFieldKeys, PrescriptionSchemaType } from '$lib/config/form/addRxFormConfig.js';
+	import * as Select from '$lib/components/ui/select/index.js';
 
 	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
@@ -67,7 +68,7 @@
 <form method="POST" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
 		{#each formConfigs as config}
-			{#if config.type === 'select' && medicationTypes.current.length > 0}
+			{#if config.type === 'select' && config.id === 'medicationType'}
 				<div>
 					<MedicationTypeSelector {isDropdownOpen} bind:value={$form.medicationType} />
 					<div class="min-h-5">
@@ -75,6 +76,10 @@
 							<p class="text-sm text-red-500">{unwrapError($errors[config.id])}</p>
 						{/if}
 					</div>
+				</div>
+			{:else if config.type === 'select'}
+				<div>
+					<Select.Root type="single"></Select.Root>
 				</div>
 			{:else if config.type !== 'select'}
 				<div>

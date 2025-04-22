@@ -68,7 +68,6 @@ func (dao *GormPrescriptionDao) GetMedicationTypesByPrescriptionId(prescription 
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("helloo")
 	return medTypes, nil
 }
 
@@ -81,7 +80,6 @@ func (dao *GormPrescriptionDao) GetAllPrescriptions(searchQueries map[string]str
 		func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "type")
 		}).Find(&prescriptions).Error
-	fmt.Println(prescriptions[0].MedicationTypes)
 	if err != nil {
 		return nil, err
 	}
