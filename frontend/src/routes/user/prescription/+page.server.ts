@@ -2,10 +2,12 @@ import type { Actions, PageServerLoad } from './$types.js';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/addRxFormConfig.js';
+import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
 
 export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
 	try {
 		const prescriptionForm = await superValidate(zod(prescriptionSchema));
+		const createMedTypeForm = await superValidate(zod(addMedicationTypeSchema));
 		const { session } = await safeGetSession();
 
 		const fetchOptions = {
@@ -21,7 +23,7 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 
 		const prescription = await rxResponse.json();
 		const medicationTypes = await mtResponse.json();
-		return { prescription, medicationTypes, prescriptionForm };
+		return { prescription, medicationTypes, form: { prescriptionForm, createMedTypeForm } };
 	} catch (err) {
 		console.error(err);
 		return {};
@@ -29,7 +31,7 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 };
 
 export const actions: Actions = {
-	default: async ({ request, fetch, locals: { safeGetSession } }) => {
+	createPrescription: async ({ request, fetch, locals: { safeGetSession } }) => {
 		const prescriptionForm = await superValidate(request, zod(prescriptionSchema));
 
 		if (!prescriptionForm.valid) return fail(400, { prescriptionForm });
@@ -60,6 +62,34 @@ export const actions: Actions = {
 			return {
 				success: true,
 				data: { ...prescriptionForm.data, id: success }
+			};
+		} catch (err) {
+			console.error(err);
+		}
+	},
+	createMedType: async ({ request, fetch, locals: { safeGetSession } }) => {
+		const createMedTypeForm = await superValidate(request, zod(addMedicationTypeSchema));
+		if (!createMedTypeForm.valid) return fail(400, createMedTypeForm);
+
+		try {
+			const { session } = await safeGetSession();
+			const response = await fetch('http://mtg_api:8080/api/v1/medication-type', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session?.access_token}`
+				},
+				body: JSON.stringify(createMedTypeForm.data)
+			});
+
+			const { success } = await response.json();
+
+			return {
+				success: true,
+				data: {
+					...createMedTypeForm.data,
+					id: success
+				}
 			};
 		} catch (err) {
 			console.error(err);

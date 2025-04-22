@@ -7,14 +7,12 @@
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
 	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
 	import type { FormFieldKeys, PrescriptionSchemaType } from '$lib/config/form/addRxFormConfig.js';
-	import * as Select from '$lib/components/ui/select/index.js';
+	import DoctorSelector from './Selector/DoctorSelector.svelte';
 
-	let { prescriptionForm, isAddDialogOpen = $bindable() } = $props();
+	let { prescriptionForm, createMedTypeForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
-	const medicationTypes = getMedicationTypeContext();
 
 	const formConfigs: Array<{
 		id: FormFieldKeys;
@@ -64,12 +62,16 @@
 	};
 </script>
 
-<form method="POST" use:enhance>
+<form method="POST" action="?/createPrescription" use:enhance>
 	<div class="flex w-full flex-col justify-center space-y-4">
 		{#each formConfigs as config}
 			{#if config.id === 'medicationType'}
 				<div>
-					<MedicationTypeSelector {isDropdownOpen} bind:value={$form.medicationType} />
+					<MedicationTypeSelector
+						{isDropdownOpen}
+						bind:value={$form.medicationType}
+						{createMedTypeForm}
+					/>
 					<div class="min-h-5">
 						{#if $errors[config.id]}
 							<p class="text-sm text-red-500">{unwrapError($errors[config.id])}</p>
@@ -78,9 +80,7 @@
 				</div>
 			{:else if config.id === 'prescribedBy'}
 				<div>
-					<Select.Root type="single">
-						<Select.Trigger>Who placed the prescription order</Select.Trigger>
-					</Select.Root>
+					<DoctorSelector />
 				</div>
 			{:else if config.type !== 'select'}
 				<div>
