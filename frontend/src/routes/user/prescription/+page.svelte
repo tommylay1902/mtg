@@ -52,6 +52,7 @@
 		<UpdatePrescriptionDialog
 			bind:isUpdateDialogOpen
 			{updateDisplayPrescriptions}
+			createMedTypeForm={data.form?.createMedTypeForm}
 			bind:rowSelection
 		/>
 	{/if}
@@ -61,7 +62,11 @@
 			<Dialog.Header>
 				<Dialog.Title>Create a new prescription</Dialog.Title>
 			</Dialog.Header>
-			<PrescriptionForm prescriptionForm={data.prescriptionForm} bind:isAddDialogOpen />
+			<PrescriptionForm
+				prescriptionForm={data.form?.prescriptionForm}
+				createMedTypeForm={data.form?.createMedTypeForm}
+				bind:isAddDialogOpen
+			/>
 		</Dialog.Content>
 	</Dialog.Root>
 	<PrescriptionTable bind:rowSelection />

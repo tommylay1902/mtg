@@ -12,6 +12,7 @@
 	import MedicationTypeSelector from '$lib/components/prescription/form/Selector/MedicationTypeSelector.svelte';
 	import { type MedicationType } from '$lib/types/MedicationType.js';
 	import Loader from '$lib/components/ui/Loader.svelte';
+	import type { AddMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
 
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
@@ -32,7 +33,8 @@
 	let {
 		updateDisplayPrescriptions,
 		isUpdateDialogOpen = $bindable(),
-		rowSelection = $bindable()
+		rowSelection = $bindable(),
+		createMedTypeForm
 	} = $props();
 
 	const inputConfigs = prescriptinInputConfigs;
@@ -195,6 +197,7 @@
 									<MedicationTypeSelector
 										{isDropdownOpen}
 										bind:value={localDrafts[activeIdx].medicationType}
+										{createMedTypeForm}
 									/>
 								</div>
 							{/key}

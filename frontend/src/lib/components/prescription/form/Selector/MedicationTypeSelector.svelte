@@ -7,6 +7,7 @@
 	import type { MedicationType } from '$lib/types/MedicationType.js';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import X from '@lucide/svelte/icons/x';
+	import AddMedicationTypeDialog from '$lib/components/prescription/dialog/AddMedicationTypeDialog.svelte';
 
 	type DropdownViewMode = 'All' | 'Selected' | 'Deselected';
 	type SelectedMedication = {
@@ -15,7 +16,7 @@
 	};
 
 	let dropDownViewMode = $state<DropdownViewMode>('All');
-	let { isDropdownOpen = $bindable(), value = $bindable() } = $props();
+	let { isDropdownOpen = $bindable(), value = $bindable(), createMedTypeForm } = $props();
 	let searchQuery = $state<string>('');
 	let selectedMedicationTypes = $state<Set<SelectedMedication>>(new Set(value));
 	const medicationTypes = getMedicationTypeContext();
@@ -98,9 +99,40 @@
 	};
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (isDropdownOpen && searchInput && event.key === '/') {
-			event.preventDefault();
-			searchInput.focus();
+		if (!isDropdownOpen || !searchInput) return;
+
+		if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+			return;
+		}
+
+		if (
+			event.ctrlKey ||
+			event.altKey ||
+			event.metaKey ||
+			event.key === 'Control' ||
+			event.key === 'Alt' ||
+			event.key === 'Meta' ||
+			event.key === 'Shift' ||
+			event.key === 'Tab' ||
+			event.key === 'Enter' ||
+			event.key === 'Escape' ||
+			event.key === 'ArrowUp' ||
+			event.key === 'ArrowDown' ||
+			event.key === 'ArrowLeft' ||
+			event.key === 'ArrowRight'
+		) {
+			return;
+		}
+
+		event.preventDefault();
+		searchInput.focus();
+
+		// If it's a printable character, add it to the search query
+		if (event.key.length === 1) {
+			searchQuery += event.key;
+			// Move cursor to end of input
+			searchInput.selectionStart = searchQuery.length;
+			searchInput.selectionEnd = searchQuery.length;
 		}
 	}
 </script>
@@ -140,11 +172,11 @@
 					<div class="relative">
 						<input
 							type="text"
-							placeholder="Search medication type(s)..."
+							placeholder="Search or add medication types"
 							class="z-1000 w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+							bind:this={searchInput}
 							oninput={updateSearchQuery}
 							value={searchQuery}
-							bind:this={searchInput}
 						/>
 						{#if searchQuery}
 							<div>
@@ -191,9 +223,18 @@
 							</div>
 						{:else}
 							<div class="flex flex-col">
-								<span class="pt-5 text-center text-sm italic">
-									No medication types to display!
-								</span>
+								<div class="pt-5 text-center text-sm italic">
+									{#if searchQuery.length > 0}
+										<div>
+											No medications found with search: <span class="font-bold">{searchQuery}</span>
+											<div>
+												<AddMedicationTypeDialog {searchQuery} {createMedTypeForm} />
+											</div>
+										</div>
+									{:else}
+										No medication types to display!
+									{/if}
+								</div>
 							</div>
 						{/if}
 					</ScrollArea>

@@ -14,3 +14,5 @@ setup-dev: build-dev
 	docker compose -f docker-compose.dev.yml up -d
 
 refresh-dev: down-dev setup-dev
+
+refresh-fresh-dev: down-dev setup-fresh-dev
