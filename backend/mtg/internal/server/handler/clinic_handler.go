@@ -16,10 +16,26 @@ func InitializeClinicHandler(service cService.ClinicService) *ClinicHandler {
 }
 
 func (ch *ClinicHandler) CreateClinic(c *fiber.Ctx) error {
+	email := c.Locals("email").(string)
 	var bodyRequest entity.Clinic
+
 	if err := c.BodyParser(&bodyRequest); err != nil {
-		return c.SendStatus(fiber.StatusBadGateway)
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	bodyRequest.Owner = &email
+	id, err := ch.Service.CreateClinic(bodyRequest)
+
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": id,
+	})
+}
+
+func (ch *ClinicHandler) GetAllClinics(c *fiber.Ctx) error {
+
+	return nil
 }
