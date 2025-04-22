@@ -4,23 +4,28 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/addRxFormConfig.js';
 
 export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
-	const prescriptionForm = await superValidate(zod(prescriptionSchema));
-	const { session } = await safeGetSession();
+	try {
+		const prescriptionForm = await superValidate(zod(prescriptionSchema));
+		const { session } = await safeGetSession();
 
-	const fetchOptions = {
-		headers: {
-			Authorization: `Bearer ${session?.access_token}`
-		}
-	};
+		const fetchOptions = {
+			headers: {
+				Authorization: `Bearer ${session?.access_token}`
+			}
+		};
 
-	const rxResponse = await fetch('/api/prescriptions?type=prescriptions', fetchOptions);
+		const rxResponse = await fetch('/api/prescriptions?type=prescriptions', fetchOptions);
 
-	//input fetch logic for medication types for drop down list
-	const mtResponse = await fetch('/api/medication-type', fetchOptions);
+		//input fetch logic for medication types for drop down list
+		const mtResponse = await fetch('/api/medication-type', fetchOptions);
 
-	const prescription = await rxResponse.json();
-	const medicationTypes = await mtResponse.json();
-	return { prescription, medicationTypes, prescriptionForm };
+		const prescription = await rxResponse.json();
+		const medicationTypes = await mtResponse.json();
+		return { prescription, medicationTypes, prescriptionForm };
+	} catch (err) {
+		console.error(err);
+		return {};
+	}
 };
 
 export const actions: Actions = {

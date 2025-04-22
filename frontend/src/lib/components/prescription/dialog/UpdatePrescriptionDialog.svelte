@@ -12,7 +12,6 @@
 	import MedicationTypeSelector from '$lib/components/prescription/form/Selector/MedicationTypeSelector.svelte';
 	import { type MedicationType } from '$lib/types/MedicationType.js';
 	import Loader from '$lib/components/ui/Loader.svelte';
-	import { medicationChange } from '$lib/actions/medicationChange.js';
 
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
@@ -28,7 +27,6 @@
 	let localDrafts = $state<Prescription[]>([]);
 
 	// let selectedMedTypes = $state<MedicationType[]>([]);
-
 	let isLoadingMedTypes = $state<boolean>(false);
 
 	let {
@@ -40,8 +38,6 @@
 	const inputConfigs = prescriptinInputConfigs;
 
 	const prescriptions = getPrescriptionContext();
-
-	let selectedMedTypes = $derived(localDrafts[activeIdx].medicationType);
 
 	// EFFECT
 	$effect(() => {
