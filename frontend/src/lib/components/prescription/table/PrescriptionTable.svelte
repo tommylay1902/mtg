@@ -22,7 +22,7 @@
 
 	const table = createSvelteTable({
 		get data() {
-			return prescriptions.current as TData[];
+			return $state.snapshot(prescriptions.current) as TData[];
 		},
 		columns: columns<TData>(),
 		getCoreRowModel: getCoreRowModel(),
@@ -81,8 +81,8 @@
 					{/each}
 				</Table.Row>
 			{:else}
-				<Table.Row>
-					<Table.Cell colspan={columns.length} class="h-24 text-center">No results.</Table.Cell>
+				<Table.Row class="w-full">
+					<Table.Cell colspan={columns.length} class="h-24">No results.</Table.Cell>
 				</Table.Row>
 			{/each}
 		</Table.Body>

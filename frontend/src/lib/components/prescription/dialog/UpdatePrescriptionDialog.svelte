@@ -175,7 +175,7 @@
 	<Dialog.Trigger>
 		<Button>Update Prescriptions</Button>
 	</Dialog.Trigger>
-	<Dialog.Content>
+	<Dialog.Content class="max-h-[80dvh] overflow-y-scroll">
 		<Dialog.Header>
 			<Dialog.Title>Update Prescription</Dialog.Title>
 		</Dialog.Header>

@@ -10,6 +10,8 @@
 	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
 	import type { FormFieldKeys, PrescriptionSchemaType } from '$lib/config/form/addRxFormConfig.js';
 	import DoctorSelector from './Selector/DoctorSelector.svelte';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import PillBottle from '@lucide/svelte/icons/pill-bottle';
 
 	let { prescriptionForm, createMedTypeForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
@@ -18,6 +20,7 @@
 		id: FormFieldKeys;
 		title: string;
 		type: string;
+		space: string;
 	}> = addRxFormConfig;
 
 	const { form, errors, enhance, reset, delayed } = superForm<PrescriptionSchemaType>(
@@ -63,10 +66,10 @@
 </script>
 
 <form method="POST" action="?/createPrescription" use:enhance>
-	<div class="flex w-full flex-col justify-center space-y-4">
+	<div class="grid w-full grid-cols-4 gap-x-4">
 		{#each formConfigs as config}
 			{#if config.id === 'medicationType'}
-				<div>
+				<div class={config.space + ' py-4'}>
 					<MedicationTypeSelector
 						{isDropdownOpen}
 						bind:value={$form.medicationType}
@@ -79,11 +82,22 @@
 					</div>
 				</div>
 			{:else if config.id === 'prescribedBy'}
-				<div>
+				<div class={config.space}>
+					<Label>Prescribed By</Label>
 					<DoctorSelector />
 				</div>
+			{:else if config.id === 'notes'}
+				<div class={config.space}>
+					<Label for={config.id}>{config.title}</Label>
+					<Textarea id={config.id} name={config.id} bind:value={$form[config.id]} />
+					<div class="min-h-5">
+						{#if $errors[config.id]}
+							<p class="text-sm text-red-500">{$errors[config.id]}</p>
+						{/if}
+					</div>
+				</div>
 			{:else if config.type !== 'select'}
-				<div>
+				<div class={config.space}>
 					<Label for={config.id}>{config.title}</Label>
 					<Input id={config.id} name={config.id} type={config.type} bind:value={$form[config.id]} />
 					<div class="min-h-5">
@@ -97,6 +111,9 @@
 	</div>
 
 	<Dialog.Footer class="mt-3">
-		<Button type="submit">Add Prescription</Button>
+		<Button type="submit">
+			Add
+			<PillBottle />
+		</Button>
 	</Dialog.Footer>
 </form>

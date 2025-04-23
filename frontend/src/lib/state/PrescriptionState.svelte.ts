@@ -9,7 +9,7 @@ export class PrescriptionState {
 		return this.prescriptions;
 	}
 	addPrescription(p: Prescription) {
-		this.prescriptions = [...this.prescriptions, p];
+		this.prescriptions.push(p);
 	}
 	deletePrescriptions(selectedIds: string[]) {
 		this.prescriptions = this.prescriptions.filter((p: Prescription) => {
