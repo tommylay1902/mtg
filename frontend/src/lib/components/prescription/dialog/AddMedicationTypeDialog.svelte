@@ -54,7 +54,7 @@
 					<Input id="type" bind:value={$form.type} />
 				</div>
 				<div>
-					<ColorPicker bind:hex={$form.color} />
+					<ColorPicker label={'Pick a color to associate this tag with'} bind:hex={$form.color} />
 				</div>
 			</div>
 			<Dialog.Footer>
