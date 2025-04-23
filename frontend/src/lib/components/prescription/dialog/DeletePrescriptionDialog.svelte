@@ -36,7 +36,6 @@
 			}
 		} catch (error) {
 			toast.error('Failed to delete prescriptions: ' + error);
-			console.error('Delete error:', error);
 		}
 	};
 </script>

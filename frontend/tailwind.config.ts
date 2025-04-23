@@ -10,7 +10,7 @@ const config: Config = {
 		animation: {
 			'float-up': 'floatUp .5s ease-out forwards',
 			scaleUp: 'scaleUp 0.5s ease-out',
-			spin: 'spin 1s linear infinite'
+			spin: 'spin 3s linear infinite'
 		},
 		keyframes: {
 			floatUp: {
