@@ -11,7 +11,7 @@
 	import type { FormFieldKeys, PrescriptionSchemaType } from '$lib/config/form/addRxFormConfig.js';
 	import DoctorSelector from './Selector/DoctorSelector.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
-	import PillBottle from '@lucide/svelte/icons/pill-bottle';
+	import Pill from '@lucide/svelte/icons/pill';
 
 	let { prescriptionForm, createMedTypeForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
@@ -21,25 +21,30 @@
 		title: string;
 		type: string;
 		space: string;
+		placeholder?: string;
 	}> = addRxFormConfig;
 
 	const { form, errors, enhance, reset, delayed } = superForm<PrescriptionSchemaType>(
 		prescriptionForm,
 		{
 			dataType: 'json',
-			resetForm: false,
+			resetForm: true,
 			onSubmit() {
 				toast.loading('Processing...');
 			},
 			onResult(event) {
 				toast.dismiss();
 				if (event.result.type === 'success') {
+					reset();
 					isAddDialogOpen = false;
 					prescriptions.addPrescription(event.result.data?.data);
-					toast.success('Successfully created prescription');
-					reset();
+					toast.success('Success', {
+						description: 'Successfully created prescription'
+					});
 				} else if (event.result.type === 'failure') {
-					toast.error('ERROR!');
+					toast.error('Something went wrong...', {
+						description: 'Please fix the errors in the form before submitting.'
+					});
 				}
 			}
 		}
@@ -89,7 +94,12 @@
 			{:else if config.id === 'notes'}
 				<div class={config.space}>
 					<Label for={config.id}>{config.title}</Label>
-					<Textarea id={config.id} name={config.id} bind:value={$form[config.id]} />
+					<Textarea
+						id={config.id}
+						name={config.id}
+						bind:value={$form[config.id]}
+						placeholder={config?.placeholder}
+					/>
 					<div class="min-h-5">
 						{#if $errors[config.id]}
 							<p class="text-sm text-red-500">{$errors[config.id]}</p>
@@ -99,7 +109,13 @@
 			{:else if config.type !== 'select'}
 				<div class={config.space}>
 					<Label for={config.id}>{config.title}</Label>
-					<Input id={config.id} name={config.id} type={config.type} bind:value={$form[config.id]} />
+					<Input
+						id={config.id}
+						name={config.id}
+						type={config.type}
+						bind:value={$form[config.id]}
+						placeholder={config?.placeholder}
+					/>
 					<div class="min-h-5">
 						{#if $errors[config.id]}
 							<p class="text-sm text-red-500">{$errors[config.id]}</p>
@@ -112,8 +128,8 @@
 
 	<Dialog.Footer class="mt-3">
 		<Button type="submit">
-			Add
-			<PillBottle />
+			<Pill />
+			<span class="text-md"> Add Prescription </span>
 		</Button>
 	</Dialog.Footer>
 </form>

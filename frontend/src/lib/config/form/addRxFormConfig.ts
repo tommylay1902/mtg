@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 const basePrescriptionSchema = z.object({
-	medication: z.string().min(1, 'Field is required'),
-	dosage: z.string().min(1, 'Dosage is required or provide unknown'),
+	medication: z.string().min(1, 'Name of medication is required'),
+	dosage: z.string().min(1, "Dosage is required or provide value 'unknown'"),
 	notes: z.string().nullable(),
 	started: z.string().nullable(),
 	ended: z.string().nullable(),
@@ -19,7 +19,7 @@ export const prescriptionSchema = basePrescriptionSchema
 				type: z.string()
 			})
 			.array()
-			.min(1, 'Medication type is required!')
+			.min(1, 'Please include at least one medication type')
 	})
 	.refine(
 		(data) => {
@@ -28,8 +28,8 @@ export const prescriptionSchema = basePrescriptionSchema
 			return true;
 		},
 		{
-			message: "Can't end prescription before the day you started it!",
-			path: ['prescription.ended']
+			message: "Prescriptions can't have an end date before the start date",
+			path: ['ended']
 		}
 	);
 
@@ -43,10 +43,29 @@ export const addRxFormConfig: {
 	title: string;
 	type: string;
 	space: string;
+	placeholder?: string;
 }[] = [
-	{ id: 'medication', title: 'Medication', type: 'text', space: 'col-span-2' },
-	{ id: 'dosage', title: 'Dosage', type: 'text', space: 'col-span-2' },
-	{ id: 'notes', title: 'Notes', type: 'text', space: 'col-span-4' },
+	{
+		id: 'medication',
+		title: 'Medication',
+		type: 'text',
+		space: 'col-span-2',
+		placeholder: 'Name of medication...'
+	},
+	{
+		id: 'dosage',
+		title: 'Dosage',
+		type: 'text',
+		space: 'col-span-2',
+		placeholder: 'e.g. 200mg tablet daily'
+	},
+	{
+		id: 'notes',
+		title: 'Notes',
+		type: 'text',
+		space: 'col-span-4',
+		placeholder: 'Additional notes (why are we taking this, what is it used for...etc.)'
+	},
 	{
 		id: 'started',
 		title: 'Started',
@@ -75,7 +94,8 @@ export const addRxFormConfig: {
 		id: 'prescribedBy',
 		title: 'Prescribed By',
 		type: 'select',
-		space: 'col-span-4'
+		space: 'col-span-4',
+		placeholder: 'Who placed the order?'
 	},
 	{
 		id: 'medicationType',

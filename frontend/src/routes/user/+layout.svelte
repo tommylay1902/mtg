@@ -22,5 +22,5 @@
 </header>
 <main>
 	{@render children()}
-	<Toaster />
+	<Toaster richColors />
 </main>

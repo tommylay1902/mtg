@@ -12,7 +12,7 @@
 	import MedicationTypeSelector from '$lib/components/prescription/form/Selector/MedicationTypeSelector.svelte';
 	import { type MedicationType } from '$lib/types/MedicationType.js';
 	import Loader from '$lib/components/ui/Loader.svelte';
-	import type { AddMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
+	import { toast } from 'svelte-sonner';
 
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
@@ -65,9 +65,14 @@
 
 	// API CALL
 	const batchUpdate = async () => {
+		toast.loading('Updating prescriptions...');
 		await fetch('/api/prescriptions', {
 			method: 'PUT',
 			body: JSON.stringify(localDrafts)
+		});
+		toast.dismiss();
+		toast.success('Success!', {
+			description: 'Succesfully updated prescription(s)'
 		});
 
 		prescriptions.updatePrescriptions(localDrafts);
