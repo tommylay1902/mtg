@@ -5,8 +5,8 @@
 	let { medicationTypes }: { medicationTypes: MedicationType[] } = $props();
 </script>
 
-<div class="flex flex-col gap-y-4">
+<span class="flex flex-row gap-x-2">
 	{#each medicationTypes as type}
-		<Badge class={`w-fit `} style={`background-color: ${type.color};`}>{type.type}</Badge>
+		<Badge class={`w-fit`} style={`background-color: ${type.color};`}>{type.type}</Badge>
 	{/each}
-</div>
+</span>
