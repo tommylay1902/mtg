@@ -2,7 +2,6 @@ package pDao
 
 import (
 	"errors"
-	"fmt"
 	"mtg/internal/error/apperror"
 	"mtg/internal/helper"
 	"mtg/internal/models/entity"
@@ -28,8 +27,6 @@ func (dao *GormPrescriptionDao) CreatePrescription(model entity.Prescription) (*
 		tx.Rollback()
 		return nil, err
 	}
-	fmt.Println(model.ID)
-	fmt.Println(model)
 
 	if err := tx.Model(&model).Association("MedicationTypes").Append(model.MedicationTypes); err != nil {
 		tx.Rollback()
@@ -78,7 +75,7 @@ func (dao *GormPrescriptionDao) GetAllPrescriptions(searchQueries map[string]str
 
 	err := query.Where("owner = ?", *owner).Order("started desc").Preload("MedicationTypes",
 		func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "type")
+			return db.Select("id", "type", "color")
 		}).Find(&prescriptions).Error
 	if err != nil {
 		return nil, err

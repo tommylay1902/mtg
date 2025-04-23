@@ -3,6 +3,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/addRxFormConfig.js';
 import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
+import type { MedicationType } from '$lib/types/MedicationType.js';
 
 export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
 	try {
@@ -22,7 +23,9 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 		const mtResponse = await fetch('/api/medication-type', fetchOptions);
 
 		const prescription = await rxResponse.json();
-		const medicationTypes = await mtResponse.json();
+		const medicationTypes: MedicationType[] = await mtResponse.json();
+		console.log(medicationTypes);
+
 		return { prescription, medicationTypes, form: { prescriptionForm, createMedTypeForm } };
 	} catch (err) {
 		console.error(err);
@@ -32,7 +35,6 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 
 export const actions: Actions = {
 	createPrescription: async ({ request, fetch, locals: { safeGetSession } }) => {
-		console.log('hello from form action');
 		const prescriptionForm = await superValidate(request, zod(prescriptionSchema));
 
 		if (!prescriptionForm.valid) return fail(400, { prescriptionForm });

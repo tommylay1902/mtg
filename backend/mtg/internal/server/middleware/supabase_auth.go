@@ -3,7 +3,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -22,7 +21,7 @@ func SupabaseProtected() fiber.Handler {
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-		fmt.Println(authHeader)
+
 		if tokenString == authHeader {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Bearer token required",
@@ -43,8 +42,6 @@ func SupabaseProtected() fiber.Handler {
 				"details": err.Error(),
 			})
 		}
-
-		fmt.Println(user)
 
 		c.Locals("email", user.Email)
 

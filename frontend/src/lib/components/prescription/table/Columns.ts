@@ -3,6 +3,7 @@ import DataTableCheckbox from './DataTableCheckbox.svelte';
 import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js';
 import GenericSortHeader from '../table/header/GenericSortHeader.svelte';
 import { type Prescription } from '$lib/types/Prescription.js';
+import MTBadge from '$lib/components/ui/MTBadge.svelte';
 
 // This type is used to define the shape of our data.
 
@@ -61,6 +62,13 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Dosage' })
 	},
 	{
+		accessorKey: 'medicationType',
+		header: ({ column }) => 'Medication Type',
+		cell: ({ row }) => {
+			return renderComponent(MTBadge, { medicationTypes: row.original.medicationType });
+		}
+	},
+	{
 		accessorKey: 'notes',
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Notes' }),
 		cell: ({ row }) => {
@@ -73,7 +81,12 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	},
 	{
 		accessorKey: 'started',
-		cell: ({ row }) => formatISODateForUserDisplay(row.original.started),
+		cell: ({ row }) => {
+			if (!row.original.started) {
+				return 'Unknown';
+			}
+			return formatISODateForUserDisplay(row.original.started);
+		},
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Started' }),
 		sortingFn: dateSortingFn
 	},

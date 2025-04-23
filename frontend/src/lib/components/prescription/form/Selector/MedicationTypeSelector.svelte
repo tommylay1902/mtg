@@ -10,20 +10,16 @@
 	import AddMedicationTypeDialog from '$lib/components/prescription/dialog/AddMedicationTypeDialog.svelte';
 
 	type DropdownViewMode = 'All' | 'Selected' | 'Deselected';
-	type SelectedMedication = {
-		id: string;
-		type: string;
-	};
 
 	let dropDownViewMode = $state<DropdownViewMode>('All');
 	let { isDropdownOpen = $bindable(), value = $bindable(), createMedTypeForm } = $props();
 	let searchQuery = $state<string>('');
-	let selectedMedicationTypes = $state<Set<SelectedMedication>>(new Set(value));
+	let selectedMedicationTypes = $state<Set<MedicationType>>(new Set(value));
 	const medicationTypes = getMedicationTypeContext();
 
 	let searchInput: HTMLInputElement;
 
-	const removeMedicationType = (med: SelectedMedication) => {
+	const removeMedicationType = (med: MedicationType) => {
 		const updated = new Set(selectedMedicationTypes);
 		// Find the exact item to delete by comparing IDs
 		for (const item of updated) {
@@ -60,9 +56,9 @@
 	});
 
 	const selectAllMedTypes = () => {
-		const newSelection = new Set<SelectedMedication>();
+		const newSelection = new Set<MedicationType>();
 		medicationTypes.current.forEach((mt) => {
-			newSelection.add({ id: mt.id, type: mt.type });
+			newSelection.add({ id: mt.id, type: mt.type, color: mt.color });
 		});
 		selectedMedicationTypes = newSelection;
 		value = Array.from(newSelection);
@@ -87,7 +83,7 @@
 
 		const updated = new Set(selectedMedicationTypes);
 		if (isSelected) {
-			updated.add({ id: mt.id, type: mt.type });
+			updated.add({ id: mt.id, type: mt.type, color: mt.color });
 		} else {
 			Array.from(updated).forEach((item) => {
 				if (item.id === mt.id) updated.delete(item);
@@ -154,7 +150,7 @@
 			{#if selectedMedicationTypes.size > 0}
 				<div class="mt-2 flex flex-wrap items-center justify-center gap-1 border p-3">
 					{#each Array.from(selectedMedicationTypes) as selected}
-						<Badge class="chip p-2" variant="default">
+						<Badge style={`background-color: ${selected.color};`}>
 							{selected.type}
 							<button
 								type="button"
@@ -217,7 +213,8 @@
 										class="flex h-9 w-full px-3 py-2 hover:bg-gray-300"
 										onclick={(e: Event) => toggleCheck(e, mt)}
 									>
-										<span class="ml-6 text-xs">{mt.type}</span>
+										<span class={`ml-6 text-xs font-bold`} style="color: {mt.color}">{mt.type}</span
+										>
 									</DropdownMenu.CheckboxItem>
 								{/each}
 							</div>

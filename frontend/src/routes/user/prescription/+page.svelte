@@ -22,7 +22,7 @@
 	let updateDisplayPrescriptions = $state<Prescription[]>([]);
 
 	let prescriptions = new PrescriptionState(data.prescription);
-	let medicationTypes = new MedicationTypeState(data.medicationTypes);
+	let medicationTypes = new MedicationTypeState(data.medicationTypes ?? []);
 
 	setPrescriptionContext(prescriptions);
 	setMedicationTypeContext(medicationTypes);
