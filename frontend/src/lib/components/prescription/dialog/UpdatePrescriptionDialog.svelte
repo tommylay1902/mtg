@@ -7,7 +7,7 @@
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import type { Prescription } from '$lib/types/Prescription.js';
-	import { prescriptinInputConfigs } from '$lib/config/inputConfig.js';
+	import { rxFormConfig } from '$lib/config/form/rxFormConfig.js';
 	import { compareDates } from '$lib/utils.js';
 	import MedicationTypeSelector from '$lib/components/prescription/form/Selector/MedicationTypeSelector.svelte';
 	import { type MedicationType } from '$lib/types/MedicationType.js';
@@ -37,7 +37,7 @@
 		createMedTypeForm
 	} = $props();
 
-	const inputConfigs = prescriptinInputConfigs;
+	const inputConfigs = rxFormConfig;
 
 	const prescriptions = getPrescriptionContext();
 

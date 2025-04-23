@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { formatISODateForHtmlInput } from '$lib/format/formatDate.js';
 
 const basePrescriptionSchema = z.object({
 	medication: z.string().min(1, 'Name of medication is required'),
@@ -35,73 +36,85 @@ export const prescriptionSchema = basePrescriptionSchema
 	);
 
 export type PrescriptionSchemaType = z.infer<typeof prescriptionSchema>;
-
-// Simplified type - no more nested paths needed
 export type FormFieldKeys = keyof PrescriptionSchemaType;
 
-export const addRxFormConfig: {
+const defaultTransform = (v: string) => v;
+
+export type rxFormConfigFields = {
 	id: FormFieldKeys;
 	title: string;
 	type: string;
 	space: string;
 	placeholder?: string;
-}[] = [
+	transform: (data: any) => string | null;
+};
+
+export const rxFormConfig: rxFormConfigFields[] = [
 	{
 		id: 'medication',
 		title: 'Medication',
 		type: 'text',
 		space: 'col-span-2',
-		placeholder: 'Name of medication...'
+		placeholder: 'Name of medication...',
+		transform: defaultTransform
 	},
 	{
 		id: 'dosage',
 		title: 'Dosage',
 		type: 'text',
 		space: 'col-span-2',
-		placeholder: 'e.g. 200mg tablet daily'
+		placeholder: 'e.g. 200mg tablet daily',
+		transform: defaultTransform
 	},
 	{
 		id: 'notes',
 		title: 'Notes',
 		type: 'text',
 		space: 'col-span-4',
-		placeholder: 'Additional notes (why are we taking this, what is it used for...etc.)'
+		placeholder: 'Additional notes (why are we taking this, what is it used for...etc.)',
+		transform: defaultTransform
 	},
 	{
 		id: 'started',
 		title: 'Started',
 		type: 'date',
-		space: 'col-span-2'
+		space: 'col-span-2',
+		transform: (v: string | null) => (v ? formatISODateForHtmlInput(v) : '')
 	},
 	{
 		id: 'ended',
 		title: 'Ended',
 		type: 'date',
-		space: 'col-span-2'
+		space: 'col-span-2',
+		transform: (v: string | null) => (v ? formatISODateForHtmlInput(v) : '')
 	},
 	{
 		id: 'refills',
 		title: 'Refills',
 		type: 'number',
-		space: 'col-span-2'
+		space: 'col-span-2',
+		transform: (v: number) => v.toString()
 	},
 	{
 		id: 'total',
 		title: 'Total',
 		type: 'number',
-		space: 'col-span-2'
+		space: 'col-span-2',
+		transform: (v: number) => v.toString()
 	},
 	{
 		id: 'prescribedBy',
 		title: 'Prescribed By',
 		type: 'select',
 		space: 'col-span-4',
-		placeholder: 'Who placed the order?'
+		placeholder: 'Who placed the order?',
+		transform: defaultTransform
 	},
 	{
 		id: 'medicationType',
 		title: 'Medication Type',
 		type: 'select',
-		space: 'col-span-4'
+		space: 'col-span-4',
+		transform: defaultTransform
 	}
 ];

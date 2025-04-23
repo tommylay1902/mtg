@@ -3,12 +3,15 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { addRxFormConfig } from '$lib/config/form/addRxFormConfig.js';
+	import { rxFormConfig } from '$lib/config/form/rxFormConfig.js';
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms/client';
 	import MedicationTypeSelector from './Selector/MedicationTypeSelector.svelte';
-	import type { FormFieldKeys, PrescriptionSchemaType } from '$lib/config/form/addRxFormConfig.js';
+	import type {
+		PrescriptionSchemaType,
+		rxFormConfigFields
+	} from '$lib/config/form/rxFormConfig.js';
 	import DoctorSelector from './Selector/DoctorSelector.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Pill from '@lucide/svelte/icons/pill';
@@ -16,13 +19,7 @@
 	let { prescriptionForm, createMedTypeForm, isAddDialogOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
 
-	const formConfigs: Array<{
-		id: FormFieldKeys;
-		title: string;
-		type: string;
-		space: string;
-		placeholder?: string;
-	}> = addRxFormConfig;
+	const formConfigs: Array<rxFormConfigFields> = rxFormConfig;
 
 	const { form, errors, enhance, reset, delayed } = superForm<PrescriptionSchemaType>(
 		prescriptionForm,
