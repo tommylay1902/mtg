@@ -24,7 +24,6 @@ export const GET: RequestHandler = async ({ locals: { safeGetSession }, url }) =
 				Authorization: `Bearer ${session?.access_token}`
 			}
 		});
-		console.log(response.status);
 		const data = await response.json();
 
 		return new Response(JSON.stringify(data), { status: 200 });

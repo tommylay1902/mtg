@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	dto "mtg/internal/models/dto/prescription"
@@ -36,7 +35,6 @@ func (ph *PrescriptionHandler) CreatePrescription(c *fiber.Ctx) error {
 
 	id, err := ph.Service.CreatePrescription(&requestBody)
 	if err != nil {
-		fmt.Println(err)
 		return errorhandler.HandleError(err, c)
 	}
 
@@ -132,11 +130,10 @@ func (ph *PrescriptionHandler) DeleteBatchPrescription(c *fiber.Ctx) error {
 		}
 		return errorhandler.HandleError(bodyParseErr, c)
 	}
-	fmt.Println(requestBody.DeleteList)
 	err := ph.Service.DeleteBatchPrescription(requestBody.DeleteList, email)
 
 	if err != nil {
-		fmt.Println(err)
+
 		return errorhandler.HandleError(err, c)
 	}
 
@@ -184,7 +181,7 @@ func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
 	var requestBody []entity.Prescription
 
 	if err := c.BodyParser(&requestBody); err != nil {
-		fmt.Println(err)
+
 		bodyParseErr := &apperror.BadRequestError{
 			Message: err.Error(),
 			Code:    400,
@@ -199,7 +196,7 @@ func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
 	err := ph.Service.UpdateBatchPrescription(requestBody, email)
 
 	if err != nil {
-		fmt.Println(err)
+
 		return errorhandler.HandleError(err, c)
 	}
 

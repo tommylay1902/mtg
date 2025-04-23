@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"mtg/internal/error/errorhandler"
 	dto "mtg/internal/models/dto/prescriptionhistory"
@@ -51,18 +50,17 @@ func (h *PrescriptionHistoryHandler) GetAll(c *fiber.Ctx) error {
 func (h *PrescriptionHistoryHandler) GetByEmailAndRx(c *fiber.Ctx) error {
 	email := c.Params("email")
 	idParam := c.Params("pId")
-	fmt.Println(idParam)
 
 	pId, err := uuid.Parse(idParam)
 
 	if err != nil {
-		fmt.Println("hello")
+
 		return errorhandler.HandleError(err, c)
 	}
 	result, sErr := h.Service.GetByEmailAndRx(email, pId)
 
 	if sErr != nil {
-		fmt.Println("hello")
+
 		return errorhandler.HandleError(sErr, c)
 	}
 

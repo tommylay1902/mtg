@@ -82,7 +82,10 @@
 				</Table.Row>
 			{:else}
 				<Table.Row class="w-full">
-					<Table.Cell colspan={columns.length} class="h-24">No results.</Table.Cell>
+					<Table.Cell
+						colspan={table.getHeaderGroups()[0]?.headers.length}
+						class="h-24 text-center font-bold">No results</Table.Cell
+					>
 				</Table.Row>
 			{/each}
 		</Table.Body>

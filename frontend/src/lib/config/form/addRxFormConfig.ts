@@ -16,7 +16,8 @@ export const prescriptionSchema = basePrescriptionSchema
 		medicationType: z
 			.object({
 				id: z.string(),
-				type: z.string()
+				type: z.string(),
+				color: z.string()
 			})
 			.array()
 			.min(1, 'Please include at least one medication type')

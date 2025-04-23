@@ -1,7 +1,6 @@
 package phService
 
 import (
-	"fmt"
 	"mtg/internal/error/apperror"
 	dto "mtg/internal/models/dto/prescriptionhistory"
 	"mtg/internal/models/entity"
@@ -64,7 +63,7 @@ func (phs *FiberPrescriptionHistoryService) UpdateByEmailAndRx(dto *dto.Prescrip
 	curr, err := phs.DAO.GetByEmailAndRx(email, pId)
 
 	if err != nil {
-		fmt.Println("hello")
+
 		return err
 	}
 

@@ -3,7 +3,6 @@ package errorhandler
 
 import (
 	"errors"
-	"fmt"
 	"mtg/internal/error/apperror"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,7 +37,6 @@ func HandleError(err error, c *fiber.Ctx) error {
 				"error": err.Error(),
 			})
 	default:
-		fmt.Println("server error:", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "server error",
 		})

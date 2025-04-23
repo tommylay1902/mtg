@@ -6,8 +6,8 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { type AddMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
 	import { toast } from 'svelte-sonner';
-	import { onMount } from 'svelte';
 	import { getMedicationTypeContext } from '$lib/context/MedicationContext.js';
+	import ColorPicker from 'svelte-awesome-color-picker';
 
 	const medicationTypes = getMedicationTypeContext();
 
@@ -52,6 +52,9 @@
 				<div>
 					<Label for="type" class="text-right">Medication Type</Label>
 					<Input id="type" bind:value={$form.type} />
+				</div>
+				<div>
+					<ColorPicker bind:hex={$form.color} />
 				</div>
 			</div>
 			<Dialog.Footer>
