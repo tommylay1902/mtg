@@ -42,38 +42,45 @@ export const addRxFormConfig: {
 	id: FormFieldKeys;
 	title: string;
 	type: string;
+	space: string;
 }[] = [
-	{ id: 'medication', title: 'Medication', type: 'text' },
-	{ id: 'dosage', title: 'Dosage', type: 'text' },
-	{ id: 'notes', title: 'Notes', type: 'text' },
+	{ id: 'medication', title: 'Medication', type: 'text', space: 'col-span-2' },
+	{ id: 'dosage', title: 'Dosage', type: 'text', space: 'col-span-2' },
+	{ id: 'notes', title: 'Notes', type: 'text', space: 'col-span-4' },
 	{
 		id: 'started',
 		title: 'Started',
-		type: 'date'
+		type: 'date',
+		space: 'col-span-2'
 	},
 	{
 		id: 'ended',
 		title: 'Ended',
-		type: 'date'
+		type: 'date',
+		space: 'col-span-2'
 	},
 	{
 		id: 'refills',
 		title: 'Refills',
-		type: 'number'
+		type: 'number',
+		space: 'col-span-2'
 	},
 	{
 		id: 'total',
 		title: 'Total',
-		type: 'number'
-	},
-	{
-		id: 'medicationType',
-		title: 'Medication Type',
-		type: 'select'
+		type: 'number',
+		space: 'col-span-2'
 	},
 	{
 		id: 'prescribedBy',
 		title: 'Prescribed By',
-		type: 'select'
+		type: 'select',
+		space: 'col-span-4'
+	},
+	{
+		id: 'medicationType',
+		title: 'Medication Type',
+		type: 'select',
+		space: 'col-span-4'
 	}
 ];

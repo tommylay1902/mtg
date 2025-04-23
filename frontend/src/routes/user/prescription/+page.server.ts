@@ -32,6 +32,7 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 
 export const actions: Actions = {
 	createPrescription: async ({ request, fetch, locals: { safeGetSession } }) => {
+		console.log('hello from form action');
 		const prescriptionForm = await superValidate(request, zod(prescriptionSchema));
 
 		if (!prescriptionForm.valid) return fail(400, { prescriptionForm });
@@ -61,7 +62,8 @@ export const actions: Actions = {
 			// take a look while refactoring
 			return {
 				success: true,
-				data: { ...prescriptionForm.data, id: success }
+				data: { ...prescriptionForm.data, id: success },
+				form: prescriptionForm
 			};
 		} catch (err) {
 			console.error(err);
@@ -89,7 +91,8 @@ export const actions: Actions = {
 				data: {
 					...createMedTypeForm.data,
 					id: success
-				}
+				},
+				form: createMedTypeForm
 			};
 		} catch (err) {
 			console.error(err);
