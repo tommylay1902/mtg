@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types.js';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { prescriptionSchema } from '$lib/config/form/addRxFormConfig.js';
+import { prescriptionSchema } from '$lib/config/form/rxFormConfig.js';
 import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
 import type { MedicationType } from '$lib/types/MedicationType.js';
 
