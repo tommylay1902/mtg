@@ -86,7 +86,7 @@
 			{:else if config.id === 'prescribedBy'}
 				<div class={config.space}>
 					<Label>Prescribed By</Label>
-					<DoctorSelector />
+					<DoctorSelector bind:value={$form.prescribedBy} />
 				</div>
 			{:else if config.id === 'notes'}
 				<div class={config.space}>

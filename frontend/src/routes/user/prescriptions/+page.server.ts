@@ -21,12 +21,18 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 
 		//input fetch logic for medication types for drop down list
 		const mtResponse = await fetch('/api/medication-type', fetchOptions);
+		const dResponse = await fetch('/api/doctors', fetchOptions);
 
 		const prescription = await rxResponse.json();
 		const medicationTypes: MedicationType[] = await mtResponse.json();
-		console.log(medicationTypes);
+		const doctors = await dResponse.json();
 
-		return { prescription, medicationTypes, form: { prescriptionForm, createMedTypeForm } };
+		return {
+			prescription,
+			medicationTypes,
+			doctors,
+			form: { prescriptionForm, createMedTypeForm }
+		};
 	} catch (err) {
 		console.error(err);
 		return {};

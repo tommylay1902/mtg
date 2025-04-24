@@ -122,26 +122,6 @@ func (dao *GormPrescriptionDao) UpdateBatchPrescription(updateList []entity.Pres
 		// 2. Batch update associations using Replace()
 		return dao.batchUpdateAssociations(tx, updateList)
 	})
-	// create values array which represents the rows
-	// values := make([]clause.Expr, 0, len(updateList))
-	// for _, p := range updateList {
-	// 	values = append(values, gorm.Expr("(?::uuid, ?, ?, ?, ?::timestamp, ?::timestamp, ?::bigint, ?)", p.ID, p.Medication, p.Dosage, p.Notes, p.Started, p.Ended, p.Refills, p.Owner))
-	// }
-
-	// valuesExpr := gorm.Expr("?", values)
-	// valuesExpr.WithoutParentheses = true
-
-	// err := dao.DB.Exec(
-	// 	"UPDATE prescriptions SET Medication = tmp.Medication, dosage = tmp.Dosage,  notes = tmp.Notes, started = tmp.Started, ended = tmp.Ended, refills = tmp.Refills FROM (VALUES ?) tmp(ID, Medication, Dosage, Notes, Started, Ended, Refills, Owner) WHERE prescriptions.ID = tmp.ID AND prescriptions.owner = ?",
-	// 	valuesExpr,
-	// 	email,
-	// ).Error
-
-	// if err != nil {
-	// 	return err
-	// }
-
-	// return nil
 }
 
 func (dao *GormPrescriptionDao) batchUpdatePrescriptions(tx *gorm.DB, updateList []entity.Prescription, email string) error {
@@ -180,6 +160,11 @@ func (dao *GormPrescriptionDao) batchUpdateAssociations(tx *gorm.DB, updateList 
 
 		// Use Replace to atomically update associations
 		if err := tx.Model(&current).Association("MedicationTypes").Replace(p.MedicationTypes); err != nil {
+			return err
+		}
+
+		current.PrescribedBy = p.PrescribedBy
+		if err := tx.Save(&current).Error; err != nil {
 			return err
 		}
 	}

@@ -14,6 +14,8 @@
 	import Loader from '$lib/components/ui/Loader.svelte';
 	import { toast } from 'svelte-sonner';
 
+	import DoctorSelector from '../form/Selector/DoctorSelector.svelte';
+
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
 	let updateIds = $state<string[]>([]);
@@ -87,13 +89,19 @@
 	};
 
 	let lastMedicationTypes = $state<MedicationType[]>([]);
+	let lastDoctor = $state<string>('');
 
 	$effect(() => {
 		if (isUpdateDialogOpen) {
-			const current = localDrafts[activeIdx]?.medicationType || [];
-			if (!arraysEqual(current, lastMedicationTypes)) {
-				updateupdateIds(localDrafts[activeIdx], 'medicationType', current);
-				lastMedicationTypes = current;
+			const currentMed = localDrafts[activeIdx]?.medicationType || [];
+			const currentDoctor = localDrafts[activeIdx]?.prescribedBy || '';
+			if (!arraysEqual(currentMed, lastMedicationTypes)) {
+				updateupdateIds(localDrafts[activeIdx], 'medicationType', currentMed);
+				lastMedicationTypes = currentMed;
+			}
+			if (lastDoctor !== currentDoctor) {
+				updateupdateIds(localDrafts[activeIdx], 'prescribedBy', currentDoctor);
+				lastDoctor = currentDoctor;
 			}
 		}
 	});
@@ -113,7 +121,7 @@
 	const updateupdateIds = <K extends keyof Prescription>(
 		activeDraft: Prescription,
 		field: K,
-		changeEvent?: Event | MedicationType[]
+		changeEvent?: Event | MedicationType[] | string
 	) => {
 		if (Array.isArray(changeEvent)) {
 			activeDraft.medicationType = [...changeEvent];
@@ -145,7 +153,11 @@
 				return !compareDates(activeDraft[k], original[activeIdx][k]);
 			} else if (k === 'medicationType') {
 				return !arraysEqual(activeDraft.medicationType || [], original[activeIdx][k] || []);
+			} else if (k === 'prescribedBy') {
+				const compare = activeDraft[k] === '' ? null : activeDraft[k];
+				return compare !== original[activeIdx][k];
 			}
+
 			return activeDraft[k] !== original[activeIdx][k];
 		});
 
@@ -195,7 +207,7 @@
 		{#if updateDisplayPrescriptions.length > 0 && activeIdx <= updateDisplayPrescriptions.length}
 			<div class="flex flex-col items-center justify-center gap-y-3">
 				{#each inputConfigs as config}
-					{#if config.type === 'select'}
+					{#if config.id === 'medicationType'}
 						{#if isLoadingMedTypes}
 							<div
 								class="flex min-h-[12dvh] items-center justify-center justify-items-center gap-x-4"
@@ -214,6 +226,8 @@
 								</div>
 							{/key}
 						{/if}
+					{:else if config.id === 'prescribedBy'}
+						<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} />
 					{:else}
 						<Label for={config.id}>{config.title}</Label>
 						<Input
