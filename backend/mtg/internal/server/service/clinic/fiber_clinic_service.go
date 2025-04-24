@@ -20,6 +20,6 @@ func (s *FiberClinicService) CreateClinic(model entity.Clinic) (*uuid.UUID, erro
 
 }
 
-func (s *FiberClinicService) GetAllClinics() ([]entity.Clinic, error) {
-	return nil, nil
+func (s *FiberClinicService) GetAllClinics(owner *string) ([]entity.Clinic, error) {
+	return s.DAO.GetAllClinics(owner)
 }

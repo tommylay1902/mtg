@@ -1,4 +1,4 @@
-package dDao
+package dService
 
 import (
 	"mtg/internal/models/entity"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DoctorDAO interface {
+type DoctorService interface {
 	CreateDoctor(*entity.Doctor) (*uuid.UUID, error)
 	GetDoctors(*string) ([]entity.Doctor, error)
 }

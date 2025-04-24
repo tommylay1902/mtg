@@ -24,3 +24,16 @@ func (dao *GormClinicDao) CreateClinic(model entity.Clinic) (*uuid.UUID, error) 
 
 	return model.ID, err
 }
+
+func (dao *GormClinicDao) GetAllClinics(owner *string) ([]entity.Clinic, error) {
+	var clinics []entity.Clinic
+
+	err := dao.DB.Where("owner = ?", *owner).Find(&clinics).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return clinics, nil
+
+}

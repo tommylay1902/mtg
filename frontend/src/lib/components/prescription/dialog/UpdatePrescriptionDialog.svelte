@@ -41,13 +41,17 @@
 
 	const prescriptions = getPrescriptionContext();
 
+	let timeoutId: NodeJS.Timeout;
+
 	// EFFECT
 	$effect(() => {
 		//reset state of dialog on close of dialog
 		if (isUpdateDialogOpen === false) {
-			updateDisplayPrescriptions = [];
-			updateIds = [];
-			activeIdx = 0;
+			timeoutId = setTimeout(() => {
+				updateDisplayPrescriptions = [];
+				updateIds = [];
+				activeIdx = 0;
+			}, 160);
 		} else {
 			// if dialog opens repopulate original data
 			const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
@@ -61,6 +65,9 @@
 			original = structuredClone(selectedPrescriptions);
 			localDrafts = structuredClone(selectedPrescriptions);
 		}
+		return () => {
+			if (timeoutId) clearTimeout(timeoutId);
+		};
 	});
 
 	// API CALL
