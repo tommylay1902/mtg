@@ -33,6 +33,7 @@ func (ps *FiberPrescriptionService) CreatePrescription(request *request.AddPresc
 		},
 		RelationshipPrescriptionFields: entity.RelationshipPrescriptionFields{
 			MedicationTypes: request.MedicationType,
+			PrescribedBy:    request.PrescribedBy,
 		},
 	}
 

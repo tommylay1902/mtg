@@ -11,6 +11,8 @@
 	import DeletePrescriptionDialog from '$lib/components/prescription/dialog/DeletePrescriptionDialog.svelte';
 	import { MedicationTypeState } from '$lib/state/MedicationTypeState.svelte.js';
 	import { setMedicationTypeContext } from '$lib/context/MedicationContext.js';
+	import { setDoctorContext } from '$lib/context/DoctorContext.js';
+	import { DoctorState } from '$lib/state/DoctorState.svelte.js';
 
 	let { data } = $props();
 	let rowSelection = $state<RowSelectionState>({});
@@ -23,9 +25,11 @@
 
 	let prescriptions = new PrescriptionState(data.prescription);
 	let medicationTypes = new MedicationTypeState(data.medicationTypes ?? []);
+	let doctor = new DoctorState(data.doctors);
 
 	setPrescriptionContext(prescriptions);
 	setMedicationTypeContext(medicationTypes);
+	setDoctorContext(doctor);
 
 	$effect(() => {
 		if (Object.keys(rowSelection).length > 0) {
