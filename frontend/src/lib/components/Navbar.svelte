@@ -4,8 +4,9 @@
 
 	const links = [
 		{ href: '/user/dashboard', text: 'Dashboard' },
-		{ href: '/user/prescription', text: 'Prescriptions' },
-		{ href: '/user/events', text: 'Events' }
+		{ href: '/user/prescriptions', text: 'Prescriptions' },
+		{ href: '/user/events', text: 'Events' },
+		{ href: '/user/doctors', text: 'Doctors' }
 	];
 
 	const { logout } = $props();
@@ -18,7 +19,7 @@
 				href={link.href}
 				class="{link.href === page.url.pathname
 					? 'text-primary'
-					: 'text-muted-foreground'} hover:text-primary block text-sm font-medium transition-colors"
+					: 'text-muted-foreground'} block text-sm font-medium transition-colors hover:text-primary"
 				>{link.text}</a
 			>
 		{/each}

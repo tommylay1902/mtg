@@ -8,4 +8,5 @@ import (
 
 type ClinicDAO interface {
 	CreateClinic(entity.Clinic) (*uuid.UUID, error)
+	GetAllClinics(*string) ([]entity.Clinic, error)
 }

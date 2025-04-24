@@ -36,6 +36,12 @@ func (ch *ClinicHandler) CreateClinic(c *fiber.Ctx) error {
 }
 
 func (ch *ClinicHandler) GetAllClinics(c *fiber.Ctx) error {
+	email := c.Locals("email").(string)
 
-	return nil
+	clinics, err := ch.Service.GetAllClinics(&email)
+
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+	return c.Status(fiber.StatusOK).JSON(clinics)
 }
