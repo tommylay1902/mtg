@@ -62,7 +62,7 @@
 	{/if}
 	<Dialog.Root bind:open={isAddDialogOpen}>
 		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Add Prescription</Dialog.Trigger>
-		<Dialog.Content class="h-[75dvh] w-full max-w-[50dvw] overflow-y-scroll rounded-2xl">
+		<Dialog.Content class="h-[80dvh] w-full max-w-[50dvw] overflow-y-scroll rounded-2xl">
 			<Dialog.Header>
 				<Dialog.Title class="text-center text-2xl">Create a new prescription</Dialog.Title>
 			</Dialog.Header>

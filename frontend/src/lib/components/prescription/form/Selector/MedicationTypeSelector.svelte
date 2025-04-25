@@ -36,23 +36,26 @@
 	};
 
 	let filteredMedicationTypes: MedicationType[] = $derived.by(() => {
-		const searchLower = searchQuery.toLowerCase();
-		const filtered = medicationTypes.current.filter((mt) =>
-			mt.type.toLowerCase().includes(searchLower)
-		);
+		if (medicationTypes.current && medicationTypes.current.length > 0) {
+			const searchLower = searchQuery.toLowerCase();
+			const filtered = medicationTypes.current.filter((mt) =>
+				mt.type.toLowerCase().includes(searchLower)
+			);
 
-		switch (dropDownViewMode) {
-			case 'Selected':
-				return filtered.filter((mt) =>
-					Array.from(selectedMedicationTypes).some((s) => s.id === mt.id)
-				);
-			case 'Deselected':
-				return filtered.filter(
-					(mt) => !Array.from(selectedMedicationTypes).some((s) => s.id === mt.id)
-				);
-			default:
-				return filtered;
+			switch (dropDownViewMode) {
+				case 'Selected':
+					return filtered.filter((mt) =>
+						Array.from(selectedMedicationTypes).some((s) => s.id === mt.id)
+					);
+				case 'Deselected':
+					return filtered.filter(
+						(mt) => !Array.from(selectedMedicationTypes).some((s) => s.id === mt.id)
+					);
+				default:
+					return filtered;
+			}
 		}
+		return [];
 	});
 
 	const selectAllMedTypes = () => {
@@ -213,8 +216,12 @@
 										class="flex h-9 w-full px-3 py-2 hover:bg-gray-300"
 										onclick={(e: Event) => toggleCheck(e, mt)}
 									>
-										<span class={`ml-6 text-xs font-bold`} style="color: {mt.color}">{mt.type}</span
+										<span class={`ml-6 text-xs font-bold`}>{mt.type}</span>
+										<span
+											class="m-3 flex h-5 w-5 items-center justify-center rounded-full text-xs"
+											style={`background-color: ${mt.color}; color: white`}
 										>
+										</span>
 									</DropdownMenu.CheckboxItem>
 								{/each}
 							</div>

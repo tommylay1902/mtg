@@ -8,18 +8,34 @@ const config: Config = {
 	safelist: ['dark'],
 	theme: {
 		animation: {
-			'float-up': 'floatUp .5s ease-out forwards',
+			'float-up': 'floatUp .3s ease-out forwards',
 			scaleUp: 'scaleUp 0.5s ease-out',
-			spin: 'spin 3s linear infinite'
+			spin: 'spin 3s linear infinite',
+			'fade-in': 'fadeIn 400ms ease-out .4s forwards',
+			'delayed-fade-in': 'delayed-fade-in 400ms ease-out 500ms forwards'
 		},
 		keyframes: {
+			fadeIn: {
+				'0%': { opacity: '0' },
+				'100%': { opacity: '1' }
+			},
 			floatUp: {
-				'0%': { transform: 'translateY(10px)', opacity: '0' },
-				'100%': { transform: 'translateY(0)', opacity: '1' }
+				'0%': {
+					transform: 'translate(-50%, 1000px)', // Keep horizontal centering
+					opacity: '0'
+				},
+				'100%': {
+					transform: 'translate(-50%, -50%)', // End at centered position
+					opacity: '1'
+				}
 			},
 			spin: {
 				'0%': { transform: 'rotate(0deg)' },
 				'100%': { transform: 'rotate(360deg)' }
+			},
+			'delayed-fade-in': {
+				'0%, 50%': { opacity: '0' }, // Delay for first 50% of animation
+				'100%': { opacity: '1' }
 			}
 		},
 		container: {

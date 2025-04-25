@@ -8,5 +8,5 @@ import (
 
 type MedicationTypeService interface {
 	CreateMedicationType(medicationType *entity.MedicationType) (*uuid.UUID, error)
-	GetMedicationTypes() ([]entity.MedicationType, error)
+	GetMedicationTypes(*string) ([]entity.MedicationType, error)
 }

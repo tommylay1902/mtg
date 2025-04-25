@@ -43,17 +43,13 @@
 
 	const prescriptions = getPrescriptionContext();
 
-	let timeoutId: NodeJS.Timeout;
-
 	// EFFECT
 	$effect(() => {
 		//reset state of dialog on close of dialog
 		if (isUpdateDialogOpen === false) {
-			timeoutId = setTimeout(() => {
-				updateDisplayPrescriptions = [];
-				updateIds = [];
-				activeIdx = 0;
-			}, 160);
+			updateDisplayPrescriptions = [];
+			updateIds = [];
+			activeIdx = 0;
 		} else {
 			// if dialog opens repopulate original data
 			const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
@@ -67,9 +63,6 @@
 			original = structuredClone(selectedPrescriptions);
 			localDrafts = structuredClone(selectedPrescriptions);
 		}
-		return () => {
-			if (timeoutId) clearTimeout(timeoutId);
-		};
 	});
 
 	// API CALL
@@ -199,13 +192,13 @@
 	<Dialog.Trigger>
 		<Button>Update Prescriptions</Button>
 	</Dialog.Trigger>
-	<Dialog.Content class="max-h-[80dvh] overflow-y-scroll">
+	<Dialog.Content class="max-h-[90dvh] max-w-[50dvw] overflow-y-scroll">
 		<Dialog.Header>
 			<Dialog.Title>Update Prescription</Dialog.Title>
 		</Dialog.Header>
 
 		{#if updateDisplayPrescriptions.length > 0 && activeIdx <= updateDisplayPrescriptions.length}
-			<div class="flex flex-col items-center justify-center gap-y-3">
+			<div class="grid w-full grid-cols-4 gap-x-4">
 				{#each inputConfigs as config}
 					{#if config.id === 'medicationType'}
 						{#if isLoadingMedTypes}
@@ -217,7 +210,7 @@
 							</div>
 						{:else}
 							{#key activeIdx}
-								<div class="min-h-[12dvh] w-full">
+								<div class={`min-h-[12dvh] w-full ${config.space}`}>
 									<MedicationTypeSelector
 										{isDropdownOpen}
 										bind:value={localDrafts[activeIdx].medicationType}
@@ -227,22 +220,29 @@
 							{/key}
 						{/if}
 					{:else if config.id === 'prescribedBy'}
-						<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} />
+						<div class="col-span-4 w-full py-3">
+							<Label>Prescribed By</Label>
+							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} />
+						</div>
 					{:else}
-						<Label for={config.id}>{config.title}</Label>
-						<Input
-							id={config.id}
-							value={config.transform(localDrafts[activeIdx][config.id])}
-							oninput={(e: Event) => updateupdateIds(localDrafts[activeIdx], config.id, e)}
-							type={config.type}
-						/>
+						<div class={`${config.space}`}>
+							<Label for={config.id}>{config.title}</Label>
+							<Input
+								id={config.id}
+								value={config.transform(localDrafts[activeIdx][config.id])}
+								oninput={(e: Event) => updateupdateIds(localDrafts[activeIdx], config.id, e)}
+								type={config.type}
+							/>
+						</div>
 					{/if}
 				{/each}
-				<div class="flex w-full justify-between gap-x-2">
-					<div>
-						<Button onclick={() => (isUpdateDialogOpen = false)}>Cancel</Button>
-					</div>
-					<div>
+				<div class="col-span-4 flex items-center justify-center">
+					{activeIdx + 1} of {updateDisplayPrescriptions.length ?? 0}
+				</div>
+				<div class="col-span-4 mt-3 flex items-center justify-between">
+					<Button onclick={() => (isUpdateDialogOpen = false)}>Cancel</Button>
+
+					<div class="flex items-center gap-2">
 						<Button
 							disabled={activeIdx <= 0}
 							onclick={() => {
