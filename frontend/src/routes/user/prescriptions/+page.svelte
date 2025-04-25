@@ -72,7 +72,7 @@
 						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
 					>
 						<div
-							class="whitespace-nowrap rounded-full bg-destructive px-3 py-1 text-xs font-medium text-destructive-foreground shadow-md"
+							class="whitespace-nowrap rounded-full bg-destructive px-3 py-1 text-sm font-medium text-destructive-foreground shadow-md"
 						>
 							Delete Prescription(s)
 						</div>
@@ -93,7 +93,7 @@
 						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
 					>
 						<div
-							class="whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground shadow-md"
+							class="whitespace-nowrap rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground shadow-md"
 						>
 							Update Prescription(s)
 						</div>
@@ -112,23 +112,23 @@
 
 		<Tabs.Root bind:value={filterStatus} class="w-[400px]">
 			<Tabs.List class="grid w-full grid-cols-3">
-				<Tabs.Trigger value="past">
+				<Tabs.Trigger value="past" tabindex={0}>
 					{#if filterStatus === 'past'}
 						<span class="animate-pulsewave rounded-full bg-yellow-600 p-1"></span>
 					{/if}
-					<span class="pl-1">Past</span>
+					<span class="pl-1">Taken</span>
 				</Tabs.Trigger>
-				<Tabs.Trigger value="active">
+				<Tabs.Trigger value="active" tabindex={0}>
 					{#if filterStatus === 'active'}
 						<span class="animate-pulsewave rounded-full bg-green-700 p-1"></span>
 					{/if}
-					<span class="pl-1">Active</span>
+					<span class="pl-1">Need To Take</span>
 				</Tabs.Trigger>
-				<Tabs.Trigger value="all">
+				<Tabs.Trigger value="all" tabindex={0}>
 					{#if filterStatus === 'all'}
 						<span class="animate-pulsewave rounded-full bg-blue-700 p-1"></span>
 					{/if}
-					<span class="pl-1">All</span>
+					<span class="pl-1">All Today</span>
 				</Tabs.Trigger>
 			</Tabs.List>
 		</Tabs.Root>

@@ -18,7 +18,7 @@ const config: Config = {
 		keyframes: {
 			pulsewave: {
 				'0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
-				'50%': { transform: 'scale(1.25)', opacity: '.3' }
+				'50%': { transform: 'scale(1.25)', opacity: '.8' }
 			},
 			fadeIn: {
 				'0%': { opacity: '0' },
