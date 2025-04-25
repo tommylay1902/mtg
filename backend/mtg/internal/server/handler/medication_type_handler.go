@@ -16,7 +16,7 @@ func InitializeMedicationTypeHandler(service mtService.MedicationTypeService) *M
 }
 
 func (mtHandler *MedicationTypeHandler) CreateMedicationType(c *fiber.Ctx) error {
-
+	email := c.Locals("email").(string)
 	var bodyRequest entity.MedicationType
 
 	if err := c.BodyParser(&bodyRequest); err != nil {
@@ -24,6 +24,8 @@ func (mtHandler *MedicationTypeHandler) CreateMedicationType(c *fiber.Ctx) error
 			"error": err.Error,
 		})
 	}
+
+	bodyRequest.Owner = email
 	id, err := mtHandler.Service.CreateMedicationType(&bodyRequest)
 
 	if err != nil {
@@ -37,7 +39,8 @@ func (mtHandler *MedicationTypeHandler) CreateMedicationType(c *fiber.Ctx) error
 }
 
 func (mtHandler *MedicationTypeHandler) GetMedicationTypes(c *fiber.Ctx) error {
-	medicationTypes, err := mtHandler.Service.GetMedicationTypes()
+	email := c.Locals("email").(string)
+	medicationTypes, err := mtHandler.Service.GetMedicationTypes(&email)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

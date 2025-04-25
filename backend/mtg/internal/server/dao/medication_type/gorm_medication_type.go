@@ -25,8 +25,8 @@ func (dao *GormMedicationTypeDao) CreateMedicationType(model *entity.MedicationT
 	return model.ID, err
 }
 
-func (dao *GormMedicationTypeDao) GetMedicationTypes() ([]entity.MedicationType, error) {
+func (dao *GormMedicationTypeDao) GetMedicationTypes(owner *string) ([]entity.MedicationType, error) {
 	var medicationTypes []entity.MedicationType
-	err := dao.DB.Find(&medicationTypes).Error
+	err := dao.DB.Where("owner = ?", owner).Find(&medicationTypes).Error
 	return medicationTypes, err
 }

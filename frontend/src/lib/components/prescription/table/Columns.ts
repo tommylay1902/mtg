@@ -4,6 +4,7 @@ import { renderComponent } from '$lib/components/ui/data-table/render-helpers.js
 import GenericSortHeader from '../table/header/GenericSortHeader.svelte';
 import { type Prescription } from '$lib/types/Prescription.js';
 import MTBadge from '$lib/components/ui/MTBadge.svelte';
+import { getDoctorContext } from '$lib/context/DoctorContext.js';
 
 // This type is used to define the shape of our data.
 
@@ -110,5 +111,14 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 		accessorKey: 'total',
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Total' }),
 		sortingFn: numberSortingFn
+	},
+	{
+		accessorKey: 'prescribedBy',
+		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Presribed By' }),
+		cell: ({ row }) => {
+			const doctors = getDoctorContext();
+			const doctor = doctors.current.find((d) => d.id === row.original.prescribedBy);
+			return doctor?.lastName || 'Unknown';
+		}
 	}
 ];

@@ -22,6 +22,6 @@ func (mts *FiberMedicationTypeService) CreateMedicationType(model *entity.Medica
 	return id, err
 }
 
-func (mts *FiberMedicationTypeService) GetMedicationTypes() ([]entity.MedicationType, error) {
-	return mts.DAO.GetMedicationTypes()
+func (mts *FiberMedicationTypeService) GetMedicationTypes(owner *string) ([]entity.MedicationType, error) {
+	return mts.DAO.GetMedicationTypes(owner)
 }

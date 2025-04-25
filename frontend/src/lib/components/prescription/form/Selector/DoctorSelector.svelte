@@ -34,7 +34,7 @@
 		{#snippet child({ props })}
 			<Button
 				variant="outline"
-				class=" justify-between"
+				class="w-full justify-between"
 				{...props}
 				role="combobox"
 				aria-expanded={open}
@@ -44,7 +44,7 @@
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
-	<Popover.Content class="w-[200px] p-0">
+	<Popover.Content class="w-full p-0">
 		<Command.Root>
 			<Command.Input placeholder="Search by last name..." class="h-9" />
 			<Command.List>
