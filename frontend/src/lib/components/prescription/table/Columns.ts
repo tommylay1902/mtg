@@ -69,44 +69,44 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 			return renderComponent(MTBadge, { medicationTypes: row.original.medicationType });
 		}
 	},
-	{
-		accessorKey: 'notes',
-		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Notes' }),
-		cell: ({ row }) => {
-			const notes = row.original.notes;
-			if (notes.length >= 60) {
-				return notes.slice(0, 60) + '...';
-			}
-			return notes;
-		}
-	},
-	{
-		accessorKey: 'started',
-		cell: ({ row }) => {
-			if (!row.original.started) {
-				return 'Unknown';
-			}
-			return formatISODateForUserDisplay(row.original.started);
-		},
-		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Started' }),
-		sortingFn: dateSortingFn
-	},
-	{
-		accessorKey: 'ended',
-		cell: ({ row }) => {
-			if (!row.original.ended) {
-				return 'Present';
-			}
-			return formatISODateForUserDisplay(row.original.ended);
-		},
-		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Ended' }),
-		sortingFn: dateSortingFn
-	},
-	{
-		accessorKey: 'refills',
-		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Refills' }),
-		sortingFn: numberSortingFn
-	},
+	// {
+	// 	accessorKey: 'notes',
+	// 	header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Notes' }),
+	// 	cell: ({ row }) => {
+	// 		const notes = row.original.notes;
+	// 		if (notes.length >= 60) {
+	// 			return notes.slice(0, 60) + '...';
+	// 		}
+	// 		return notes;
+	// 	}
+	// },
+	// {
+	// 	accessorKey: 'started',
+	// 	cell: ({ row }) => {
+	// 		if (!row.original.started) {
+	// 			return 'Unknown';
+	// 		}
+	// 		return formatISODateForUserDisplay(row.original.started);
+	// 	},
+	// 	header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Started' }),
+	// 	sortingFn: dateSortingFn
+	// },
+	// {
+	// 	accessorKey: 'ended',
+	// 	cell: ({ row }) => {
+	// 		if (!row.original.ended) {
+	// 			return 'Present';
+	// 		}
+	// 		return formatISODateForUserDisplay(row.original.ended);
+	// 	},
+	// 	header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Ended' }),
+	// 	sortingFn: dateSortingFn
+	// },
+	// {
+	// 	accessorKey: 'refills',
+	// 	header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Refills' }),
+	// 	sortingFn: numberSortingFn
+	// },
 	{
 		accessorKey: 'total',
 		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Total' }),

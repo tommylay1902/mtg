@@ -13,6 +13,7 @@
 	import { type MedicationType } from '$lib/types/MedicationType.js';
 	import Loader from '$lib/components/ui/Loader.svelte';
 	import { toast } from 'svelte-sonner';
+	import Pencil from '@lucide/svelte/icons/pencil';
 
 	import DoctorSelector from '../form/Selector/DoctorSelector.svelte';
 
@@ -189,9 +190,6 @@
 </script>
 
 <Dialog.Root bind:open={isUpdateDialogOpen}>
-	<Dialog.Trigger>
-		<Button>Update Prescriptions</Button>
-	</Dialog.Trigger>
 	<Dialog.Content class="max-h-[90dvh] max-w-[50dvw] overflow-y-scroll">
 		<Dialog.Header>
 			<Dialog.Title>Update Prescription</Dialog.Title>

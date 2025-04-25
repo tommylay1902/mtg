@@ -12,9 +12,14 @@ const config: Config = {
 			scaleUp: 'scaleUp 0.5s ease-out',
 			spin: 'spin 3s linear infinite',
 			'fade-in': 'fadeIn 400ms ease-out .4s forwards',
-			'delayed-fade-in': 'delayed-fade-in 400ms ease-out 500ms forwards'
+			'delayed-fade-in': 'delayed-fade-in 400ms ease-out 500ms forwards',
+			pulsewave: 'pulsewave 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 		},
 		keyframes: {
+			pulsewave: {
+				'0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
+				'50%': { transform: 'scale(1.25)', opacity: '.3' }
+			},
 			fadeIn: {
 				'0%': { opacity: '0' },
 				'100%': { opacity: '1' }
