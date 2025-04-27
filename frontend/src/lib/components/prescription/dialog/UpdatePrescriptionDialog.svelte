@@ -37,7 +37,8 @@
 		updateDisplayPrescriptions,
 		isUpdateDialogOpen = $bindable(),
 		rowSelection = $bindable(),
-		createMedTypeForm
+		createMedTypeForm,
+		createDoctorForm
 	} = $props();
 
 	const inputConfigs = rxFormConfig;
@@ -220,7 +221,7 @@
 					{:else if config.id === 'prescribedBy'}
 						<div class="col-span-4 w-full py-3">
 							<Label>Prescribed By</Label>
-							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} />
+							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} {createDoctorForm} />
 						</div>
 					{:else}
 						<div class={`${config.space}`}>

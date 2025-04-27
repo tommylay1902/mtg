@@ -232,7 +232,11 @@
 										<div>
 											No medications found with search: <span class="font-bold">{searchQuery}</span>
 											<div>
-												<AddMedicationTypeDialog {searchQuery} {createMedTypeForm} />
+												<AddMedicationTypeDialog
+													{searchQuery}
+													{createMedTypeForm}
+													isButton={false}
+												/>
 											</div>
 										</div>
 									{:else}
@@ -244,6 +248,10 @@
 					</ScrollArea>
 				</DropdownMenu.Group>
 				<div class="sticky bottom-0 z-10 m-0 border-t bg-background p-0">
+					<div class="flex w-full text-center">
+						<AddMedicationTypeDialog {searchQuery} {createMedTypeForm} isButton={true} />
+					</div>
+
 					<div class="flex">
 						<Button
 							variant="outline"

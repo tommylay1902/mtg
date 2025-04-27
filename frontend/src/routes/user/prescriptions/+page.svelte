@@ -106,6 +106,7 @@
 					{updateDisplayPrescriptions}
 					createMedTypeForm={data.form?.createMedTypeForm}
 					bind:rowSelection
+					createDoctorForm={data.form?.createDoctorForm}
 				/>
 			</div>
 		{/if}

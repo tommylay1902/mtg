@@ -50,7 +50,7 @@ export const AddDoctorFormConfig: addDoctorFormConfigFields[] = [
 		id: 'works',
 		title: 'Works At',
 		type: 'select',
-		space: 'col-span-2',
+		space: 'col-span-4',
 		placeholder: 'Clinic doctor works at...',
 		transform: (data: any) => data
 	}

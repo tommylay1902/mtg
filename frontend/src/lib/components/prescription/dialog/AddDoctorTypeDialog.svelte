@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
-
+	import { Label } from '$lib/components/ui/label/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
 
@@ -52,7 +52,10 @@
 			<div class="grid w-full grid-cols-4 gap-x-4">
 				{#each config as c}
 					{#if c.type !== 'select'}
-						<Input type={c.type} id={c.id} placeholder={c.placeholder} />
+						<div class={`${c.space}`}>
+							<Label>{c.title}</Label>
+							<Input type={c.type} id={c.id} placeholder={c.placeholder} class={`${c.space}`} />
+						</div>
 					{/if}
 				{/each}
 			</div>
