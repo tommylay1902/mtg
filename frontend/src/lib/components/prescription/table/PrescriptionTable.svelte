@@ -5,7 +5,9 @@
 		type RowSelectionState,
 		type SortingState,
 		getCoreRowModel,
-		getSortedRowModel
+		getSortedRowModel,
+		getExpandedRowModel,
+		type ExpandedState
 	} from '@tanstack/table-core';
 	import { columns } from './Columns.js';
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
@@ -27,6 +29,7 @@
 		columns: columns<TData>(),
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
+		getRowCanExpand: (row) => true,
 		onSortingChange: (updater) => {
 			if (typeof updater === 'function') {
 				sorting = updater(sorting);

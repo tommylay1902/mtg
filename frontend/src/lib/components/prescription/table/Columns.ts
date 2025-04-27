@@ -5,9 +5,7 @@ import GenericSortHeader from '../table/header/GenericSortHeader.svelte';
 import { type Prescription } from '$lib/types/Prescription.js';
 import MTBadge from '$lib/components/ui/MTBadge.svelte';
 import { getDoctorContext } from '$lib/context/DoctorContext.js';
-
-// This type is used to define the shape of our data.
-
+import ViewMore from '$lib/components/prescription/table/ViewMore.svelte';
 const dateSortingFn = <T extends Prescription>(rowA: any, rowB: any, columnId: string): number => {
 	const dateA = new Date(rowA.original[columnId as keyof Prescription] as string);
 	const dateB = new Date(rowB.original[columnId as keyof Prescription] as string);
@@ -69,6 +67,7 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 			return renderComponent(MTBadge, { medicationTypes: row.original.medicationType });
 		}
 	},
+
 	// {
 	// 	accessorKey: 'notes',
 	// 	header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Notes' }),
@@ -120,5 +119,10 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 			const doctor = doctors.current.find((d) => d.id === row.original.prescribedBy);
 			return doctor?.lastName || 'Unknown';
 		}
+	},
+	{
+		id: 'details',
+		header: 'View More',
+		cell: ({ row }) => renderComponent(ViewMore, { pId: row.original.id })
 	}
 ];
