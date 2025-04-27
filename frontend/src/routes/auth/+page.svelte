@@ -28,7 +28,7 @@
 			<Tabs.Trigger value="login">Log In</Tabs.Trigger>
 			<Tabs.Trigger value="signup">Sign Up</Tabs.Trigger>
 		</Tabs.List>
-		<Tabs.Content value="login" class="animate-float-up ">
+		<Tabs.Content value="login">
 			<Card.Root class=" h-[500px] w-full p-6">
 				<Card.Title class="mb-4 text-center text-2xl font-bold">Login</Card.Title>
 
@@ -76,7 +76,7 @@
 				</Card.Content>
 			</Card.Root>
 		</Tabs.Content>
-		<Tabs.Content value="signup" class="animate-float-up">
+		<Tabs.Content value="signup">
 			<Card.Root class="h-[500px] w-full p-6">
 				<Card.Title class="mb-4 text-center text-2xl font-bold">Sign Up</Card.Title>
 

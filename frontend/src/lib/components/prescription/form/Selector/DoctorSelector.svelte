@@ -8,10 +8,11 @@
 	import { cn } from '$lib/utils.js';
 	import { getDoctorContext } from '$lib/context/DoctorContext.js';
 	import type { Doctor } from '$lib/types/Doctor.js';
+	import AddDoctorTypeDialog from '../../dialog/AddDoctorTypeDialog.svelte';
 
 	const doctors = getDoctorContext();
 
-	let { value = $bindable() } = $props();
+	let { value = $bindable(), createDoctorForm } = $props();
 
 	let open = $state(false);
 
@@ -20,7 +21,7 @@
 	const selectedValue: Doctor | string = $derived(
 		doctors.current.find((f) => f.id === value) ?? 'Select a healthcare professional...'
 	);
-
+	let searchQuery = $state('');
 	function closeAndFocusTrigger() {
 		open = false;
 		tick().then(() => {
@@ -46,9 +47,16 @@
 	</Popover.Trigger>
 	<Popover.Content class="w-full p-0">
 		<Command.Root>
-			<Command.Input placeholder="Search by last name..." class="h-9" />
+			<Command.Input
+				placeholder="Search by last name..."
+				class="h-9"
+				oninput={(e) => (searchQuery = (e.target as HTMLInputElement).value ?? '')}
+			/>
 			<Command.List>
-				<Command.Empty>No Doctors found</Command.Empty>
+				<Command.Empty>
+					<div>No Doctors found</div>
+					<AddDoctorTypeDialog {searchQuery} {createDoctorForm} isButton={false} />
+				</Command.Empty>
 				<Command.Group>
 					<Command.Item
 						value=""
@@ -74,6 +82,7 @@
 					{/each}
 				</Command.Group>
 			</Command.List>
+			<AddDoctorTypeDialog {searchQuery} {createDoctorForm} isButton={true} />
 		</Command.Root>
 	</Popover.Content>
 </Popover.Root>

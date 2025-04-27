@@ -10,7 +10,9 @@
 					'bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent',
 				destructive:
 					'bg-destructive text-destructive-foreground hover:bg-destructive/80 border-transparent',
-				outline: 'text-foreground'
+				outline: 'text-foreground',
+				success: 'border-transparent bg-green-500 text-success-foreground text-white',
+				warning: `border-transparent bg-yellow-600 text-warning-foreground text-white`
 			},
 			size: {
 				sm: 'px-2 py-0.5 text-xs',

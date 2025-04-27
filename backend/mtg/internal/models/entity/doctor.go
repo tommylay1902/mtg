@@ -10,6 +10,7 @@ type BaseDoctorFields struct {
 	FirstName   string     `json:"firstName"`
 	LastName    string     `json:"lastName"`
 	PhoneNumber *string    `json:"phoneNumber"`
+	Notes       *string    `json:"notes"`
 }
 
 type DoctorRelationship struct {
