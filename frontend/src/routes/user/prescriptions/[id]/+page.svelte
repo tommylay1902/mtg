@@ -15,28 +15,13 @@
 			Prescriptions
 		</Button>
 	</h1>
-	<div class="flex flex-row justify-between gap-x-2 px-4 py-4">
+	<div class="flex flex-row justify-center gap-x-2 px-4 py-4">
 		<h1 class=" text-3xl font-bold">
 			{data.prescription.medication}
 		</h1>
-		<div class="flex gap-x-4">
-			{#each data.prescription.medicationType as mt}
-				<Badge
-					class="px-0 py-0 text-xs
-                            sm:px-3 sm:py-1 sm:text-sm
-                            md:px-4 md:text-base
-                            lg:px-5 lg:py-1.5 lg:text-lg"
-					style={`background-color: ${mt.color};`}
-				>
-					{mt.type}
-				</Badge>
-			{/each}
-		</div>
 	</div>
 
 	<div class="flex flex-col">
-		<!-- Header content remains the same -->
-
 		<div class="flex flex-1 flex-col">
 			<div class="shrink-0">
 				<!-- Timeline container -->
@@ -44,27 +29,111 @@
 					<Timeline />
 				</div>
 			</div>
-			<div class="flex justify-center gap-x-4 p-3">
+			<div class="flex justify-center gap-x-2 p-3">
 				<Card.Root class="flex-1">
-					<Card.Title class="p-4">Information</Card.Title>
+					<Card.Title class="flex flex-row justify-between p-4">
+						<div>Information</div>
+
+						<div class="flex gap-x-4">
+							{#each data.prescription.medicationType as mt}
+								<Badge
+									class="lg:text-md px-0 py-0
+                            text-xs sm:px-1 sm:py-1
+                            sm:text-xs md:px-2
+                            md:text-sm lg:px-3 lg:py-1.5"
+									style={`background-color: ${mt.color};`}
+								>
+									{mt.type}
+								</Badge>
+							{/each}
+						</div>
+					</Card.Title>
 					<Card.Content>
 						<div>
+							<span class="font-bold">Notes:</span>
 							{data.prescription.notes}
 						</div>
 					</Card.Content>
 				</Card.Root>
 				<Card.Root class="flex-1">
-					<Card.Title class="p-4">Pharmacy</Card.Title>
+					<Card.Title class="flex flex-row justify-between p-4">
+						<div>Pharmacy</div>
+
+						<div class="flex gap-x-4">
+							<Badge
+								class="lg:text-md  px-0
+                            py-0 text-xs sm:px-1
+                            sm:py-1 sm:text-xs
+                            md:px-2 md:text-sm lg:px-3 lg:py-1.5"
+								variant={data.prescription.refills <= 1
+									? 'destructive'
+									: data.prescription.refills <= 4
+										? 'warning'
+										: 'success'}
+							>
+								Refills: {data.prescription.refills}
+							</Badge>
+							<Badge
+								class="lg:text-md px-0 py-0
+                            text-xs sm:px-1 sm:py-1
+                            sm:text-xs md:px-2
+                            md:text-sm lg:px-3 lg:py-1.5"
+								variant={data.prescription.total <= 5
+									? 'destructive'
+									: data.prescription.total <= 10
+										? 'warning'
+										: 'success'}
+							>
+								Total: {data.prescription.total}
+							</Badge>
+						</div>
+					</Card.Title>
 					<Card.Content>
 						<div>hello</div>
 					</Card.Content>
 				</Card.Root>
 			</div>
-			<div class="p-3">
+			<div class="p-4">
 				<Card.Root>
-					<Card.Title class="p-4">Doctor</Card.Title>
-					<Card.Content>
-						<div>hello</div>
+					<Card.Title class="flex justify-between px-4 pt-4 text-2xl font-bold">
+						<div>Healthcare Professional</div>
+						<div>
+							<Button>Update Information</Button>
+						</div>
+					</Card.Title>
+					<Card.Content class="space-y-2 px-4 pb-4">
+						<div>
+							<span class="font-semibold">Name:</span>
+							{data.prescription.Doctor?.firstName + ' ' + data.prescription.Doctor?.lastName}
+						</div>
+						<div>
+							<span class="font-semibold">Phone:</span>
+							<span class={!data.prescription.Doctor?.phoneNumber ? 'italic text-gray-400' : ''}>
+								{!data.prescription.Doctor?.phoneNumber
+									? 'Not Provided'
+									: data.prescription.Doctor?.phoneNumber}
+							</span>
+						</div>
+						<div>
+							<span class="font-semibold">Notes:</span>
+							<span class={!data.prescription.Doctor?.Notes ? 'italic text-gray-400' : ''}>
+								{!data.prescription.Doctor?.Notes
+									? 'Not Provided'
+									: data.prescription.Doctor?.Notes}
+							</span>
+						</div>
+
+						<div class="mt-4 border-t pt-4">
+							<h2 class="mb-2 text-xl font-bold">Clinic Information</h2>
+							<div>
+								<span class="font-semibold">Clinic:</span>
+								<span class={!data.prescription.Doctor?.Clinic ? 'italic text-gray-400' : ''}>
+									{!data.prescription.Doctor?.Clinic
+										? 'Not Provided'
+										: data.prescription.Doctor?.Clinic}
+								</span>
+							</div>
+						</div>
 					</Card.Content>
 				</Card.Root>
 			</div>

@@ -16,7 +16,12 @@
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Pill from '@lucide/svelte/icons/pill';
 
-	let { prescriptionForm, createMedTypeForm, isAddDialogOpen = $bindable() } = $props();
+	let {
+		prescriptionForm,
+		createMedTypeForm,
+		isAddDialogOpen = $bindable(),
+		createDoctorForm
+	} = $props();
 	const prescriptions = getPrescriptionContext();
 
 	const formConfigs: Array<rxFormConfigFields> = rxFormConfig;
@@ -86,7 +91,7 @@
 			{:else if config.id === 'prescribedBy'}
 				<div class={config.space}>
 					<Label>Prescribed By</Label>
-					<DoctorSelector bind:value={$form.prescribedBy} />
+					<DoctorSelector bind:value={$form.prescribedBy} {createDoctorForm} />
 				</div>
 			{:else if config.id === 'notes'}
 				<div class={config.space}>

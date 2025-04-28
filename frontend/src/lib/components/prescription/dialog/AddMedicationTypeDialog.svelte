@@ -11,7 +11,7 @@
 
 	const medicationTypes = getMedicationTypeContext();
 
-	let { searchQuery, createMedTypeForm } = $props();
+	let { searchQuery, createMedTypeForm, isButton } = $props();
 	$effect(() => {
 		$form.type = searchQuery;
 	});
@@ -40,8 +40,12 @@
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger>
-		<Button variant="link" class="text-blue-500">Click here to add as medication type</Button>
+	<Dialog.Trigger class="w-full">
+		{#if isButton}
+			<Button class="w-full" variant="outline">Add Medication Type</Button>
+		{:else}
+			<Button variant="link" class="text-blue-500">Click here to add as medication type</Button>
+		{/if}
 	</Dialog.Trigger>
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>

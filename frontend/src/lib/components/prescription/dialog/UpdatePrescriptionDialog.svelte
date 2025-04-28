@@ -13,9 +13,7 @@
 	import { type MedicationType } from '$lib/types/MedicationType.js';
 	import Loader from '$lib/components/ui/Loader.svelte';
 	import { toast } from 'svelte-sonner';
-	import Pencil from '@lucide/svelte/icons/pencil';
-
-	import DoctorSelector from '../form/Selector/DoctorSelector.svelte';
+	import DoctorSelector from '$lib/components/prescription/form/Selector/DoctorSelector.svelte';
 
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
@@ -37,7 +35,8 @@
 		updateDisplayPrescriptions,
 		isUpdateDialogOpen = $bindable(),
 		rowSelection = $bindable(),
-		createMedTypeForm
+		createMedTypeForm,
+		createDoctorForm
 	} = $props();
 
 	const inputConfigs = rxFormConfig;
@@ -220,7 +219,7 @@
 					{:else if config.id === 'prescribedBy'}
 						<div class="col-span-4 w-full py-3">
 							<Label>Prescribed By</Label>
-							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} />
+							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} {createDoctorForm} />
 						</div>
 					{:else}
 						<div class={`${config.space}`}>

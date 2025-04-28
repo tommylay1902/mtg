@@ -113,7 +113,7 @@ export const columns = <T extends Prescription>(): ColumnDef<T>[] => [
 	},
 	{
 		accessorKey: 'prescribedBy',
-		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Presribed By' }),
+		header: ({ column }) => renderComponent(GenericSortHeader, { column, title: 'Prescribed By' }),
 		cell: ({ row }) => {
 			const doctors = getDoctorContext();
 			const doctor = doctors.current.find((d) => d.id === row.original.prescribedBy);

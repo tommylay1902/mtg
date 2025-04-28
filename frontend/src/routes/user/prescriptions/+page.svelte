@@ -56,7 +56,7 @@
 		</div>
 
 		{#if displayEditButtons}
-			<div class="fixed bottom-8 left-1/2 flex -translate-x-1/2 transform animate-float-up gap-4">
+			<div class="animate-float-up fixed bottom-8 left-1/2 flex -translate-x-1/2 transform gap-4">
 				<!-- Delete Button -->
 				<div class="group relative">
 					<Button
@@ -72,7 +72,7 @@
 						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
 					>
 						<div
-							class="whitespace-nowrap rounded-full bg-destructive px-3 py-1 text-sm font-medium text-destructive-foreground shadow-md"
+							class="bg-destructive text-destructive-foreground whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium shadow-md"
 						>
 							Delete Prescription(s)
 						</div>
@@ -93,7 +93,7 @@
 						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
 					>
 						<div
-							class="whitespace-nowrap rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground shadow-md"
+							class="bg-primary text-primary-foreground whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium shadow-md"
 						>
 							Update Prescription(s)
 						</div>
@@ -106,6 +106,7 @@
 					{updateDisplayPrescriptions}
 					createMedTypeForm={data.form?.createMedTypeForm}
 					bind:rowSelection
+					createDoctorForm={data.form?.createDoctorForm}
 				/>
 			</div>
 		{/if}
@@ -142,6 +143,7 @@
 					<Dialog.Title class="text-center text-2xl">Create a new prescription</Dialog.Title>
 				</Dialog.Header>
 				<PrescriptionForm
+					createDoctorForm={data.form?.createDoctorForm}
 					prescriptionForm={data.form?.prescriptionForm}
 					createMedTypeForm={data.form?.createMedTypeForm}
 					bind:isAddDialogOpen

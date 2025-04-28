@@ -4,11 +4,13 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/rxFormConfig.js';
 import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
 import type { MedicationType } from '$lib/types/MedicationType.js';
+import { addDoctorForm } from '$lib/config/form/addDoctorFormConfig.js';
 
 export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
 	try {
 		const prescriptionForm = await superValidate(zod(prescriptionSchema));
 		const createMedTypeForm = await superValidate(zod(addMedicationTypeSchema));
+		const createDoctorForm = await superValidate(zod(addDoctorForm));
 		const { session } = await safeGetSession();
 
 		const fetchOptions = {
@@ -31,7 +33,7 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 			prescription,
 			medicationTypes,
 			doctors,
-			form: { prescriptionForm, createMedTypeForm }
+			form: { prescriptionForm, createMedTypeForm, createDoctorForm }
 		};
 	} catch (err) {
 		console.error(err);

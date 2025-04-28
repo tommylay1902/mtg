@@ -44,7 +44,7 @@ func (dao *GormPrescriptionDao) CreatePrescription(model entity.Prescription) (*
 
 func (dao *GormPrescriptionDao) GetPrescriptionById(id uuid.UUID, email string) (*entity.Prescription, error) {
 	prescription := new(entity.Prescription)
-	err := dao.DB.Where("owner = ?", email).First(&prescription, id).Error
+	err := dao.DB.Where("owner = ? AND id = ?", email, id).Preload(clause.Associations).First(&prescription).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -55,7 +55,7 @@ func (dao *GormPrescriptionDao) GetPrescriptionById(id uuid.UUID, email string) 
 		}
 		return nil, err
 	}
-
+	fmt.Println(prescription)
 	return prescription, nil
 }
 
