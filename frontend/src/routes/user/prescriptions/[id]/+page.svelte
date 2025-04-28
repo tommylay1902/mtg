@@ -104,20 +104,22 @@
 					<Card.Content class="space-y-2 px-4 pb-4">
 						<div>
 							<span class="font-semibold">Name:</span>
-							{data.prescription.Doctor.firstName + ' ' + data.prescription.Doctor.lastName}
+							{data.prescription.Doctor?.firstName + ' ' + data.prescription.Doctor?.lastName}
 						</div>
 						<div>
 							<span class="font-semibold">Phone:</span>
-							<span class={!data.prescription.Doctor.phoneNumber ? 'italic text-gray-400' : ''}>
-								{!data.prescription.Doctor.phoneNumber
+							<span class={!data.prescription.Doctor?.phoneNumber ? 'italic text-gray-400' : ''}>
+								{!data.prescription.Doctor?.phoneNumber
 									? 'Not Provided'
-									: data.prescription.Doctor.phoneNumber}
+									: data.prescription.Doctor?.phoneNumber}
 							</span>
 						</div>
 						<div>
 							<span class="font-semibold">Notes:</span>
-							<span class={!data.prescription.Doctor.Notes ? 'italic text-gray-400' : ''}>
-								{!data.prescription.Doctor.Notes ? 'Not Provided' : data.prescription.Doctor.Notes}
+							<span class={!data.prescription.Doctor?.Notes ? 'italic text-gray-400' : ''}>
+								{!data.prescription.Doctor?.Notes
+									? 'Not Provided'
+									: data.prescription.Doctor?.Notes}
 							</span>
 						</div>
 
@@ -125,10 +127,10 @@
 							<h2 class="mb-2 text-xl font-bold">Clinic Information</h2>
 							<div>
 								<span class="font-semibold">Clinic:</span>
-								<span class={!data.prescription.Doctor.Clinic ? 'italic text-gray-400' : ''}>
-									{!data.prescription.Doctor.Clinic
+								<span class={!data.prescription.Doctor?.Clinic ? 'italic text-gray-400' : ''}>
+									{!data.prescription.Doctor?.Clinic
 										? 'Not Provided'
-										: data.prescription.Doctor.Clinic}
+										: data.prescription.Doctor?.Clinic}
 								</span>
 							</div>
 						</div>

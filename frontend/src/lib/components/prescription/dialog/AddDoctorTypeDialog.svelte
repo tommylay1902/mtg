@@ -44,7 +44,7 @@
 			<Button variant="link" class="text-blue-500">Click here to add a new doctor</Button>
 		{/if}
 	</Dialog.Trigger>
-	<Dialog.Content class="sm:max-w-[425px]">
+	<Dialog.Content class="min-w-[80dvw]">
 		<Dialog.Header>
 			<Dialog.Title>Add a new doctor into the system</Dialog.Title>
 		</Dialog.Header>
@@ -60,7 +60,7 @@
 				{/each}
 			</div>
 			<Dialog.Footer>
-				<Button type="submit">Add New Doctor</Button>
+				<Button type="submit" class="pt-2">Add New Doctor</Button>
 			</Dialog.Footer>
 		</form>
 	</Dialog.Content>

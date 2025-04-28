@@ -35,15 +35,15 @@ export const AddDoctorFormConfig: addDoctorFormConfigFields[] = [
 		title: 'Last Name',
 		type: 'text',
 		space: 'col-span-2',
-		placeholder: 'enter last name...',
+		placeholder: 'Enter last name...',
 		transform: (data: any) => data
 	},
 	{
 		id: 'phoneNumber',
 		title: 'Phone Number',
 		type: 'text',
-		space: 'col-span-2',
-		placeholder: 'enter phone number...',
+		space: 'col-span-4',
+		placeholder: 'Enter phone number...',
 		transform: (data: any) => data
 	},
 	{
