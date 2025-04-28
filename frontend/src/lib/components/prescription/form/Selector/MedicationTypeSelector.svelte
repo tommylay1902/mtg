@@ -167,12 +167,12 @@
 				</div>
 			{/if}
 			<DropdownMenu.Content class="max-h-[50vh] w-[40dvw] overflow-y-auto p-0">
-				<div class="z-2000 sticky top-0 border-b bg-background p-2">
+				<div class="z-2000 bg-background sticky top-0 border-b p-2">
 					<div class="relative">
 						<input
 							type="text"
 							placeholder="Search or add medication types"
-							class="z-1000 w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+							class="z-1000 focus:ring-primary w-full rounded border bg-white p-1 pr-8 text-sm focus:outline-none focus:ring-1"
 							bind:this={searchInput}
 							oninput={updateSearchQuery}
 							value={searchQuery}
@@ -180,7 +180,7 @@
 						{#if searchQuery}
 							<div>
 								<button
-									class="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground hover:text-foreground"
+									class="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex items-center pr-2"
 									onclick={(e: Event) => {
 										e.preventDefault();
 										searchQuery = '';
@@ -194,7 +194,7 @@
 
 					<div class="m-1 mt-1">
 						<Select.Root type="single" bind:value={dropDownViewMode}>
-							<Select.Trigger class="h-8 w-full justify-center text-sm hover:bg-accent/50">
+							<Select.Trigger class="hover:bg-accent/50 h-8 w-full justify-center text-sm">
 								View: {dropDownViewMode}
 							</Select.Trigger>
 							<Select.Content>
@@ -247,7 +247,7 @@
 						{/if}
 					</ScrollArea>
 				</DropdownMenu.Group>
-				<div class="sticky bottom-0 z-10 m-0 border-t bg-background p-0">
+				<div class="bg-background sticky bottom-0 z-10 m-0 border-t p-0">
 					<div class="flex w-full text-center">
 						<AddMedicationTypeDialog {searchQuery} {createMedTypeForm} isButton={true} />
 					</div>
