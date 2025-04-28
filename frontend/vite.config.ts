@@ -1,8 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
-
-export default defineConfig({
-	plugins: [sveltekit()],
+import { svelteTesting } from '@testing-library/svelte/vite';
+export default defineConfig(({ mode }) => ({
+	resolve: {
+		conditions: mode === 'test' ? ['browser'] : []
+	},
+	plugins: [sveltekit(), svelteTesting()],
 	server: {
 		watch: {
 			usePolling: true
@@ -11,8 +14,20 @@ export default defineConfig({
 			protocol: 'ws'
 		}
 	},
-
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		globals: true,
+		environment: 'jsdom',
+		setupFiles: ['./vitest-setup.js'],
+		include: ['src/**/*.{test,spec}.{js,ts}'], // Only scans unit tests
+		exclude: ['**/node_modules/**'],
+		browser: {
+			instances: [
+				{
+					browser: 'firefox',
+					launch: {},
+					context: {}
+				}
+			]
+		}
 	}
-});
+}));
