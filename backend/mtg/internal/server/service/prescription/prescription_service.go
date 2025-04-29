@@ -1,7 +1,6 @@
 package pService
 
 import (
-	dto "mtg/internal/models/dto/prescription"
 	"mtg/internal/models/entity"
 	"mtg/internal/models/request"
 
@@ -15,6 +14,6 @@ type PrescriptionService interface {
 	GetPrescriptions(searchQuery map[string]string, owner *string) ([]entity.Prescription, error)
 	DeletePrescription(id uuid.UUID, email string) error
 	DeleteBatchPrescription(deleteList []uuid.UUID, email string) error
-	UpdatePrescription(pDTO *dto.PrescriptionDTO, id uuid.UUID, email string) error
+	UpdatePrescription(model *entity.Prescription, id uuid.UUID, email string) error
 	UpdateBatchPrescription(updateList []entity.Prescription, email string) error
 }

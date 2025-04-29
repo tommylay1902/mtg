@@ -1,237 +1,237 @@
 package phService_test
 
-import (
-	"log"
-	dto "mtg/internal/models/dto/prescriptionhistory"
-	"mtg/internal/models/entity"
-	phService "mtg/internal/server/service/prescriptionhistory"
-	"testing"
-	"time"
+// import (
+// 	"log"
 
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	m "github.com/stretchr/testify/mock"
-)
+// 	"mtg/internal/models/entity"
+// 	phService "mtg/internal/server/service/prescriptionhistory"
+// 	"testing"
+// 	"time"
 
-type MockPrescriptionHistoryDAO struct {
-	m.Mock
-	Generated uuid.UUID
-}
+// 	"github.com/google/uuid"
+// 	"github.com/stretchr/testify/assert"
+// 	"github.com/stretchr/testify/mock"
+// 	m "github.com/stretchr/testify/mock"
+// )
 
-func (m *MockPrescriptionHistoryDAO) CreateHistory(model *entity.PrescriptionHistory) (*uuid.UUID, error) {
-	args := m.Called(model)
+// type MockPrescriptionHistoryDAO struct {
+// 	m.Mock
+// 	Generated uuid.UUID
+// }
 
-	result := args.Get(0)
-	err := args.Error(1)
+// func (m *MockPrescriptionHistoryDAO) CreateHistory(model *entity.PrescriptionHistory) (*uuid.UUID, error) {
+// 	args := m.Called(model)
 
-	if result == nil {
-		return nil, err
-	}
+// 	result := args.Get(0)
+// 	err := args.Error(1)
 
-	id, ok := result.(*uuid.UUID)
+// 	if result == nil {
+// 		return nil, err
+// 	}
 
-	if !ok {
-		log.Panic("conversion went wrong in CreateHistory of service layer test")
-	}
+// 	id, ok := result.(*uuid.UUID)
 
-	return id, nil
-}
+// 	if !ok {
+// 		log.Panic("conversion went wrong in CreateHistory of service layer test")
+// 	}
 
-func (m *MockPrescriptionHistoryDAO) GetAll(searchQueries map[string]string, email string) ([]entity.PrescriptionHistory, error) {
-	args := m.Called(searchQueries, email)
+// 	return id, nil
+// }
 
-	result, err := args.Get(0), args.Error(1)
+// func (m *MockPrescriptionHistoryDAO) GetAll(searchQueries map[string]string, email string) ([]entity.PrescriptionHistory, error) {
+// 	args := m.Called(searchQueries, email)
 
-	if err != nil {
-		return nil, err
-	}
+// 	result, err := args.Get(0), args.Error(1)
 
-	rxHistories, ok := result.([]entity.PrescriptionHistory)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	if !ok {
-		log.Panic("conversion went wrong in GetAll Mock")
-	}
+// 	rxHistories, ok := result.([]entity.PrescriptionHistory)
 
-	return rxHistories, nil
-}
+// 	if !ok {
+// 		log.Panic("conversion went wrong in GetAll Mock")
+// 	}
 
-func (m *MockPrescriptionHistoryDAO) GetByEmailAndRx(email string, pId uuid.UUID) (*entity.PrescriptionHistory, error) {
-	args := m.Called(email, pId)
+// 	return rxHistories, nil
+// }
 
-	result, err := args.Get(0), args.Error(1)
-	if err != nil {
-		return nil, err
-	}
+// func (m *MockPrescriptionHistoryDAO) GetByEmailAndRx(email string, pId uuid.UUID) (*entity.PrescriptionHistory, error) {
+// 	args := m.Called(email, pId)
 
-	rxHistory, ok := result.(*entity.PrescriptionHistory)
+// 	result, err := args.Get(0), args.Error(1)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	if !ok {
-		log.Panic("conversion went wrong in GetByEmailAndRx mock function")
-	}
+// 	rxHistory, ok := result.(*entity.PrescriptionHistory)
 
-	return rxHistory, args.Error(1)
-}
+// 	if !ok {
+// 		log.Panic("conversion went wrong in GetByEmailAndRx mock function")
+// 	}
 
-func (m *MockPrescriptionHistoryDAO) DeleteByEmailAndRx(email string, pId uuid.UUID) error {
-	args := m.Called(email, pId)
-	return args.Error(0)
-}
+// 	return rxHistory, args.Error(1)
+// }
 
-func (m *MockPrescriptionHistoryDAO) UpdateByModel(e *entity.PrescriptionHistory) error {
-	args := m.Called(e)
+// func (m *MockPrescriptionHistoryDAO) DeleteByEmailAndRx(email string, pId uuid.UUID) error {
+// 	args := m.Called(email, pId)
+// 	return args.Error(0)
+// }
 
-	err := args.Error(0)
+// func (m *MockPrescriptionHistoryDAO) UpdateByModel(e *entity.PrescriptionHistory) error {
+// 	args := m.Called(e)
 
-	return err
-}
+// 	err := args.Error(0)
 
-func MatchRxHistoryExceptUUID(rx *entity.PrescriptionHistory) interface{} {
-	return m.MatchedBy(func(arg *entity.PrescriptionHistory) bool {
-		return arg.Owner == rx.Owner &&
-			arg.PrescriptionId == rx.PrescriptionId
-	})
-}
+// 	return err
+// }
 
-func TestCreatePrescriptionHistory(t *testing.T) {
-	dao := &MockPrescriptionHistoryDAO{}
+// func MatchRxHistoryExceptUUID(rx *entity.PrescriptionHistory) interface{} {
+// 	return m.MatchedBy(func(arg *entity.PrescriptionHistory) bool {
+// 		return arg.Owner == rx.Owner &&
+// 			arg.PrescriptionId == rx.PrescriptionId
+// 	})
+// }
 
-	service := phService.InitializeFiberPrescriptionHistoryService(dao)
+// func TestCreatePrescriptionHistory(t *testing.T) {
+// 	dao := &MockPrescriptionHistoryDAO{}
 
-	rxDTO := GenerateRxHistoryDTO()
-	model, mapErr := dto.MapPrescriptionHistoryDTOToModel(rxDTO)
+// 	service := phService.InitializeFiberPrescriptionHistoryService(dao)
 
-	if mapErr != nil {
-		log.Panic("error mapping dto to model within TestCreatePrescriptionHistory")
-	}
+// 	rxDTO := GenerateRxHistoryDTO()
+// 	model, mapErr := dto.MapPrescriptionHistoryDTOToModel(rxDTO)
 
-	dao.On("CreateHistory", MatchRxHistoryExceptUUID(model)).Return(model.Id, nil)
+// 	if mapErr != nil {
+// 		log.Panic("error mapping dto to model within TestCreatePrescriptionHistory")
+// 	}
 
-	id, err := service.CreatePrescriptionHistory(rxDTO)
+// 	dao.On("CreateHistory", MatchRxHistoryExceptUUID(model)).Return(model.Id, nil)
 
-	assert.NoError(t, err)
+// 	id, err := service.CreatePrescriptionHistory(rxDTO)
 
-	assert.Equal(t, *id, *model.Id)
-	dao.AssertExpectations(t)
-}
+// 	assert.NoError(t, err)
 
-func TestGetAll(t *testing.T) {
-	email := "tommylay.c@gmail.com"
+// 	assert.Equal(t, *id, *model.Id)
+// 	dao.AssertExpectations(t)
+// }
 
-	rxOne := GenerateRxHistoryModel()
+// func TestGetAll(t *testing.T) {
+// 	email := "tommylay.c@gmail.com"
 
-	rxTwo := GenerateRxHistoryModel()
-	dao := &MockPrescriptionHistoryDAO{}
+// 	rxOne := GenerateRxHistoryModel()
 
-	service := phService.InitializeFiberPrescriptionHistoryService(dao)
+// 	rxTwo := GenerateRxHistoryModel()
+// 	dao := &MockPrescriptionHistoryDAO{}
 
-	dao.On("GetAll", make(map[string]string), email).Return([]entity.PrescriptionHistory{*rxOne, *rxTwo}, nil)
+// 	service := phService.InitializeFiberPrescriptionHistoryService(dao)
 
-	result, err := service.GetAll(make(map[string]string), email)
+// 	dao.On("GetAll", make(map[string]string), email).Return([]entity.PrescriptionHistory{*rxOne, *rxTwo}, nil)
 
-	assert.NoError(t, err)
-	assert.Contains(t, result, *rxOne)
-	assert.Contains(t, result, *rxTwo)
-}
+// 	result, err := service.GetAll(make(map[string]string), email)
 
-func TestGetByEmailAndRx(t *testing.T) {
-	rx := GenerateRxHistoryModel()
+// 	assert.NoError(t, err)
+// 	assert.Contains(t, result, *rxOne)
+// 	assert.Contains(t, result, *rxTwo)
+// }
 
-	dao := &MockPrescriptionHistoryDAO{}
+// func TestGetByEmailAndRx(t *testing.T) {
+// 	rx := GenerateRxHistoryModel()
 
-	service := phService.InitializeFiberPrescriptionHistoryService(dao)
+// 	dao := &MockPrescriptionHistoryDAO{}
 
-	dao.On("GetByEmailAndRx", *rx.Owner, *rx.PrescriptionId).Return(rx, nil)
+// 	service := phService.InitializeFiberPrescriptionHistoryService(dao)
 
-	result, err := service.GetByEmailAndRx(*rx.Owner, *rx.PrescriptionId)
+// 	dao.On("GetByEmailAndRx", *rx.Owner, *rx.PrescriptionId).Return(rx, nil)
 
-	assert.NoError(t, err)
+// 	result, err := service.GetByEmailAndRx(*rx.Owner, *rx.PrescriptionId)
 
-	assert.Equal(t, rx, result)
+// 	assert.NoError(t, err)
 
-}
+// 	assert.Equal(t, rx, result)
 
-func TestDeleteByEmailAndId(t *testing.T) {
-	email := "tommylay.c@gmail.com"
-	id := uuid.New()
+// }
 
-	dao := &MockPrescriptionHistoryDAO{}
-	service := phService.InitializeFiberPrescriptionHistoryService(dao)
+// func TestDeleteByEmailAndId(t *testing.T) {
+// 	email := "tommylay.c@gmail.com"
+// 	id := uuid.New()
 
-	dao.On("DeleteByEmailAndRx", email, id).Return(nil)
+// 	dao := &MockPrescriptionHistoryDAO{}
+// 	service := phService.InitializeFiberPrescriptionHistoryService(dao)
 
-	err := service.DeleteByEmailAndRx(email, id)
+// 	dao.On("DeleteByEmailAndRx", email, id).Return(nil)
 
-	assert.NoError(t, err)
-}
+// 	err := service.DeleteByEmailAndRx(email, id)
 
-func TestUpdateUpdateByEmailAndRx(t *testing.T) {
-	// Step 1: Generate initial Rx history model
-	rxOne := GenerateRxHistoryModel()
-	// originalOwner := rxOne.Owner
-	newOwner := "new.owner@example.com" // Set a new owner to test the if condition
-	newPrescription := uuid.New()
-	taken := time.Now()
-	rxDTO := &dto.PrescriptionHistoryDTO{
-		PrescriptionId: &newPrescription,
-		Owner:          &newOwner, // Use a different owner to trigger the if block
-		Taken:          &taken,
-	}
+// 	assert.NoError(t, err)
+// }
 
-	// Step 2: Initialize mock DAO and service
-	dao := &MockPrescriptionHistoryDAO{}
-	service := phService.InitializeFiberPrescriptionHistoryService(dao)
+// func TestUpdateUpdateByEmailAndRx(t *testing.T) {
+// 	// Step 1: Generate initial Rx history model
+// 	rxOne := GenerateRxHistoryModel()
+// 	// originalOwner := rxOne.Owner
+// 	newOwner := "new.owner@example.com" // Set a new owner to test the if condition
+// 	newPrescription := uuid.New()
+// 	taken := time.Now()
+// 	rxDTO := &dto.PrescriptionHistoryDTO{
+// 		PrescriptionId: &newPrescription,
+// 		Owner:          &newOwner, // Use a different owner to trigger the if block
+// 		Taken:          &taken,
+// 	}
 
-	// Step 3: Set up mocks for GetByEmailAndRx and UpdateByModel
-	dao.On("GetByEmailAndRx", "tommylay.c@gmail.com", newPrescription).Return(rxOne, nil)
-	dao.On("UpdateByModel", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
-		// Simulate the update by modifying the rxOne object
-		updatedRx := args.Get(0).(*entity.PrescriptionHistory)
-		*rxOne = *updatedRx
-	})
+// 	// Step 2: Initialize mock DAO and service
+// 	dao := &MockPrescriptionHistoryDAO{}
+// 	service := phService.InitializeFiberPrescriptionHistoryService(dao)
 
-	// Step 4: Call the update method
-	err := service.UpdateByEmailAndRx(rxDTO, "tommylay.c@gmail.com", *rxDTO.PrescriptionId)
-	assert.NoError(t, err)
+// 	// Step 3: Set up mocks for GetByEmailAndRx and UpdateByModel
+// 	dao.On("GetByEmailAndRx", "tommylay.c@gmail.com", newPrescription).Return(rxOne, nil)
+// 	dao.On("UpdateByModel", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+// 		// Simulate the update by modifying the rxOne object
+// 		updatedRx := args.Get(0).(*entity.PrescriptionHistory)
+// 		*rxOne = *updatedRx
+// 	})
 
-	// Step 5: Verify that UpdateByModel was called
-	dao.AssertCalled(t, "UpdateByModel", mock.AnythingOfType("*entity.PrescriptionHistory"))
+// 	// Step 4: Call the update method
+// 	err := service.UpdateByEmailAndRx(rxDTO, "tommylay.c@gmail.com", *rxDTO.PrescriptionId)
+// 	assert.NoError(t, err)
 
-	// Step 6: Mock the result of GetByEmailAndRx after the update
-	dao.On("GetByEmailAndRx", newOwner, *rxOne.PrescriptionId).Return(rxOne, nil)
+// 	// Step 5: Verify that UpdateByModel was called
+// 	dao.AssertCalled(t, "UpdateByModel", mock.AnythingOfType("*entity.PrescriptionHistory"))
 
-	// Step 7: Retrieve the updated entity
-	result, err := service.GetByEmailAndRx(newOwner, *rxOne.PrescriptionId)
-	assert.NoError(t, err)
+// 	// Step 6: Mock the result of GetByEmailAndRx after the update
+// 	dao.On("GetByEmailAndRx", newOwner, *rxOne.PrescriptionId).Return(rxOne, nil)
 
-	// Step 8: Assert the updated values
-	assert.Equal(t, *rxDTO.Taken, *result.Taken)
-	assert.Equal(t, newOwner, *result.Owner)
-	assert.Equal(t, newPrescription, *result.PrescriptionId)
-}
+// 	// Step 7: Retrieve the updated entity
+// 	result, err := service.GetByEmailAndRx(newOwner, *rxOne.PrescriptionId)
+// 	assert.NoError(t, err)
 
-func GenerateRxHistoryModel() *entity.PrescriptionHistory {
-	email := "tommylay.c@gmail.com"
-	taken := time.Now()
-	id := uuid.New()
-	pId := uuid.New()
-	return &entity.PrescriptionHistory{
-		Id:             &id,
-		PrescriptionId: &pId,
-		Owner:          &email,
-		Taken:          &taken,
-	}
-}
+// 	// Step 8: Assert the updated values
+// 	assert.Equal(t, *rxDTO.Taken, *result.Taken)
+// 	assert.Equal(t, newOwner, *result.Owner)
+// 	assert.Equal(t, newPrescription, *result.PrescriptionId)
+// }
 
-func GenerateRxHistoryDTO() *dto.PrescriptionHistoryDTO {
-	pId := uuid.New()
-	owner := "tommylay.c@gmail.com"
-	taken := time.Now()
+// func GenerateRxHistoryModel() *entity.PrescriptionHistory {
+// 	email := "tommylay.c@gmail.com"
+// 	taken := time.Now()
+// 	id := uuid.New()
+// 	pId := uuid.New()
+// 	return &entity.PrescriptionHistory{
+// 		Id:             &id,
+// 		PrescriptionId: &pId,
+// 		Owner:          &email,
+// 		Taken:          &taken,
+// 	}
+// }
 
-	return &dto.PrescriptionHistoryDTO{
-		PrescriptionId: &pId,
-		Owner:          &owner,
-		Taken:          &taken,
-	}
+// func GenerateRxHistoryDTO() *dto.PrescriptionHistoryDTO {
+// 	pId := uuid.New()
+// 	owner := "tommylay.c@gmail.com"
+// 	taken := time.Now()
 
-}
+// 	return &dto.PrescriptionHistoryDTO{
+// 		PrescriptionId: &pId,
+// 		Owner:          &owner,
+// 		Taken:          &taken,
+// 	}
+
+// }

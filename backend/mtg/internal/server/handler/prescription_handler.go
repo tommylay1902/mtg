@@ -3,7 +3,7 @@ package handler
 import (
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
-	dto "mtg/internal/models/dto/prescription"
+
 	"mtg/internal/models/entity"
 	"mtg/internal/models/request"
 	service "mtg/internal/server/service/prescription"
@@ -155,7 +155,7 @@ func (ph *PrescriptionHandler) UpdatePrescription(c *fiber.Ctx) error {
 		return errorhandler.HandleError(badErr, c)
 	}
 
-	var requestBody dto.PrescriptionDTO
+	var requestBody entity.Prescription
 	if err := c.BodyParser(&requestBody); err != nil {
 		bodyParseErr := &apperror.BadRequestError{
 			Message: err.Error(),

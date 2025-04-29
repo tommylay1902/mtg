@@ -2,7 +2,7 @@ package pService
 
 import (
 	"mtg/internal/error/apperror"
-	pDto "mtg/internal/models/dto/prescription"
+
 	"mtg/internal/models/entity"
 	"mtg/internal/models/request"
 	pDao "mtg/internal/server/dao/prescription"
@@ -99,43 +99,43 @@ func (ps *FiberPrescriptionService) DeleteBatchPrescription(deleteList []uuid.UU
 	return nil
 }
 
-func (ps *FiberPrescriptionService) UpdatePrescription(pDTO *pDto.PrescriptionDTO, id uuid.UUID, email string) error {
+func (ps *FiberPrescriptionService) UpdatePrescription(model *entity.Prescription, id uuid.UUID, email string) error {
 	pUpdate, err := ps.DAO.GetPrescriptionById(id, email)
 	if err != nil {
 		return err
 	}
 	hasUpdate := false
-	if pDTO.Dosage != pUpdate.Dosage {
+	if model.Dosage != pUpdate.Dosage {
 		hasUpdate = true
-		pUpdate.Dosage = pDTO.Dosage
+		pUpdate.Dosage = model.Dosage
 	}
 
-	if pDTO.Medication != pUpdate.Medication {
+	if model.Medication != pUpdate.Medication {
 		hasUpdate = true
-		pUpdate.Medication = pDTO.Medication
+		pUpdate.Medication = model.Medication
 	}
 
-	if pDTO.Notes != nil && *pDTO.Notes != *pUpdate.Notes {
+	if model.Notes != nil && *model.Notes != *pUpdate.Notes {
 		hasUpdate = true
-		*pUpdate.Notes = *pDTO.Notes
+		*pUpdate.Notes = *model.Notes
 	}
 
-	if pDTO.Started != nil && *pDTO.Started != *pUpdate.Started {
+	if model.Started != nil && *model.Started != *pUpdate.Started {
 		hasUpdate = true
-		*pUpdate.Started = *pDTO.Started
+		*pUpdate.Started = *model.Started
 	}
 
-	if pUpdate.Ended == nil && pDTO.Ended != nil || pDTO.Ended == nil && pUpdate.Ended != nil {
+	if pUpdate.Ended == nil && model.Ended != nil || model.Ended == nil && pUpdate.Ended != nil {
 		hasUpdate = true
-		pUpdate.Ended = pDTO.Ended
-	} else if pUpdate.Ended != nil && pDTO.Ended != nil && *pUpdate.Ended != *pDTO.Ended {
+		pUpdate.Ended = model.Ended
+	} else if pUpdate.Ended != nil && model.Ended != nil && *pUpdate.Ended != *model.Ended {
 		hasUpdate = true
-		*pUpdate.Ended = *pDTO.Ended
+		*pUpdate.Ended = *model.Ended
 	}
 
-	if pUpdate.Refills != nil && *pDTO.Refills != *pUpdate.Refills {
+	if pUpdate.Refills != nil && *model.Refills != *pUpdate.Refills {
 		hasUpdate = true
-		*pUpdate.Refills = *pDTO.Refills
+		*pUpdate.Refills = *model.Refills
 	}
 
 	if hasUpdate {

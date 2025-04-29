@@ -3,7 +3,8 @@ package handler
 import (
 	"log"
 	"mtg/internal/error/errorhandler"
-	dto "mtg/internal/models/dto/prescriptionhistory"
+	"mtg/internal/models/entity"
+
 	service "mtg/internal/server/service/prescriptionhistory"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,7 +20,7 @@ func InitializePrescriptionHistoryHandler(service service.PrescriptionHistorySer
 }
 
 func (h *PrescriptionHistoryHandler) CreatePrescriptionHistory(c *fiber.Ctx) error {
-	var request dto.PrescriptionHistoryDTO
+	var request entity.PrescriptionHistory
 	err := c.BodyParser(&request)
 
 	if err != nil {
@@ -95,19 +96,18 @@ func (h *PrescriptionHistoryHandler) UpdateByEmailAndRx(c *fiber.Ctx) error {
 		return errorhandler.HandleError(err, c)
 	}
 
-	dto := &dto.PrescriptionHistoryDTO{}
+	model := &entity.PrescriptionHistory{}
 
-	err = c.BodyParser(dto)
+	err = c.BodyParser(&model)
 
 	if err != nil {
 
 		return errorhandler.HandleError(err, c)
 	}
 
-	err = h.Service.UpdateByEmailAndRx(dto, email, pId)
+	err = h.Service.UpdateByEmailAndRx(model, email, pId)
 
 	if err != nil {
-
 		return errorhandler.HandleError(err, c)
 	}
 

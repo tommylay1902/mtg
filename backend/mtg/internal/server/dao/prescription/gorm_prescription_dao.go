@@ -55,7 +55,6 @@ func (dao *GormPrescriptionDao) GetPrescriptionById(id uuid.UUID, email string) 
 		}
 		return nil, err
 	}
-	fmt.Println(prescription)
 	return prescription, nil
 }
 

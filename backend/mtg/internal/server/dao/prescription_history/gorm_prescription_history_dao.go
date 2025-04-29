@@ -25,7 +25,7 @@ func (dao *GormPrescriptionHistoryDao) CreateHistory(entity *entity.Prescription
 		return nil, err
 	}
 
-	return entity.Id, nil
+	return entity.ID, nil
 }
 
 func (dao *GormPrescriptionHistoryDao) GetAll(searchQueries map[string]string, email string) ([]entity.PrescriptionHistory, error) {

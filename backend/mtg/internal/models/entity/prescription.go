@@ -19,6 +19,17 @@ type BasePrescriptionFields struct {
 	Owner      *string    `json:"owner"`
 }
 
+type RelationshipPrescriptionFields struct {
+	MedicationTypes []MedicationType `json:"medicationType" gorm:"constraint:OnDelete:CASCADE;many2many:prescription_medication_types"`
+	PrescribedBy    *uuid.UUID       `json:"prescribedBy"`
+	Doctor          *Doctor          `gorm:"foreignKey:PrescribedBy"`
+}
+
+type Prescription struct {
+	BasePrescriptionFields
+	RelationshipPrescriptionFields
+}
+
 func (b *BasePrescriptionFields) BeforeCreate(tx *gorm.DB) error {
 	if b.ID == nil {
 		id := uuid.New()
@@ -33,15 +44,4 @@ func (p *Prescription) BeforeCreate(tx *gorm.DB) error {
 		p.ID = &id
 	}
 	return nil
-}
-
-type RelationshipPrescriptionFields struct {
-	MedicationTypes []MedicationType `json:"medicationType" gorm:"constraint:OnDelete:CASCADE;many2many:prescription_medication_types"`
-	PrescribedBy    *uuid.UUID       `json:"prescribedBy"`
-	Doctor          *Doctor          `gorm:"foreignKey:PrescribedBy"`
-}
-
-type Prescription struct {
-	BasePrescriptionFields
-	RelationshipPrescriptionFields
 }

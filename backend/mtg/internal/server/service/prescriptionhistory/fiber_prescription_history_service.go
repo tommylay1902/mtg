@@ -2,7 +2,7 @@ package phService
 
 import (
 	"mtg/internal/error/apperror"
-	dto "mtg/internal/models/dto/prescriptionhistory"
+
 	"mtg/internal/models/entity"
 	dao "mtg/internal/server/dao/prescription_history"
 
@@ -17,12 +17,7 @@ func InitializeFiberPrescriptionHistoryService(dao dao.PrescriptionHistoryDao) *
 	return &FiberPrescriptionHistoryService{DAO: dao}
 }
 
-func (phs *FiberPrescriptionHistoryService) CreatePrescriptionHistory(data *dto.PrescriptionHistoryDTO) (*uuid.UUID, error) {
-	model, err := dto.MapPrescriptionHistoryDTOToModel(data)
-
-	if err != nil {
-		return nil, err
-	}
+func (phs *FiberPrescriptionHistoryService) CreatePrescriptionHistory(model *entity.PrescriptionHistory) (*uuid.UUID, error) {
 
 	id, daoErr := phs.DAO.CreateHistory(model)
 
@@ -57,7 +52,7 @@ func (phs *FiberPrescriptionHistoryService) DeleteByEmailAndRx(email string, id 
 	return err
 }
 
-func (phs *FiberPrescriptionHistoryService) UpdateByEmailAndRx(dto *dto.PrescriptionHistoryDTO, email string, pId uuid.UUID) error {
+func (phs *FiberPrescriptionHistoryService) UpdateByEmailAndRx(dto *entity.PrescriptionHistory, email string, pId uuid.UUID) error {
 	hasUpdate := false
 
 	curr, err := phs.DAO.GetByEmailAndRx(email, pId)
