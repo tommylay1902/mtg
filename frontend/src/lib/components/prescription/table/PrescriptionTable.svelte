@@ -6,7 +6,6 @@
 		type SortingState,
 		getCoreRowModel,
 		getSortedRowModel,
-		getExpandedRowModel,
 		type ExpandedState
 	} from '@tanstack/table-core';
 	import { columns } from './Columns.js';

@@ -11,7 +11,9 @@
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import Trash from '@lucide/svelte/icons/trash';
 	import Pencil from '@lucide/svelte/icons/pencil';
+	import Refresh from '@lucide/svelte/icons/refresh-cw';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import EditDock from '$lib/components/prescription/edit-dock.svelte';
 
 	let { data } = $props();
 	let rowSelection = $state<RowSelectionState>({});
@@ -43,62 +45,6 @@
 				>{prescriptions.current.length ?? 0} Total</Badge
 			>
 		</div>
-
-		{#if displayEditButtons}
-			<div class="fixed bottom-8 left-1/2 flex -translate-x-1/2 transform animate-float-up gap-4">
-				<!-- Delete Button -->
-				<div class="group relative">
-					<Button
-						variant="destructive"
-						class="peer/delete h-16 w-16 rounded-full transition-all duration-300 hover:scale-125 group-hover/update:scale-90 [&_svg]:size-6"
-						onclick={() => {
-							isDeleteDialogOpen = true;
-						}}
-					>
-						<Trash />
-					</Button>
-					<div
-						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
-					>
-						<div
-							class="whitespace-nowrap rounded-full bg-destructive px-3 py-1 text-sm font-medium text-destructive-foreground shadow-md"
-						>
-							Delete Prescription(s)
-						</div>
-					</div>
-				</div>
-
-				<!-- Update Button -->
-				<div class="group relative">
-					<Button
-						class="peer/update h-16 w-16 rounded-full bg-black transition-all duration-300 hover:scale-125 [&_svg]:size-6"
-						onclick={() => {
-							isUpdateDialogOpen = true;
-						}}
-					>
-						<Pencil size={32} />
-					</Button>
-					<div
-						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
-					>
-						<div
-							class="whitespace-nowrap rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground shadow-md"
-						>
-							Update Prescription(s)
-						</div>
-					</div>
-				</div>
-
-				<DeletePrescriptionDialog bind:rowSelection bind:isDeleteDialogOpen />
-				<UpdatePrescriptionDialog
-					bind:isUpdateDialogOpen
-					{updateDisplayPrescriptions}
-					createMedTypeForm={data.form?.createMedTypeForm}
-					bind:rowSelection
-					createDoctorForm={data.form?.createDoctorForm}
-				/>
-			</div>
-		{/if}
 
 		<Tabs.Root bind:value={filterStatus} class="w-[400px]">
 			<Tabs.List class="grid w-full grid-cols-3">
@@ -142,4 +88,17 @@
 	</div>
 
 	<PrescriptionTable bind:rowSelection />
+
+	{#if displayEditButtons}
+		<EditDock bind:isDeleteDialogOpen bind:isUpdateDialogOpen />
+
+		<DeletePrescriptionDialog bind:rowSelection bind:isDeleteDialogOpen />
+		<UpdatePrescriptionDialog
+			bind:isUpdateDialogOpen
+			{updateDisplayPrescriptions}
+			createMedTypeForm={data.form?.createMedTypeForm}
+			bind:rowSelection
+			createDoctorForm={data.form?.createDoctorForm}
+		/>
+	{/if}
 </div>

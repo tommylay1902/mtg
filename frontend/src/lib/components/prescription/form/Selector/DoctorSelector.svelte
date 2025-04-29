@@ -9,26 +9,37 @@
 	import { getDoctorContext } from '$lib/context/DoctorContext.js';
 	import type { Doctor } from '$lib/types/Doctor.js';
 	import AddDoctorTypeDialog from '../../dialog/AddDoctorTypeDialog.svelte';
+	import { Input } from '$lib/components/ui/input/index.js';
 
 	const doctors = getDoctorContext();
 
 	let { value = $bindable(), createDoctorForm } = $props();
 
 	let open = $state(false);
-
 	let triggerRef = $state<HTMLButtonElement>(null!);
+	let searchQuery = $state('');
+
+	// Filter doctors based on search query
+	const filteredDoctors = $derived.by(() => {
+		if (!searchQuery) return doctors?.current ?? [];
+		return (
+			doctors?.current.filter((doctor) =>
+				doctor.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+			) ?? []
+		);
+	});
 
 	const selectedValue: Doctor | string = $derived(
-		doctors?.current.find((f) => f.id === value) ?? 'Select a healthcare professional...'
+		doctors?.current.find((f) => f.id === value) ?? 'Unknown'
 	);
 
-	let searchQuery = $state('');
 	function closeAndFocusTrigger() {
 		open = false;
 		tick().then(() => {
 			triggerRef.focus();
 		});
 	}
+	$inspect(filteredDoctors);
 </script>
 
 <Popover.Root bind:open>
@@ -41,23 +52,15 @@
 				role="combobox"
 				aria-expanded={open}
 			>
-				{typeof selectedValue === 'string' ? 'Select a doctor...' : selectedValue.lastName}
+				{typeof selectedValue === 'string' ? selectedValue : `${selectedValue.lastName}`}
 				<ChevronsUpDown class="opacity-50" />
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-full p-0">
 		<Command.Root>
-			<Command.Input
-				placeholder="Search by last name..."
-				class="h-9"
-				oninput={(e) => (searchQuery = (e.target as HTMLInputElement).value ?? '')}
-			/>
+			<Input placeholder="Search by last name..." class="h-9 p-4" bind:value={searchQuery} />
 			<Command.List>
-				<Command.Empty>
-					<div>No Doctors found</div>
-					<AddDoctorTypeDialog {searchQuery} {createDoctorForm} isButton={false} />
-				</Command.Empty>
 				<Command.Group>
 					<Command.Item
 						value=""
@@ -69,18 +72,22 @@
 						<Check class={cn(value !== '' && 'text-transparent')} />
 						{'Unknown'}
 					</Command.Item>
-					{#each doctors.current as doctor (doctor.id)}
-						<Command.Item
-							value={doctor.id}
-							onSelect={() => {
-								value = doctor.id;
-								closeAndFocusTrigger();
-							}}
-						>
-							<Check class={cn(value !== doctor.id && 'text-transparent')} />
-							{doctor.lastName}
-						</Command.Item>
-					{/each}
+					{#if filteredDoctors.length !== 0}
+						{#each filteredDoctors as doctor (doctor.id)}
+							<Command.Item
+								value={doctor.id}
+								onSelect={() => {
+									value = doctor.id;
+									closeAndFocusTrigger();
+								}}
+							>
+								<Check class={cn(value !== doctor.id && 'text-transparent')} />
+								{doctor.lastName}
+							</Command.Item>
+						{/each}
+					{:else if filteredDoctors.length === 0 && searchQuery !== ''}
+						<div class="text-center text-sm font-bold">No doctors found for "{searchQuery}"</div>
+					{/if}
 				</Command.Group>
 			</Command.List>
 			<AddDoctorTypeDialog {searchQuery} {createDoctorForm} isButton={true} />
