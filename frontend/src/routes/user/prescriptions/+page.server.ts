@@ -3,7 +3,6 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/rxFormConfig.js';
 import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
-import type { MedicationType } from '$lib/types/MedicationType.js';
 import { addDoctorForm } from '$lib/config/form/addDoctorFormConfig.js';
 
 export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
@@ -11,28 +10,8 @@ export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }
 		const prescriptionForm = await superValidate(zod(prescriptionSchema));
 		const createMedTypeForm = await superValidate(zod(addMedicationTypeSchema));
 		const createDoctorForm = await superValidate(zod(addDoctorForm));
-		const { session } = await safeGetSession();
-
-		const fetchOptions = {
-			headers: {
-				Authorization: `Bearer ${session?.access_token}`
-			}
-		};
-
-		const rxResponse = await fetch('/api/prescriptions?type=prescriptions', fetchOptions);
-
-		//input fetch logic for medication types for drop down list
-		const mtResponse = await fetch('/api/medication-type', fetchOptions);
-		const dResponse = await fetch('/api/doctors', fetchOptions);
-
-		const prescription = await rxResponse.json();
-		const medicationTypes: MedicationType[] = await mtResponse.json();
-		const doctors = await dResponse.json();
 
 		return {
-			prescription,
-			medicationTypes,
-			doctors,
 			form: { prescriptionForm, createMedTypeForm, createDoctorForm }
 		};
 	} catch (err) {
@@ -59,6 +38,7 @@ export const actions: Actions = {
 				},
 				body: JSON.stringify(prescriptionForm.data)
 			});
+
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error('API Error:', errorData);

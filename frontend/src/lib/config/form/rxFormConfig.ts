@@ -9,9 +9,14 @@ const basePrescriptionSchema = z.object({
 	ended: z.string().nullable(),
 	refills: z.number().min(0, 'Required'),
 	total: z.number().min(0, 'Required'),
-	prescribedBy: z.string().transform((dr) => {
-		if (dr === '') return null;
-	})
+	prescribedBy: z
+		.string()
+		.optional()
+		.nullable()
+		.transform((dr) => {
+			if (dr === '') return null;
+			return dr;
+		})
 });
 
 export const prescriptionSchema = basePrescriptionSchema

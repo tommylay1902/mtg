@@ -3,16 +3,11 @@
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import PrescriptionForm from '$lib/components/prescription/form/PrescriptionForm.svelte';
 	import type { RowSelectionState } from '@tanstack/react-table';
-	import { setPrescriptionContext } from '$lib/context/PrescriptionContext.js';
-	import { PrescriptionState } from '$lib/state/PrescriptionState.svelte.js';
+	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { type Prescription } from '$lib/types/Prescription.js';
 	import PrescriptionTable from '$lib/components/prescription/table/PrescriptionTable.svelte';
 	import UpdatePrescriptionDialog from '$lib/components/prescription/dialog/UpdatePrescriptionDialog.svelte';
 	import DeletePrescriptionDialog from '$lib/components/prescription/dialog/DeletePrescriptionDialog.svelte';
-	import { MedicationTypeState } from '$lib/state/MedicationTypeState.svelte.js';
-	import { setMedicationTypeContext } from '$lib/context/MedicationContext.js';
-	import { setDoctorContext } from '$lib/context/DoctorContext.js';
-	import { DoctorState } from '$lib/state/DoctorState.svelte.js';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import Trash from '@lucide/svelte/icons/trash';
 	import Pencil from '@lucide/svelte/icons/pencil';
@@ -27,15 +22,9 @@
 	let isAddDialogOpen = $state(false);
 	let updateDisplayPrescriptions = $state<Prescription[]>([]);
 
-	let prescriptions = new PrescriptionState(data.prescription);
-	let medicationTypes = new MedicationTypeState(data.medicationTypes ?? []);
-	let doctor = new DoctorState(data.doctors);
-
-	setPrescriptionContext(prescriptions);
-	setMedicationTypeContext(medicationTypes);
-	setDoctorContext(doctor);
-
 	let filterStatus = $state('active');
+
+	const prescriptions = getPrescriptionContext();
 
 	$effect(() => {
 		if (Object.keys(rowSelection).length > 0) {
@@ -56,7 +45,7 @@
 		</div>
 
 		{#if displayEditButtons}
-			<div class="animate-float-up fixed bottom-8 left-1/2 flex -translate-x-1/2 transform gap-4">
+			<div class="fixed bottom-8 left-1/2 flex -translate-x-1/2 transform animate-float-up gap-4">
 				<!-- Delete Button -->
 				<div class="group relative">
 					<Button
@@ -72,7 +61,7 @@
 						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
 					>
 						<div
-							class="bg-destructive text-destructive-foreground whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium shadow-md"
+							class="whitespace-nowrap rounded-full bg-destructive px-3 py-1 text-sm font-medium text-destructive-foreground shadow-md"
 						>
 							Delete Prescription(s)
 						</div>
@@ -93,7 +82,7 @@
 						class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
 					>
 						<div
-							class="bg-primary text-primary-foreground whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium shadow-md"
+							class="whitespace-nowrap rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground shadow-md"
 						>
 							Update Prescription(s)
 						</div>

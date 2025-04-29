@@ -19,8 +19,9 @@
 	let triggerRef = $state<HTMLButtonElement>(null!);
 
 	const selectedValue: Doctor | string = $derived(
-		doctors.current.find((f) => f.id === value) ?? 'Select a healthcare professional...'
+		doctors?.current.find((f) => f.id === value) ?? 'Select a healthcare professional...'
 	);
+
 	let searchQuery = $state('');
 	function closeAndFocusTrigger() {
 		open = false;
