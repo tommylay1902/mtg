@@ -49,7 +49,7 @@ export const actions: Actions = {
 			}
 
 			const { success } = await response.json();
-			// take a look while refactoring
+
 			return {
 				success: true,
 				data: { ...prescriptionForm.data, id: success },
@@ -59,6 +59,7 @@ export const actions: Actions = {
 			console.error(err);
 		}
 	},
+
 	createMedType: async ({ request, fetch, locals: { safeGetSession } }) => {
 		const createMedTypeForm = await superValidate(request, zod(addMedicationTypeSchema));
 		if (!createMedTypeForm.valid) return fail(400, createMedTypeForm);

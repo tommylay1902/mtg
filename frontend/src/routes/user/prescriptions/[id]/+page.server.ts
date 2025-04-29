@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params, fetch, locals: { safeGetSes
 			}
 		});
 		const rx = await rxResponse.json();
-		console.log(rx);
+
 		return {
 			prescription: rx
 		};

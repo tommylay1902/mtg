@@ -13,14 +13,12 @@ export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession }
 			}
 		};
 
-		// Remove the duplicate fetches (you had them both individually and in Promise.allSettled)
 		const results = await Promise.allSettled([
 			fetch('/api/prescriptions?type=prescriptions', fetchOptions),
 			fetch('/api/medication-type', fetchOptions),
 			fetch('/api/doctors', fetchOptions)
 		]);
 
-		// Helper function that returns just the data or throws
 		const getDataOrThrow = async <T>(result: PromiseSettledResult<Response>): Promise<T> => {
 			if (result.status === 'rejected') {
 				throw new Error(result.reason.message || 'Request failed');
@@ -33,7 +31,6 @@ export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession }
 			}
 		};
 
-		// Process all results - any failures will be caught by the outer try/catch
 		const [prescriptions, medicationTypes, doctors] = await Promise.all([
 			getDataOrThrow<Prescription[]>(results[0]),
 			getDataOrThrow<MedicationType[]>(results[1]),
@@ -47,7 +44,6 @@ export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession }
 		};
 	} catch (err) {
 		console.error(err);
-		// Return empty arrays instead of throwing to prevent page crash
 		return {
 			prescription: [],
 			medicationTypes: [],
