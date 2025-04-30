@@ -1,18 +1,18 @@
 <script lang="ts">
-	import EllipsisVertical from '@lucide/svelte/icons/ellipsis-vertical';
+	import Info from '@lucide/svelte/icons/info';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	let { pId } = $props();
 </script>
 
 <div>
-	<Tooltip.Provider>
+	<Tooltip.Provider delayDuration={20}>
 		<Tooltip.Root>
 			<Tooltip.Trigger>
 				<a href={`/user/prescriptions/${pId}`} class="hover:bg-gray-500">
-					<EllipsisVertical />
+					<Info class="hover:text-blue-600" />
 				</a>
 			</Tooltip.Trigger>
-			<Tooltip.Content>Click to view more details of the given prescription</Tooltip.Content>
+			<Tooltip.Content>Click to view more details...</Tooltip.Content>
 		</Tooltip.Root>
 	</Tooltip.Provider>
 </div>

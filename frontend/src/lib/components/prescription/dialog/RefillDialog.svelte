@@ -8,6 +8,5 @@
 		<Dialog.Header>
 			<Dialog.Title>Refill Prescriptions</Dialog.Title>
 		</Dialog.Header>
-		<div></div>
 	</Dialog.Content>
 </Dialog.Root>
