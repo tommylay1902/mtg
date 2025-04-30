@@ -20,7 +20,6 @@ func (dao *GormDoctorDao) CreateDoctor(model *entity.Doctor) (*uuid.UUID, error)
 	if err != nil {
 		return nil, err
 	}
-
 	return model.ID, nil
 }
 

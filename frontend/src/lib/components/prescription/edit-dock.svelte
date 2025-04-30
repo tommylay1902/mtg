@@ -2,7 +2,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Trash from '@lucide/svelte/icons/trash';
 	import Pencil from '@lucide/svelte/icons/pencil';
-	import Refresh from '@lucide/svelte/icons/refresh-cw';
+	import Phone from '@lucide/svelte/icons/phone';
 
 	let { dialogs = $bindable() } = $props();
 </script>
@@ -58,7 +58,7 @@
 				dialogs.isRefillOpen = true;
 			}}
 		>
-			<Refresh />
+			<Phone />
 		</Button>
 		<div
 			class="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100"
@@ -66,7 +66,7 @@
 			<div
 				class="whitespace-nowrap rounded-full bg-white px-3 py-1 text-sm font-medium text-black shadow-md"
 			>
-				Refill Prescription(s)
+				Contact Doctor(s)/Pharmacy for refills
 			</div>
 		</div>
 	</div>

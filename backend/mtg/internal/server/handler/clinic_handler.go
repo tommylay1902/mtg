@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"mtg/internal/error/apperror"
+	"mtg/internal/error/errorhandler"
 	"mtg/internal/models/entity"
 	cService "mtg/internal/server/service/clinic"
 
@@ -20,14 +22,18 @@ func (ch *ClinicHandler) CreateClinic(c *fiber.Ctx) error {
 	var bodyRequest entity.Clinic
 
 	if err := c.BodyParser(&bodyRequest); err != nil {
-		return c.SendStatus(fiber.StatusBadRequest)
+		bodyParseErr := &apperror.BadRequestError{
+			Message: err.Error(),
+			Code:    400,
+		}
+		return errorhandler.HandleError(bodyParseErr, c)
 	}
 
 	bodyRequest.Owner = &email
 	id, err := ch.Service.CreateClinic(bodyRequest)
 
 	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
+		return errorhandler.HandleError(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -41,7 +47,8 @@ func (ch *ClinicHandler) GetAllClinics(c *fiber.Ctx) error {
 	clinics, err := ch.Service.GetAllClinics(&email)
 
 	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
+		return errorhandler.HandleError(err, c)
 	}
+	
 	return c.Status(fiber.StatusOK).JSON(clinics)
 }

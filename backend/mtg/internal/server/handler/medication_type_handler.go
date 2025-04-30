@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"mtg/internal/error/apperror"
+	"mtg/internal/error/errorhandler"
 	"mtg/internal/models/entity"
 	mtService "mtg/internal/server/service/medication_type"
 
@@ -20,19 +22,20 @@ func (mtHandler *MedicationTypeHandler) CreateMedicationType(c *fiber.Ctx) error
 	var bodyRequest entity.MedicationType
 
 	if err := c.BodyParser(&bodyRequest); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error,
-		})
+		error := apperror.BadRequestError{
+			Message: err.Error(),
+			Code:    400,
+		}
+		return errorhandler.HandleError(&error, c)
 	}
 
 	bodyRequest.Owner = email
 	id, err := mtHandler.Service.CreateMedicationType(&bodyRequest)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"success": id,
-		})
+		return errorhandler.HandleError(err, c)
 	}
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": id,
 	})
@@ -43,9 +46,7 @@ func (mtHandler *MedicationTypeHandler) GetMedicationTypes(c *fiber.Ctx) error {
 	medicationTypes, err := mtHandler.Service.GetMedicationTypes(&email)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Server Error",
-		})
+		return errorhandler.HandleError(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(medicationTypes)

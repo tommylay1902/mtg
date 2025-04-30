@@ -12,6 +12,7 @@
 	const medicationTypes = getMedicationTypeContext();
 
 	let { searchQuery, createMedTypeForm, isButton } = $props();
+
 	$effect(() => {
 		$form.type = searchQuery;
 	});

@@ -16,10 +16,7 @@ func InitializeFiberMedicationTypeService(DAO mtDao.MedicationTypeDAO) *FiberMed
 }
 
 func (mts *FiberMedicationTypeService) CreateMedicationType(model *entity.MedicationType) (*uuid.UUID, error) {
-
-	id, err := mts.DAO.CreateMedicationType(model)
-
-	return id, err
+	return mts.DAO.CreateMedicationType(model)
 }
 
 func (mts *FiberMedicationTypeService) GetMedicationTypes(owner *string) ([]entity.MedicationType, error) {

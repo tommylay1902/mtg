@@ -54,6 +54,7 @@ func (ph *PrescriptionHandler) GetPrescription(c *fiber.Ctx) error {
 			Message: err.Error(),
 			Code:    400,
 		}
+
 		return errorhandler.HandleError(custErr, c)
 	}
 
@@ -82,9 +83,7 @@ func (ph *PrescriptionHandler) GetMedicationTypeByPrescription(c *fiber.Ctx) err
 
 	if err != nil {
 		//change left for testing purposes
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return errorhandler.HandleError(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(mt)
@@ -196,12 +195,11 @@ func (ph *PrescriptionHandler) UpdateBatchPrescription(c *fiber.Ctx) error {
 	err := ph.Service.UpdateBatchPrescription(requestBody, email)
 
 	if err != nil {
-
 		return errorhandler.HandleError(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": "successfully all prescriptions",
+		"success": "successfully updated all prescriptions",
 	})
 
 }
