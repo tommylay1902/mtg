@@ -16,12 +16,7 @@
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Pill from '@lucide/svelte/icons/pill';
 
-	let {
-		prescriptionForm,
-		createMedTypeForm,
-		isAddDialogOpen = $bindable(),
-		createDoctorForm
-	} = $props();
+	let { prescriptionForm, createMedTypeForm, isOpen = $bindable(), createDoctorForm } = $props();
 	const prescriptions = getPrescriptionContext();
 
 	const formConfigs: Array<rxFormConfigFields> = rxFormConfig;
@@ -38,7 +33,7 @@
 				toast.dismiss();
 				if (event.result.type === 'success') {
 					reset();
-					isAddDialogOpen = false;
+					isOpen = false;
 					prescriptions.addPrescription(event.result.data?.data);
 					toast.success('Success', {
 						description: 'Successfully created prescription'

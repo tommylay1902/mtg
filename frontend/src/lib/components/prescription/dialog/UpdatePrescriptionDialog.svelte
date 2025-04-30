@@ -33,7 +33,7 @@
 
 	let {
 		updateDisplayPrescriptions,
-		isUpdateDialogOpen = $bindable(),
+		isOpen = $bindable(),
 		rowSelection = $bindable(),
 		createMedTypeForm,
 		createDoctorForm
@@ -46,7 +46,7 @@
 	// EFFECT
 	$effect(() => {
 		//reset state of dialog on close of dialog
-		if (isUpdateDialogOpen === false) {
+		if (isOpen === false) {
 			updateDisplayPrescriptions = [];
 			updateIds = [];
 			activeIdx = 0;
@@ -78,14 +78,14 @@
 		});
 
 		prescriptions.updatePrescriptions(localDrafts);
-		isUpdateDialogOpen = false;
+		isOpen = false;
 	};
 
 	let lastMedicationTypes = $state<MedicationType[]>([]);
 	let lastDoctor = $state<string>('');
 
 	$effect(() => {
-		if (isUpdateDialogOpen) {
+		if (isOpen) {
 			const currentMed = localDrafts[activeIdx]?.medicationType || [];
 			const currentDoctor = localDrafts[activeIdx]?.prescribedBy || '';
 			if (!arraysEqual(currentMed, lastMedicationTypes)) {
@@ -188,7 +188,7 @@
 	let isDropdownOpen = $state(false);
 </script>
 
-<Dialog.Root bind:open={isUpdateDialogOpen}>
+<Dialog.Root bind:open={isOpen}>
 	<Dialog.Content class="max-h-[90dvh] max-w-[50dvw] overflow-y-scroll">
 		<Dialog.Header>
 			<Dialog.Title>Update Prescription</Dialog.Title>
@@ -237,7 +237,7 @@
 					{activeIdx + 1} of {updateDisplayPrescriptions.length ?? 0}
 				</div>
 				<div class="col-span-4 mt-3 flex items-center justify-between">
-					<Button onclick={() => (isUpdateDialogOpen = false)}>Cancel</Button>
+					<Button onclick={() => (isOpen = false)}>Cancel</Button>
 
 					<div class="flex items-center gap-2">
 						<Button

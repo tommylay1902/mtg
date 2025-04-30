@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import PrescriptionForm from '$lib/components/prescription/form/PrescriptionForm.svelte';
 	import type { RowSelectionState } from '@tanstack/react-table';
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
@@ -9,32 +9,26 @@
 	import UpdatePrescriptionDialog from '$lib/components/prescription/dialog/UpdatePrescriptionDialog.svelte';
 	import DeletePrescriptionDialog from '$lib/components/prescription/dialog/DeletePrescriptionDialog.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import Trash from '@lucide/svelte/icons/trash';
-	import Pencil from '@lucide/svelte/icons/pencil';
-	import Refresh from '@lucide/svelte/icons/refresh-cw';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import EditDock from '$lib/components/prescription/edit-dock.svelte';
+	import RefillDialog from '$lib/components/prescription/dialog/RefillDialog.svelte';
 
 	let { data } = $props();
 	let rowSelection = $state<RowSelectionState>({});
-	let isDeleteDialogOpen = $state(false);
-	let displayEditButtons = $state(false);
 
-	let isUpdateDialogOpen = $state(false);
+	let displayEditButtons = $derived(Object.keys(rowSelection).length > 0);
+	let dialogs = $state({
+		isUpdateOpen: false,
+		isDeleteOpen: false,
+		isAddOpen: false,
+		isRefillOpen: false
+	});
 	let isAddDialogOpen = $state(false);
 	let updateDisplayPrescriptions = $state<Prescription[]>([]);
 
 	let filterStatus = $state('active');
 
 	const prescriptions = getPrescriptionContext();
-
-	$effect(() => {
-		if (Object.keys(rowSelection).length > 0) {
-			displayEditButtons = true;
-		} else {
-			displayEditButtons = false;
-		}
-	});
 </script>
 
 <div class="w-full">
@@ -81,7 +75,7 @@
 					createDoctorForm={data.form?.createDoctorForm}
 					prescriptionForm={data.form?.prescriptionForm}
 					createMedTypeForm={data.form?.createMedTypeForm}
-					bind:isAddDialogOpen
+					bind:isOpen={dialogs.isAddOpen}
 				/>
 			</Dialog.Content>
 		</Dialog.Root>
@@ -90,15 +84,16 @@
 	<PrescriptionTable bind:rowSelection />
 
 	{#if displayEditButtons}
-		<EditDock bind:isDeleteDialogOpen bind:isUpdateDialogOpen />
+		<EditDock bind:dialogs />
 
-		<DeletePrescriptionDialog bind:rowSelection bind:isDeleteDialogOpen />
+		<DeletePrescriptionDialog bind:rowSelection bind:isOpen={dialogs.isDeleteOpen} />
 		<UpdatePrescriptionDialog
-			bind:isUpdateDialogOpen
+			bind:isOpen={dialogs.isUpdateOpen}
 			{updateDisplayPrescriptions}
 			createMedTypeForm={data.form?.createMedTypeForm}
 			bind:rowSelection
 			createDoctorForm={data.form?.createDoctorForm}
 		/>
+		<RefillDialog bind:isOpen={dialogs.isRefillOpen} />
 	{/if}
 </div>

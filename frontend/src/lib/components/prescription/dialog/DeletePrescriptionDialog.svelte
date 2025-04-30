@@ -3,7 +3,7 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { getPrescriptionContext } from '$lib/context/PrescriptionContext.js';
 	import { toast } from 'svelte-sonner';
-	let { rowSelection = $bindable(), isDeleteDialogOpen = $bindable() } = $props();
+	let { rowSelection = $bindable(), isOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
 
 	const batchDelete = async () => {
@@ -30,7 +30,7 @@
 				toast.success('Successfully deleted prescriptions');
 				prescriptions.deletePrescriptions(selectedIds);
 				rowSelection = {};
-				isDeleteDialogOpen = false;
+				isOpen = false;
 			} else {
 				throw new Error(await response.text());
 			}
@@ -40,7 +40,7 @@
 	};
 </script>
 
-<Dialog.Root bind:open={isDeleteDialogOpen}>
+<Dialog.Root bind:open={isOpen}>
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Confirm Deletion</Dialog.Title>

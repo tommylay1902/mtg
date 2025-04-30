@@ -4,7 +4,12 @@
 	import Pencil from '@lucide/svelte/icons/pencil';
 	import Refresh from '@lucide/svelte/icons/refresh-cw';
 
-	let { isDeleteDialogOpen = $bindable(), isUpdateDialogOpen = $bindable() } = $props();
+	let {
+		dialogs = $bindable()
+		// isDeleteDialogOpen = $bindable(),
+		// isUpdateOpen = $bindable(),
+		// isRefillDialogOpen = $bindable()
+	} = $props();
 </script>
 
 <div
@@ -15,7 +20,7 @@
 			variant="destructive"
 			class="peer/delete rounded-full transition-all duration-300 hover:scale-110 group-hover/update:scale-90 [&_svg]:size-5"
 			onclick={() => {
-				isDeleteDialogOpen = true;
+				dialogs.isDeleteOpen = true;
 			}}
 		>
 			<Trash /> Delete
@@ -35,7 +40,7 @@
 		<Button
 			class="peer/update rounded-full bg-black transition-all duration-300 hover:scale-110 [&_svg]:size-5"
 			onclick={() => {
-				isUpdateDialogOpen = true;
+				dialogs.isUpdateOpen = true;
 			}}
 		>
 			<Pencil size={32} /> Update
@@ -54,6 +59,7 @@
 		<Button
 			variant="outline"
 			class="peer/delete rounded-full transition-all duration-300 hover:scale-110 group-hover/update:scale-90 [&_svg]:size-5"
+			onclick={() => (dialogs.isRefillOpen = true)}
 		>
 			<Refresh /> Refill
 		</Button>
