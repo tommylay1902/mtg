@@ -23,6 +23,7 @@
 		isAddOpen: false,
 		isRefillOpen: false
 	});
+
 	let isAddDialogOpen = $state(false);
 	let updateDisplayPrescriptions = $state<Prescription[]>([]);
 

@@ -51,7 +51,6 @@
 			updateIds = [];
 			activeIdx = 0;
 		} else {
-			// if dialog opens repopulate original data
 			const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
 				.map((id) => {
 					const original = prescriptions.current.find((p) => p.id === id);

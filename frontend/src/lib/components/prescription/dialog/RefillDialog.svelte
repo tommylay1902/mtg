@@ -3,7 +3,7 @@
 	let { isOpen = $bindable() } = $props();
 </script>
 
-<Dialog.Root open={isOpen}>
+<Dialog.Root bind:open={isOpen}>
 	<Dialog.Content class="min-w-[80dvw]">
 		<Dialog.Header>
 			<Dialog.Title>Refill Prescriptions</Dialog.Title>
