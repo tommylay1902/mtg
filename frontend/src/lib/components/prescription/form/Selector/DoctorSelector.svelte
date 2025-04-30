@@ -39,7 +39,6 @@
 			triggerRef.focus();
 		});
 	}
-	$inspect(filteredDoctors);
 </script>
 
 <Popover.Root bind:open>

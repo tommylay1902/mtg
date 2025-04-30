@@ -28,7 +28,6 @@
 	 **/
 	let localDrafts = $state<Prescription[]>([]);
 
-	// let selectedMedTypes = $state<MedicationType[]>([]);
 	let isLoadingMedTypes = $state<boolean>(false);
 
 	let {
@@ -42,27 +41,6 @@
 	const inputConfigs = rxFormConfig;
 
 	const prescriptions = getPrescriptionContext();
-
-	// EFFECT
-	$effect(() => {
-		//reset state of dialog on close of dialog
-		if (isOpen === false) {
-			updateDisplayPrescriptions = [];
-			updateIds = [];
-			activeIdx = 0;
-		} else {
-			const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
-				.map((id) => {
-					const original = prescriptions.current.find((p) => p.id === id);
-					return original ? JSON.parse(JSON.stringify(original)) : null;
-				})
-				.filter((p): p is Prescription => p !== null);
-
-			updateDisplayPrescriptions = selectedPrescriptions;
-			original = structuredClone(selectedPrescriptions);
-			localDrafts = structuredClone(selectedPrescriptions);
-		}
-	});
 
 	// API CALL
 	const batchUpdate = async () => {
@@ -84,19 +62,48 @@
 	let lastDoctor = $state<string>('');
 
 	$effect(() => {
-		if (isOpen) {
-			const currentMed = localDrafts[activeIdx]?.medicationType || [];
-			const currentDoctor = localDrafts[activeIdx]?.prescribedBy || '';
-			if (!arraysEqual(currentMed, lastMedicationTypes)) {
-				updateupdateIds(localDrafts[activeIdx], 'medicationType', currentMed);
-				lastMedicationTypes = currentMed;
-			}
-			if (lastDoctor !== currentDoctor) {
-				updateupdateIds(localDrafts[activeIdx], 'prescribedBy', currentDoctor);
-				lastDoctor = currentDoctor;
-			}
+		if (isOpen === false) {
+			//reset state of dialog on close of dialog
+			updateDisplayPrescriptions = [];
+			updateIds = [];
+			activeIdx = 0;
+		} else {
+			// if dialog is open then create deep copy of objects so we can detect changes when needed
+			createDeepCopy();
 		}
 	});
+
+	$effect(() => {
+		if (isOpen) {
+			updateTrackingAssociations();
+		}
+	});
+
+	const createDeepCopy = () => {
+		const selectedPrescriptions: Prescription[] = Object.keys(rowSelection)
+			.map((id) => {
+				const original = prescriptions.current.find((p) => p.id === id);
+				return original ? JSON.parse(JSON.stringify(original)) : null;
+			})
+			.filter((p): p is Prescription => p !== null);
+
+		updateDisplayPrescriptions = selectedPrescriptions;
+		original = structuredClone(selectedPrescriptions);
+		localDrafts = structuredClone(selectedPrescriptions);
+	};
+
+	const updateTrackingAssociations = () => {
+		const currentMed = localDrafts[activeIdx]?.medicationType || [];
+		const currentDoctor = localDrafts[activeIdx]?.prescribedBy || '';
+		if (!arraysEqual(currentMed, lastMedicationTypes)) {
+			updateIdArray(localDrafts[activeIdx], 'medicationType', currentMed);
+			lastMedicationTypes = $state.snapshot(currentMed);
+		}
+		if (lastDoctor !== currentDoctor) {
+			updateIdArray(localDrafts[activeIdx], 'prescribedBy', currentDoctor);
+			lastDoctor = currentDoctor;
+		}
+	};
 
 	/**
 	 * Manages the update tracking state when prescription fields are modified
@@ -110,7 +117,7 @@
 	 * - Removing ID if changes are reverted to original values
 	 * - Maintains a clean list of IDs needing server updates
 	 */
-	const updateupdateIds = <K extends keyof Prescription>(
+	const updateIdArray = <K extends keyof Prescription>(
 		activeDraft: Prescription,
 		field: K,
 		changeEvent?: Event | MedicationType[] | string
@@ -164,24 +171,16 @@
 	};
 
 	const arraysEqual = (a: MedicationType[], b: MedicationType[]) => {
-		return a.length === b.length && a.every((item, i) => item.id === b[i].id);
-	};
+		const aIds = new Set(a.map((item) => item.id));
+		const bIds = new Set(b.map((item) => item.id));
 
-	const unwrapError = (error: { _errors?: string[] } | string | string[] | undefined): string => {
-		if (!error) return '';
+		if (aIds.size !== bIds.size) return false;
 
-		// Handle Zod array error format
-		if (typeof error === 'object' && '_errors' in error) {
-			return error._errors?.[0] || '';
+		for (const id of aIds) {
+			if (!bIds.has(id)) return false;
 		}
 
-		// Handle string arrays
-		if (Array.isArray(error)) {
-			return error[0] || '';
-		}
-
-		// Handle regular strings
-		return error.toString();
+		return true;
 	};
 
 	let isDropdownOpen = $state(false);
@@ -226,7 +225,7 @@
 							<Input
 								id={config.id}
 								value={config.transform(localDrafts[activeIdx][config.id])}
-								oninput={(e: Event) => updateupdateIds(localDrafts[activeIdx], config.id, e)}
+								oninput={(e: Event) => updateIdArray(localDrafts[activeIdx], config.id, e)}
 								type={config.type}
 							/>
 						</div>
