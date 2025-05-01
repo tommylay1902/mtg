@@ -3,13 +3,13 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/rxFormConfig.js';
 import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
-import { addDoctorForm } from '$lib/config/form/addDoctorFormConfig.js';
+import { quickAddDoctorFormSchema } from '$lib/config/form/addDoctorFormConfig.js';
 
 export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
 	try {
 		const prescriptionForm = await superValidate(zod(prescriptionSchema));
 		const createMedTypeForm = await superValidate(zod(addMedicationTypeSchema));
-		const createDoctorForm = await superValidate(zod(addDoctorForm));
+		const createDoctorForm = await superValidate(zod(quickAddDoctorFormSchema));
 
 		return {
 			form: { prescriptionForm, createMedTypeForm, createDoctorForm }
@@ -62,7 +62,8 @@ export const actions: Actions = {
 
 	createMedType: async ({ request, fetch, locals: { safeGetSession } }) => {
 		const createMedTypeForm = await superValidate(request, zod(addMedicationTypeSchema));
-		if (!createMedTypeForm.valid) return fail(400, createMedTypeForm);
+
+		if (!createMedTypeForm.valid) return fail(400, { createMedTypeForm });
 
 		try {
 			const { session } = await safeGetSession();
@@ -84,6 +85,39 @@ export const actions: Actions = {
 					id: success
 				},
 				form: createMedTypeForm
+			};
+		} catch (err) {
+			console.error(err);
+		}
+	},
+
+	createDoctor: async ({ request, fetch, locals: { safeGetSession } }) => {
+		const createDoctorForm = await superValidate(request, zod(quickAddDoctorFormSchema));
+
+		if (!createDoctorForm.valid) return fail(400, { createDoctorForm });
+
+		try {
+			console.log(createDoctorForm);
+			const { session } = await safeGetSession();
+			const response = await fetch('http://mtg_api:8080/api/v1/doctor', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session?.access_token}`
+				},
+				body: JSON.stringify(createDoctorForm.data)
+			});
+
+			const body = await response.json();
+			console.log(body);
+
+			return {
+				success: true,
+				data: {
+					...createDoctorForm.data,
+					id: body.success
+				},
+				form: createDoctorForm
 			};
 		} catch (err) {
 			console.error(err);

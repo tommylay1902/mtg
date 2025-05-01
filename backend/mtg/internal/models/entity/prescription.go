@@ -20,9 +20,11 @@ type BasePrescriptionFields struct {
 }
 
 type RelationshipPrescriptionFields struct {
-	MedicationTypes []MedicationType `json:"medicationType" gorm:"constraint:OnDelete:CASCADE;many2many:prescription_medication_types"`
-	PrescribedBy    *uuid.UUID       `json:"prescribedBy"`
-	Doctor          *Doctor          `gorm:"foreignKey:PrescribedBy"`
+	MedicationTypes    []MedicationType    `json:"medicationType" gorm:"constraint:OnDelete:CASCADE;many2many:prescription_medication_types"`
+	PrescribedBy       *uuid.UUID          `json:"prescribedBy"`
+	Doctor             *Doctor             `gorm:"foreignKey:PrescribedBy"`
+	Pickup             *uuid.UUID          `json:"pickup"`
+	HealthCareFacility *HealthCareFacility `gorm:"foreignKey:Pickup"`
 }
 
 type Prescription struct {

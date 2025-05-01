@@ -4,22 +4,22 @@ import (
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	"mtg/internal/models/entity"
-	cService "mtg/internal/server/service/clinic"
+	hcService "mtg/internal/server/service/healthcare_faciliity"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type ClinicHandler struct {
-	Service cService.ClinicService
+type HealthCareFacilityHandler struct {
+	Service hcService.HealthCareFacilityService
 }
 
-func InitializeClinicHandler(service cService.ClinicService) *ClinicHandler {
-	return &ClinicHandler{Service: service}
+func InitializeClinicHandler(service hcService.HealthCareFacilityService) *HealthCareFacilityHandler {
+	return &HealthCareFacilityHandler{Service: service}
 }
 
-func (ch *ClinicHandler) CreateClinic(c *fiber.Ctx) error {
+func (hch *HealthCareFacilityHandler) CreateHealthCareFacility(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
-	var bodyRequest entity.Clinic
+	var bodyRequest entity.HealthCareFacility
 
 	if err := c.BodyParser(&bodyRequest); err != nil {
 		bodyParseErr := &apperror.BadRequestError{
@@ -30,7 +30,7 @@ func (ch *ClinicHandler) CreateClinic(c *fiber.Ctx) error {
 	}
 
 	bodyRequest.Owner = &email
-	id, err := ch.Service.CreateClinic(bodyRequest)
+	id, err := hch.Service.CreateHealthCareFacility(bodyRequest)
 
 	if err != nil {
 		return errorhandler.HandleError(err, c)
@@ -41,14 +41,14 @@ func (ch *ClinicHandler) CreateClinic(c *fiber.Ctx) error {
 	})
 }
 
-func (ch *ClinicHandler) GetAllClinics(c *fiber.Ctx) error {
+func (hch *HealthCareFacilityHandler) GetAllHealthCareFacility(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
 
-	clinics, err := ch.Service.GetAllClinics(&email)
+	clinics, err := hch.Service.GetAllHealthCareFacility(&email)
 
 	if err != nil {
 		return errorhandler.HandleError(err, c)
 	}
-	
+
 	return c.Status(fiber.StatusOK).JSON(clinics)
 }

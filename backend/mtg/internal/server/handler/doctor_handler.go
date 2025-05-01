@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
 	"mtg/internal/models/entity"
@@ -21,6 +22,7 @@ func (dh *DoctorHandler) CreateDoctor(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
 	var doctor entity.Doctor
 	if err := c.BodyParser(&doctor); err != nil {
+		fmt.Println(err.Error())
 		error := &apperror.BadRequestError{
 			Message: err.Error(),
 			Code:    400,

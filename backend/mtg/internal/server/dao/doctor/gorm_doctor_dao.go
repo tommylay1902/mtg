@@ -16,6 +16,7 @@ func InitializeGormDoctorDao(db *gorm.DB) *GormDoctorDao {
 }
 
 func (dao *GormDoctorDao) CreateDoctor(model *entity.Doctor) (*uuid.UUID, error) {
+
 	err := dao.DB.Create(&model).Error
 	if err != nil {
 		return nil, err

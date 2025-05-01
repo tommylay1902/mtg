@@ -2,7 +2,7 @@ package entity
 
 import "github.com/google/uuid"
 
-type ClinicLocation struct {
+type Location struct {
 	ID          *uuid.UUID `json:"id" gorm:"type:uuid;primaryKey"`
 	Street      *string    `json:"street"`
 	City        *string    `json:"city"`

@@ -5,24 +5,18 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
-
+	const doctors = getDoctorContext();
 	import {
 		AddDoctorFormConfig,
-		type AddDoctorSchema
+		type quickAddDoctorForm
 	} from '$lib/config/form/addDoctorFormConfig.js';
+	import { getDoctorContext } from '$lib/context/DoctorContext.js';
 
 	let { searchQuery, createDoctorForm, isButton } = $props();
 
-	const {
-		form: drForm,
-		errors: drErrors,
-		enhance: drEnhance,
-		reset: drReset
-	} = superForm<AddDoctorSchema>(createDoctorForm, {
+	const { form, errors, enhance, reset } = superForm<quickAddDoctorForm>(createDoctorForm, {
 		resetForm: false,
-		warnings: {
-			duplicateId: true
-		},
+		dataType: 'json',
 		onSubmit() {
 			toast.loading('Processing...');
 		},
@@ -30,7 +24,8 @@
 			toast.dismiss();
 			if (event.result.type === 'success') {
 				toast.success('Successfully created a Doctor');
-				drReset();
+				doctors.addDoctor(event.result.data?.data);
+				reset();
 			} else if (event.result.type === 'failure') {
 				toast.error('ERROR!');
 			}
@@ -38,7 +33,7 @@
 	});
 
 	$effect(() => {
-		$drForm.lastName = searchQuery;
+		$form.lastName = searchQuery;
 	});
 
 	const config = AddDoctorFormConfig;
@@ -54,7 +49,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Add a new doctor into the system</Dialog.Title>
 		</Dialog.Header>
-		<form action="?/createDoctor" method="POST" use:drEnhance>
+		<form action="?/createDoctor" method="POST" use:enhance>
 			<div class="grid w-full grid-cols-4 gap-x-4">
 				{#each config as c}
 					{#if c.type !== 'select'}
@@ -65,8 +60,13 @@
 								type={c.type}
 								placeholder={c.placeholder}
 								class={`${c.space}`}
-								bind:value={$drForm[c.id]}
+								bind:value={$form[c.id]}
 							/>
+							<div class="min-h-5">
+								{#if $errors[c.id]}
+									<p class="text-sm text-red-500">{$errors[c.id]}</p>
+								{/if}
+							</div>
 						</div>
 					{/if}
 				{/each}
