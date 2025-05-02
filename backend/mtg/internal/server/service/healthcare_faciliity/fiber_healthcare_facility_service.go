@@ -23,3 +23,7 @@ func (s *FiberHealthCareFacilityService) CreateHealthCareFacility(model entity.H
 func (s *FiberHealthCareFacilityService) GetAllHealthCareFacility(owner *string) ([]entity.HealthCareFacility, error) {
 	return s.DAO.GetAll(owner)
 }
+
+func (s *FiberHealthCareFacilityService) GetAllPharmacy(owner *string) ([]entity.HealthCareFacility, error) {
+	return s.DAO.GetAllPharmacy(owner)
+}

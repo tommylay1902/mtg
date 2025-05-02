@@ -38,3 +38,15 @@ func (dao *GormHealthCareFacilityDao) GetAll(owner *string) ([]entity.HealthCare
 	return healthCareFacilities, nil
 
 }
+
+func (dao *GormHealthCareFacilityDao) GetAllPharmacy(owner *string) ([]entity.HealthCareFacility, error) {
+	var healthCareFacilities []entity.HealthCareFacility
+
+	err := dao.DB.Where("owner = ? AND type = 'Pharmacy'", *owner).Find(&healthCareFacilities).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return healthCareFacilities, nil
+}

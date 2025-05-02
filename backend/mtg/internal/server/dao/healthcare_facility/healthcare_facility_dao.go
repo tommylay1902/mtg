@@ -9,4 +9,5 @@ import (
 type HealthCareFacilityDao interface {
 	CreateHealthCareFacility(entity.HealthCareFacility) (*uuid.UUID, error)
 	GetAll(*string) ([]entity.HealthCareFacility, error)
+	GetAllPharmacy(*string) ([]entity.HealthCareFacility, error)
 }

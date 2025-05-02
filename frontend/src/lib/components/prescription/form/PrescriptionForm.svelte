@@ -15,9 +15,12 @@
 	import DoctorSelector from './Selector/DoctorSelector.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Pill from '@lucide/svelte/icons/pill';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import { getPharmacyContext } from '$lib/context/PharmacyContext.js';
 
 	let { prescriptionForm, createMedTypeForm, isOpen = $bindable(), createDoctorForm } = $props();
 	const prescriptions = getPrescriptionContext();
+	const pharmacy = getPharmacyContext();
 
 	const formConfigs: Array<rxFormConfigFields> = rxFormConfig;
 
@@ -87,6 +90,23 @@
 				<div class={config.space}>
 					<Label>Prescribed By</Label>
 					<DoctorSelector bind:value={$form.prescribedBy} {createDoctorForm} />
+				</div>
+			{:else if config.id === 'pickup'}
+				<div class={config.space}>
+					<Select.Root type="single" bind:value={$form.pickup}>
+						<Select.Trigger>
+							{$form.pickup
+								? pharmacy.current.find((p) => p.id === $form.pickup)?.name
+								: 'Select a pharmacy'}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Group>
+								{#each pharmacy.current as pharm}
+									<Select.Item value={pharm.id} label={pharm.name} />
+								{/each}
+							</Select.Group>
+						</Select.Content>
+					</Select.Root>
 				</div>
 			{:else if config.id === 'notes'}
 				<div class={config.space}>

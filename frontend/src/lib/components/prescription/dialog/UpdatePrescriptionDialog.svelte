@@ -14,6 +14,8 @@
 	import Loader from '$lib/components/ui/Loader.svelte';
 	import { toast } from 'svelte-sonner';
 	import DoctorSelector from '$lib/components/prescription/form/Selector/DoctorSelector.svelte';
+	import { getPharmacyContext } from '$lib/context/PharmacyContext.js';
+	import * as Select from '$lib/components/ui/select/index.js';
 
 	// STATES
 	// array of reference ids of all prescriptions that should be updated
@@ -41,6 +43,7 @@
 	const inputConfigs = rxFormConfig;
 
 	const prescriptions = getPrescriptionContext();
+	const pharmacy = getPharmacyContext();
 
 	// API CALL
 	const batchUpdate = async () => {
@@ -184,6 +187,10 @@
 	};
 
 	let isDropdownOpen = $state(false);
+	let pharmacyValue = $state('');
+	const triggerContent = $derived(
+		pharmacy.current.find((f) => f.id === pharmacyValue)?.name ?? 'Select a pharmacy'
+	);
 </script>
 
 <Dialog.Root bind:open={isOpen}>
@@ -218,6 +225,19 @@
 						<div class="col-span-4 w-full py-3">
 							<Label>Prescribed By</Label>
 							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} {createDoctorForm} />
+						</div>
+					{:else if config.id === 'pickup'}
+						<div class={config.space}>
+							<Select.Root type="single" bind:value={pharmacyValue}>
+								<Select.Trigger>{triggerContent}</Select.Trigger>
+								<Select.Content>
+									<Select.Group>
+										{#each pharmacy.current as pharm}
+											<Select.Item value={pharm.id} label={pharm.name} />
+										{/each}
+									</Select.Group>
+								</Select.Content>
+							</Select.Root>
 						</div>
 					{:else}
 						<div class={`${config.space}`}>

@@ -1,4 +1,5 @@
 import { type MedicationType } from './MedicationType.js';
+
 export type Prescription = {
 	id: string;
 	medication: string;
@@ -10,4 +11,5 @@ export type Prescription = {
 	total: number;
 	prescribedBy: string;
 	medicationType: MedicationType[];
+	pickup: string;
 };

@@ -2,21 +2,15 @@ import type { LayoutServerLoad } from './$types.js';
 import type { Prescription } from '$lib/types/Prescription.js';
 import type { Doctor } from '$lib/types/Doctor.js';
 import type { MedicationType } from '$lib/types/MedicationType.js';
+import type { Pharmacy } from '$lib/types/Pharmacy.js';
 
 export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
 	try {
-		const { session } = await safeGetSession();
-
-		const fetchOptions = {
-			headers: {
-				Authorization: `Bearer ${session?.access_token}`
-			}
-		};
-
 		const results = await Promise.allSettled([
-			fetch('/api/prescriptions?type=prescriptions', fetchOptions),
-			fetch('/api/medication-type', fetchOptions),
-			fetch('/api/doctors', fetchOptions)
+			fetch('/api/prescriptions?type=prescriptions'),
+			fetch('/api/medication-type'),
+			fetch('/api/doctors'),
+			fetch('/api/healthcare-facility?type=pharmacy')
 		]);
 
 		const getDataOrThrow = async <T>(result: PromiseSettledResult<Response>): Promise<T> => {
@@ -31,16 +25,18 @@ export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession }
 			}
 		};
 
-		const [prescriptions, medicationTypes, doctors] = await Promise.all([
+		const [prescriptions, medicationTypes, doctors, pharmacy] = await Promise.all([
 			getDataOrThrow<Prescription[]>(results[0]),
 			getDataOrThrow<MedicationType[]>(results[1]),
-			getDataOrThrow<Doctor[]>(results[2])
+			getDataOrThrow<Doctor[]>(results[2]),
+			getDataOrThrow<Pharmacy[]>(results[3])
 		]);
 
 		return {
 			prescription: prescriptions,
-			medicationTypes: medicationTypes,
-			doctors: doctors
+			medicationTypes,
+			doctors,
+			pharmacy
 		};
 	} catch (err) {
 		console.error(err);
@@ -48,6 +44,7 @@ export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession }
 			prescription: [],
 			medicationTypes: [],
 			doctors: [],
+			pharmacy: [],
 			error: err instanceof Error ? err.message : 'Failed to load data'
 		};
 	}

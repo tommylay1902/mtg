@@ -52,3 +52,15 @@ func (hch *HealthCareFacilityHandler) GetAllHealthCareFacility(c *fiber.Ctx) err
 
 	return c.Status(fiber.StatusOK).JSON(clinics)
 }
+
+func (hch *HealthCareFacilityHandler) GetAllPharmacy(c *fiber.Ctx) error {
+	email := c.Locals("email").(string)
+
+	clinics, err := hch.Service.GetAllPharmacy(&email)
+
+	if err != nil {
+		return errorhandler.HandleError(err, c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(clinics)
+}

@@ -6,7 +6,8 @@
 		{ href: '/user/dashboard', text: 'Dashboard' },
 		{ href: '/user/prescriptions', text: 'Prescriptions' },
 		{ href: '/user/events', text: 'Events' },
-		{ href: '/user/doctors', text: 'Doctors' }
+		{ href: '/user/doctors', text: 'Doctors' },
+		{ href: '/user/healthcare', text: 'Health Care' }
 	];
 
 	const { logout } = $props();

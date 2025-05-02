@@ -28,6 +28,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	apiHealthCareFacilityRoutes.Use(middleware.SupabaseProtected())
 	apiHealthCareFacilityRoutes.Post("", s.Handler.HealthCareFacilityHandler.CreateHealthCareFacility)
 	apiHealthCareFacilityRoutes.Get("/all", s.Handler.HealthCareFacilityHandler.GetAllHealthCareFacility)
+	apiHealthCareFacilityRoutes.Get("/pharmacy/all", s.Handler.HealthCareFacilityHandler.GetAllPharmacy)
 
 	apiDoctorRoutes := s.Group("api/v1/doctor")
 	apiDoctorRoutes.Use(middleware.SupabaseProtected())

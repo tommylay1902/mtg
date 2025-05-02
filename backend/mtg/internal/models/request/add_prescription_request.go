@@ -10,4 +10,5 @@ type AddPrescriptionRequest struct {
 	entity.BasePrescriptionFields
 	MedicationType []entity.MedicationType `json:"medicationType"`
 	PrescribedBy   *uuid.UUID              `json:"prescribedBy"`
+	PickUp         *uuid.UUID              `json:"pickup"`
 }

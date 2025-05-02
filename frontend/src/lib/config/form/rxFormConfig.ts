@@ -16,6 +16,13 @@ const basePrescriptionSchema = z.object({
 		.transform((dr) => {
 			if (dr === '') return null;
 			return dr;
+		}),
+	pickup: z
+		.string()
+		.optional()
+		.transform((p) => {
+			if (p === '') return undefined;
+			return p;
 		})
 });
 
@@ -120,6 +127,13 @@ export const rxFormConfig: rxFormConfigFields[] = [
 	{
 		id: 'medicationType',
 		title: 'Medication Type',
+		type: 'select',
+		space: 'col-span-4',
+		transform: defaultTransform
+	},
+	{
+		id: 'pickup',
+		title: 'Pharmacy',
 		type: 'select',
 		space: 'col-span-4',
 		transform: defaultTransform

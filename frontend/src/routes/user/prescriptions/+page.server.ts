@@ -97,7 +97,6 @@ export const actions: Actions = {
 		if (!createDoctorForm.valid) return fail(400, { createDoctorForm });
 
 		try {
-			console.log(createDoctorForm);
 			const { session } = await safeGetSession();
 			const response = await fetch('http://mtg_api:8080/api/v1/doctor', {
 				method: 'POST',
