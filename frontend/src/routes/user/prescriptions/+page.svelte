@@ -72,12 +72,7 @@
 				<Dialog.Header>
 					<Dialog.Title class="text-center text-2xl">Create a new prescription</Dialog.Title>
 				</Dialog.Header>
-				<PrescriptionForm
-					createDoctorForm={data.form?.createDoctorForm}
-					prescriptionForm={data.form?.prescriptionForm}
-					createMedTypeForm={data.form?.createMedTypeForm}
-					bind:isOpen={dialogs.isAddOpen}
-				/>
+				<PrescriptionForm forms={data.form} bind:isOpen={dialogs.isAddOpen} />
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>

@@ -17,7 +17,10 @@ func InitializeFiberHealthCareFacilityervice(dao hcDao.HealthCareFacilityDao) *F
 
 func (s *FiberHealthCareFacilityService) CreateHealthCareFacility(model entity.HealthCareFacility) (*uuid.UUID, error) {
 	return s.DAO.CreateHealthCareFacility(model)
+}
 
+func (s *FiberHealthCareFacilityService) CreateHealthCareFacilityWithLocation(hc entity.HealthCareFacility, loc entity.Location) (*uuid.UUID, error) {
+	return s.DAO.CreateHealthCareFacilityWithLocation(hc, loc)
 }
 
 func (s *FiberHealthCareFacilityService) GetAllHealthCareFacility(owner *string) ([]entity.HealthCareFacility, error) {

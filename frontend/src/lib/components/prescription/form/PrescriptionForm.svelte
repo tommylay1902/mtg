@@ -15,17 +15,17 @@
 	import DoctorSelector from './Selector/DoctorSelector.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Pill from '@lucide/svelte/icons/pill';
-	import * as Select from '$lib/components/ui/select/index.js';
 	import { getPharmacyContext } from '$lib/context/PharmacyContext.js';
+	import PharmacySelector from './Selector/PharmacySelector.svelte';
 
-	let { prescriptionForm, createMedTypeForm, isOpen = $bindable(), createDoctorForm } = $props();
+	let { forms, isOpen = $bindable() } = $props();
 	const prescriptions = getPrescriptionContext();
 	const pharmacy = getPharmacyContext();
 
 	const formConfigs: Array<rxFormConfigFields> = rxFormConfig;
 
 	const { form, errors, enhance, reset, delayed } = superForm<PrescriptionSchemaType>(
-		prescriptionForm,
+		forms.prescriptionForm,
 		{
 			dataType: 'json',
 			resetForm: true,
@@ -78,7 +78,7 @@
 					<MedicationTypeSelector
 						{isDropdownOpen}
 						bind:value={$form.medicationType}
-						{createMedTypeForm}
+						createMedTypeForm={forms.createMedTypeForm}
 					/>
 					<div class="min-h-5">
 						{#if $errors[config.id]}
@@ -88,25 +88,19 @@
 				</div>
 			{:else if config.id === 'prescribedBy'}
 				<div class={config.space}>
-					<Label>Prescribed By</Label>
-					<DoctorSelector bind:value={$form.prescribedBy} {createDoctorForm} />
+					<Label for={config.id}>Prescribed By</Label>
+					<DoctorSelector
+						bind:value={$form.prescribedBy}
+						createDoctorForm={forms.createDoctorForm}
+					/>
 				</div>
 			{:else if config.id === 'pickup'}
 				<div class={config.space}>
-					<Select.Root type="single" bind:value={$form.pickup}>
-						<Select.Trigger>
-							{$form.pickup
-								? pharmacy.current.find((p) => p.id === $form.pickup)?.name
-								: 'Select a pharmacy'}
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Group>
-								{#each pharmacy.current as pharm}
-									<Select.Item value={pharm.id} label={pharm.name} />
-								{/each}
-							</Select.Group>
-						</Select.Content>
-					</Select.Root>
+					<Label for={config.id}>{config.title}</Label>
+					<PharmacySelector
+						bind:value={$form.pickup}
+						createPharmacyForm={forms.createPharmacyForm}
+					/>
 				</div>
 			{:else if config.id === 'notes'}
 				<div class={config.space}>
@@ -125,7 +119,9 @@
 				</div>
 			{:else if config.type !== 'select'}
 				<div class={config.space}>
-					<Label for={config.id}>{config.title}</Label>
+					<Label for={config.id} class={$errors[config.id] ? 'text-red-500' : ''}
+						>{config.title}</Label
+					>
 					<Input
 						id={config.id}
 						name={config.id}

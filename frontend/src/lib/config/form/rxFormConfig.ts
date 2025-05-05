@@ -120,20 +120,20 @@ export const rxFormConfig: rxFormConfigFields[] = [
 		id: 'prescribedBy',
 		title: 'Prescribed By',
 		type: 'select',
-		space: 'col-span-4',
+		space: 'col-span-2',
 		placeholder: 'Who placed the order?',
-		transform: defaultTransform
-	},
-	{
-		id: 'medicationType',
-		title: 'Medication Type',
-		type: 'select',
-		space: 'col-span-4',
 		transform: defaultTransform
 	},
 	{
 		id: 'pickup',
 		title: 'Pharmacy',
+		type: 'select',
+		space: 'col-span-2',
+		transform: defaultTransform
+	},
+	{
+		id: 'medicationType',
+		title: 'Medication Type',
 		type: 'select',
 		space: 'col-span-4',
 		transform: defaultTransform

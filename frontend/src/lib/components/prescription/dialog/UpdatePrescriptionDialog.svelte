@@ -187,9 +187,10 @@
 	};
 
 	let isDropdownOpen = $state(false);
-	let pharmacyValue = $state('');
+
 	const triggerContent = $derived(
-		pharmacy.current.find((f) => f.id === pharmacyValue)?.name ?? 'Select a pharmacy'
+		pharmacy.current.find((f) => f.id === localDrafts[activeIdx].pickup)?.name ??
+			'Select a pharmacy'
 	);
 </script>
 
@@ -222,13 +223,15 @@
 							{/key}
 						{/if}
 					{:else if config.id === 'prescribedBy'}
-						<div class="col-span-4 w-full py-3">
+						<div class="col-span-2 w-full py-3">
 							<Label>Prescribed By</Label>
+
 							<DoctorSelector bind:value={localDrafts[activeIdx].prescribedBy} {createDoctorForm} />
 						</div>
 					{:else if config.id === 'pickup'}
-						<div class={config.space}>
-							<Select.Root type="single" bind:value={pharmacyValue}>
+						<div class={config.space + ' pt-3'}>
+							<Label>Pharmacy</Label>
+							<Select.Root type="single" bind:value={localDrafts[activeIdx].pickup}>
 								<Select.Trigger>{triggerContent}</Select.Trigger>
 								<Select.Content>
 									<Select.Group>

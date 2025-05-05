@@ -8,6 +8,7 @@ import (
 
 type HealthCareFacilityService interface {
 	CreateHealthCareFacility(entity.HealthCareFacility) (*uuid.UUID, error)
+	CreateHealthCareFacilityWithLocation(entity.HealthCareFacility, entity.Location) (*uuid.UUID, error)
 	GetAllHealthCareFacility(*string) ([]entity.HealthCareFacility, error)
 	GetAllPharmacy(*string) ([]entity.HealthCareFacility, error)
 }

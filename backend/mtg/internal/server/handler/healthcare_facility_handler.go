@@ -3,7 +3,7 @@ package handler
 import (
 	"mtg/internal/error/apperror"
 	"mtg/internal/error/errorhandler"
-	"mtg/internal/models/entity"
+	"mtg/internal/models/request"
 	hcService "mtg/internal/server/service/healthcare_faciliity"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,7 +19,7 @@ func InitializeClinicHandler(service hcService.HealthCareFacilityService) *Healt
 
 func (hch *HealthCareFacilityHandler) CreateHealthCareFacility(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
-	var bodyRequest entity.HealthCareFacility
+	var bodyRequest request.CreateHealthCareFacilityRequest
 
 	if err := c.BodyParser(&bodyRequest); err != nil {
 		bodyParseErr := &apperror.BadRequestError{
@@ -29,8 +29,10 @@ func (hch *HealthCareFacilityHandler) CreateHealthCareFacility(c *fiber.Ctx) err
 		return errorhandler.HandleError(bodyParseErr, c)
 	}
 
-	bodyRequest.Owner = &email
-	id, err := hch.Service.CreateHealthCareFacility(bodyRequest)
+	pharm, location := bodyRequest.ToEntity()
+
+	pharm.Owner = &email
+	id, err := hch.Service.CreateHealthCareFacilityWithLocation(pharm, location)
 
 	if err != nil {
 		return errorhandler.HandleError(err, c)

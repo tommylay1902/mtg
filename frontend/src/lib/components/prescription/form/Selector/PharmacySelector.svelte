@@ -6,31 +6,31 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
-	import { getDoctorContext } from '$lib/context/DoctorContext.js';
-	import type { Doctor } from '$lib/types/Doctor.js';
-	import AddDoctorTypeDialog from '../../dialog/AddDoctorTypeDialog.svelte';
+	import type { Pharmacy } from '$lib/types/Pharmacy.js';
+
+	import AddPharmacyDialog from '../../dialog/AddPharmacyDialog.svelte';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import { getPharmacyContext } from '$lib/context/PharmacyContext.js';
 
-	const doctors = getDoctorContext();
+	const pharmacy = getPharmacyContext();
 
-	let { value = $bindable(), createDoctorForm } = $props();
+	let { value = $bindable(), createPharmacyForm } = $props();
 
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
 	let searchQuery = $state('');
 
 	// Filter doctors based on search query
-	const filteredDoctors = $derived.by(() => {
-		if (!searchQuery) return doctors?.current ?? [];
-		return (
-			doctors?.current.filter((doctor) =>
-				doctor.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-			) ?? []
+	const filteredPharmacy = $derived.by(() => {
+		if (!searchQuery) return pharmacy?.current ?? [];
+
+		return pharmacy?.current.filter(
+			(p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()) ?? []
 		);
 	});
 
-	const selectedValue: Doctor | string = $derived(
-		doctors?.current.find((f) => f.id === value) ?? 'Unknown'
+	const selectedValue: Pharmacy | string = $derived(
+		pharmacy?.current.find((f) => f.id === value) ?? 'Unknown'
 	);
 
 	function closeAndFocusTrigger() {
@@ -52,7 +52,7 @@
 					role="combobox"
 					aria-expanded={open}
 				>
-					{typeof selectedValue === 'string' ? selectedValue : `${selectedValue.lastName}`}
+					{typeof selectedValue === 'string' ? selectedValue : `${selectedValue.name}`}
 					<ChevronsUpDown class="opacity-50" />
 				</Button>
 			</div>
@@ -60,7 +60,7 @@
 	</Popover.Trigger>
 	<Popover.Content class="w-full p-0">
 		<Command.Root>
-			<Input placeholder="Search by last name..." class="h-9 p-4" bind:value={searchQuery} />
+			<Input placeholder="Search pharmacy..." class="h-9 p-4" bind:value={searchQuery} />
 			<Command.List>
 				<Command.Group>
 					<Command.Item
@@ -73,25 +73,27 @@
 						<Check class={cn(value !== '' && 'text-transparent')} />
 						{'Unknown'}
 					</Command.Item>
-					{#if filteredDoctors.length !== 0}
-						{#each filteredDoctors as doctor (doctor.id)}
+					{#if filteredPharmacy.length !== 0}
+						{#each filteredPharmacy as p (p.id)}
 							<Command.Item
-								value={doctor.id}
+								value={p.id}
 								onSelect={() => {
-									value = doctor.id;
+									value = p.id;
 									closeAndFocusTrigger();
 								}}
 							>
-								<Check class={cn(value !== doctor.id && 'text-transparent')} />
-								{doctor.lastName}
+								<Check class={cn(value !== p.id && 'text-transparent')} />
+								{p.name}
 							</Command.Item>
 						{/each}
-					{:else if filteredDoctors.length === 0 && searchQuery !== ''}
-						<div class="text-center text-sm font-bold">No doctors found for "{searchQuery}"</div>
+					{:else if filteredPharmacy.length === 0 && searchQuery !== ''}
+						<div class="text-center text-sm font-bold">
+							No pharmacies found for the query: "{searchQuery}"
+						</div>
 					{/if}
 				</Command.Group>
 			</Command.List>
-			<AddDoctorTypeDialog {searchQuery} {createDoctorForm} isButton={true} />
+			<AddPharmacyDialog {createPharmacyForm} {searchQuery} />
 		</Command.Root>
 	</Popover.Content>
 </Popover.Root>

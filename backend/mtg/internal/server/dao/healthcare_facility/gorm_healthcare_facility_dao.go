@@ -26,6 +26,18 @@ func (dao *GormHealthCareFacilityDao) CreateHealthCareFacility(model entity.Heal
 	return model.ID, err
 }
 
+func (dao *GormHealthCareFacilityDao) CreateHealthCareFacilityWithLocation(model entity.HealthCareFacility, loc entity.Location) (*uuid.UUID, error) {
+	model.ClinicLocation = &loc
+
+	err := dao.DB.Create(&model).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return model.ID, nil
+}
+
 func (dao *GormHealthCareFacilityDao) GetAll(owner *string) ([]entity.HealthCareFacility, error) {
 	var healthCareFacilities []entity.HealthCareFacility
 

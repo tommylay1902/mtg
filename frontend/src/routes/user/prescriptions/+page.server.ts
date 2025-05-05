@@ -4,15 +4,21 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { prescriptionSchema } from '$lib/config/form/rxFormConfig.js';
 import { addMedicationTypeSchema } from '$lib/config/form/addMedTypeFormConfig.js';
 import { quickAddDoctorFormSchema } from '$lib/config/form/addDoctorFormConfig.js';
+import { addPharmacy } from '$lib/config/form/addPharmacyConfig.js';
+import { type PharmacyNestedForm } from '$lib/types/PharmacyConfig.js';
 
-export const load: PageServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
+export const load: PageServerLoad = async () => {
 	try {
-		const prescriptionForm = await superValidate(zod(prescriptionSchema));
-		const createMedTypeForm = await superValidate(zod(addMedicationTypeSchema));
-		const createDoctorForm = await superValidate(zod(quickAddDoctorFormSchema));
+		const [prescriptionForm, createMedTypeForm, createDoctorForm, createPharmacyForm] =
+			await Promise.all([
+				superValidate(zod(prescriptionSchema)),
+				superValidate(zod(addMedicationTypeSchema)),
+				superValidate(zod(quickAddDoctorFormSchema)),
+				superValidate(zod(addPharmacy))
+			]);
 
 		return {
-			form: { prescriptionForm, createMedTypeForm, createDoctorForm }
+			form: { prescriptionForm, createMedTypeForm, createDoctorForm, createPharmacyForm }
 		};
 	} catch (err) {
 		console.error(err);
@@ -108,7 +114,6 @@ export const actions: Actions = {
 			});
 
 			const body = await response.json();
-			console.log(body);
 
 			return {
 				success: true,
@@ -117,6 +122,48 @@ export const actions: Actions = {
 					id: body.success
 				},
 				form: createDoctorForm
+			};
+		} catch (err) {
+			console.error(err);
+		}
+	},
+
+	createPharmacy: async ({ request, fetch, locals: { safeGetSession } }) => {
+		const createPharmacyForm = await superValidate(request, zod(addPharmacy));
+
+		if (!createPharmacyForm.valid) return fail(400, { createPharmacyForm });
+
+		try {
+			const { session } = await safeGetSession();
+			const transformedData: PharmacyNestedForm = {
+				name: createPharmacyForm.data.name,
+				type: 'Pharmacy',
+				location: {
+					street: createPharmacyForm.data.street,
+					city: createPharmacyForm.data.city,
+					state: createPharmacyForm.data.state,
+					postal_code: createPharmacyForm.data.postal_code,
+					country: createPharmacyForm.data.country,
+					phone_number: createPharmacyForm.data.phone_number
+				}
+			};
+
+			const response = await fetch('http://mtg_api:8080/api/v1/healthcare-facility', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session?.access_token}`
+				},
+				body: JSON.stringify(transformedData)
+			});
+			const body = await response.json();
+			return {
+				success: true,
+				data: {
+					...createPharmacyForm.data,
+					id: body.success
+				},
+				form: createPharmacyForm
 			};
 		} catch (err) {
 			console.error(err);

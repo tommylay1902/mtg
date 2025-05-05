@@ -7,21 +7,22 @@
 		{ href: '/user/prescriptions', text: 'Prescriptions' },
 		{ href: '/user/events', text: 'Events' },
 		{ href: '/user/doctors', text: 'Doctors' },
-		{ href: '/user/healthcare', text: 'Health Care' }
+		{ href: '/user/provider-management', text: 'Provider Management' }
 	];
 
 	const { logout } = $props();
 </script>
 
-<nav class={'h-15 m-3 flex items-center justify-between space-x-4 lg:space-x-6'}>
-	<div class="flex gap-x-4">
+<nav class="h-15 mb-3 flex items-center justify-between bg-gray-200 p-5">
+	<div class="text-3xl font-bold">MTG</div>
+	<div class="flex flex-grow justify-center gap-x-4">
 		{#each links as link}
 			<a
 				href={link.href}
-				class="{link.href === page.url.pathname
-					? 'text-primary'
-					: 'text-muted-foreground'} block text-sm font-medium transition-colors hover:text-primary"
-				>{link.text}</a
+				class="block rounded-full px-3 py-1 text-sm font-medium transition-colors {link.href ===
+				page.url.pathname
+					? 'bg-primary text-primary-foreground'
+					: 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}">{link.text}</a
 			>
 		{/each}
 	</div>

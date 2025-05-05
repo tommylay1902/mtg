@@ -28,6 +28,7 @@ func New() *gorm.DB {
 	if err != nil {
 		log.Panic("error connecting to db", err)
 	}
+
 	db.AutoMigrate(&entity.HealthCareFacility{})
 	db.AutoMigrate(&entity.Location{})
 	db.AutoMigrate(&entity.MedicationType{})

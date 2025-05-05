@@ -4,7 +4,7 @@ import type { Doctor } from '$lib/types/Doctor.js';
 import type { MedicationType } from '$lib/types/MedicationType.js';
 import type { Pharmacy } from '$lib/types/Pharmacy.js';
 
-export const load: LayoutServerLoad = async ({ fetch, locals: { safeGetSession } }) => {
+export const load: LayoutServerLoad = async ({ fetch }) => {
 	try {
 		const results = await Promise.allSettled([
 			fetch('/api/prescriptions?type=prescriptions'),
