@@ -12,6 +12,7 @@
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import EditDock from '$lib/components/prescription/edit-dock.svelte';
 	import RefillDialog from '$lib/components/prescription/dialog/RefillDialog.svelte';
+	import { onNavigate } from '$app/navigation';
 
 	let { data } = $props();
 	let rowSelection = $state<RowSelectionState>({});
@@ -27,7 +28,7 @@
 	let isAddDialogOpen = $state(false);
 	let updateDisplayPrescriptions = $state<Prescription[]>([]);
 
-	let filterStatus = $state('active');
+	let filterStatus = $state('all');
 
 	const prescriptions = getPrescriptionContext();
 </script>
@@ -49,17 +50,17 @@
 					{/if}
 					<span class="pl-1">Taken</span>
 				</Tabs.Trigger>
-				<Tabs.Trigger value="active" tabindex={0}>
-					{#if filterStatus === 'active'}
-						<span class="animate-pulsewave rounded-full bg-green-700 p-1"></span>
-					{/if}
-					<span class="pl-1">Need To Take</span>
-				</Tabs.Trigger>
 				<Tabs.Trigger value="all" tabindex={0}>
 					{#if filterStatus === 'all'}
 						<span class="animate-pulsewave rounded-full bg-blue-700 p-1"></span>
 					{/if}
 					<span class="pl-1">All Today</span>
+				</Tabs.Trigger>
+				<Tabs.Trigger value="active" tabindex={0}>
+					{#if filterStatus === 'active'}
+						<span class="animate-pulsewave rounded-full bg-green-700 p-1"></span>
+					{/if}
+					<span class="pl-1">Need To Take</span>
 				</Tabs.Trigger>
 			</Tabs.List>
 		</Tabs.Root>

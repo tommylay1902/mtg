@@ -89,7 +89,13 @@
 						</div>
 					</Card.Title>
 					<Card.Content>
-						<div>hello</div>
+						<div>{data.prescription.HealthCareFacility.name}</div>
+						<div>{data.prescription.HealthCareFacility.ClinicLocation.street}</div>
+						<div>{data.prescription.HealthCareFacility.ClinicLocation.city}</div>
+						<div>{data.prescription.HealthCareFacility.ClinicLocation.state}</div>
+						<div>{data.prescription.HealthCareFacility.ClinicLocation.notes}</div>
+						<div>{data.prescription.HealthCareFacility.ClinicLocation.phone_number}</div>
+						<div>{data.prescription.HealthCareFacility.ClinicLocation.postal_code}</div>
 					</Card.Content>
 				</Card.Root>
 			</div>

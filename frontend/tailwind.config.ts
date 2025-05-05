@@ -13,9 +13,22 @@ const config: Config = {
 			spin: 'spin 3s linear infinite',
 			'fade-in': 'fadeIn 400ms ease-out .4s forwards',
 			'delayed-fade-in': 'delayed-fade-in 400ms ease-out 500ms forwards',
-			pulsewave: 'pulsewave 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+			pulsewave: 'pulsewave 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			'pulse-fast': 'pulse .8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			'pulse-bounce': 'pulse 2s ease-in-out infinite',
+			shimmer: 'shimmer 2s infinite linear'
 		},
 		keyframes: {
+			pulse: {
+				'0%, 100%': { opacity: '0.9' },
+				'50%': { opacity: '0.45' }
+			},
+			shimmer: {
+				'0%': { backgroundPosition: '-200% 0' },
+				'100%': { backgroundPosition: '200% 0' }
+			},
+
 			pulsewave: {
 				'0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
 				'50%': { transform: 'scale(1.25)', opacity: '.8' }

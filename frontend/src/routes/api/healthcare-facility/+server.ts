@@ -22,8 +22,6 @@ export const GET: RequestHandler = async ({ fetch, url, locals: { safeGetSession
 
 		const data = await response.json();
 
-		console.log(data);
-
 		return new Response(JSON.stringify(data), { status: 200 });
 	} catch (err) {
 		console.error(err);

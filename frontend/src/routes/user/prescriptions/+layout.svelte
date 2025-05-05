@@ -7,6 +7,7 @@
 	import { setMedicationTypeContext } from '$lib/context/MedicationContext.js';
 	import { PharmacyState } from '$lib/state/PharmacyState.svelte.js';
 	import { setPharmacyContext } from '$lib/context/PharmacyContext.js';
+	import { onNavigate } from '$app/navigation';
 	let { data, children } = $props();
 
 	const prescriptions = new PrescriptionState(data.prescription);
